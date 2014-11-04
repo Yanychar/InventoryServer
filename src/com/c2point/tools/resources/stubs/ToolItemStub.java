@@ -2,13 +2,15 @@ package com.c2point.tools.resources.stubs;
 
 import java.util.ArrayList;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import com.c2point.tools.entity.location.GeoLocation;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 
-@XmlType(propOrder = { "id", "code", "name", "quantity", "responsible", "currentUser", "reservedBy" })
+@XmlType //(propOrder = { "id", "code", "name", "quantity", "responsible", "currentUser", "reservedBy" })
 public class ToolItemStub {
 	
 	private long	id;
@@ -26,6 +28,8 @@ public class ToolItemStub {
 	
 	private String		barcode;
 	private boolean		personalFlag;
+
+	private GeoLocationStub		lastKnownLocation;
 	
 	private ArrayList<String>	categoriesTree;		
 	
@@ -50,6 +54,9 @@ public class ToolItemStub {
 		setBarcode( item.getBarcode());
 		
 		setupCategoriesTree( item );
+	
+		if ( item.getLastKnownLocation() != null ) 
+			setLastKnownLocation( new GeoLocationStub( item.getLastKnownLocation()));
 		
 	}
 
@@ -85,6 +92,10 @@ public class ToolItemStub {
 
 	public boolean isPersonalFlag() { return personalFlag; }
 	public void setPersonalFlag( boolean personalFlag ) { this.personalFlag = personalFlag; }
+	
+	@XmlElement( name="location" )
+	public GeoLocationStub getLastKnownLocation() { return lastKnownLocation; }
+	public void setLastKnownLocation( GeoLocationStub lastKnownLocation ) { this.lastKnownLocation = lastKnownLocation; }
 	
 	public ArrayList<String> getCategoriesTree() { return categoriesTree; }
 	public void setCategoriesTree( ArrayList<String> categoriesTree ) { this.categoriesTree = categoriesTree; }
@@ -132,6 +143,11 @@ public class ToolItemStub {
 				+ ( getBarcode() != null ? "\n  Barcode:"+getBarcode() : "" )
 				+ "\n  Is it personal Tool?: "+isPersonalFlag()
 				+ ( getCategoriesTree() != null ? "\n Category: " + categoriesTreeToString() : "" )
+				+ ( getLastKnownLocation() != null ? "\n Location: [" 
+						+ getLastKnownLocation().getLatitude() + ", " 
+						+ getLastKnownLocation().getLongitude() + ", " 
+						+ getLastKnownLocation().getAccuracy() + "]" 
+						: "" )
 				;
 		
 		return output;

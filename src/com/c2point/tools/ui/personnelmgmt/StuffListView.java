@@ -21,7 +21,7 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 	private Table			usersTable;
 	
 	public StuffListView( StuffListModel model ) {
-		super();
+		super( true );
 		this.model = model;
 
 		initView();
@@ -43,7 +43,7 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 		
 		// Configure table
 		usersTable.setSelectable( true );
-		usersTable.setNullSelectionAllowed(  false );
+		usersTable.setNullSelectionAllowed( false );
 		usersTable.setMultiSelect( false );
 		usersTable.setColumnCollapsingAllowed( false );
 		usersTable.setColumnReorderingAllowed( false );
@@ -51,10 +51,10 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 		usersTable.setSizeFull();
 		
 		usersTable.addContainerProperty( "code", String.class, null );
-		usersTable.addContainerProperty( "fio", String.class, null );
+		usersTable.addContainerProperty( "name", String.class, null );
 		usersTable.addContainerProperty( "data", OrgUser.class, null );
 
-		usersTable.setVisibleColumns( new Object [] { "code", "fio" } );
+		usersTable.setVisibleColumns( new Object [] { "code", "name" } );
 		
 		usersTable.setColumnHeaders( new String[] { 
 				model.getApp().getResourceStr( "general.table.header.code" ), 
@@ -72,13 +72,23 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 				if ( logger.isDebugEnabled()) logger.debug( "Property.valueChanged!" );
 				
 				try {
-					Item item = usersTable.getItem( usersTable.getValue());
-					model.setSelectedUser( ( OrgUser ) item.getItemProperty( "data" ).getValue() );
+					if ( logger.isDebugEnabled()) {
+						
+						logger.debug( "Table item selected. Item Id = " + usersTable.getValue());
+						logger.debug( "  Item = " + usersTable.getItem( usersTable.getValue()));
+
+						if ( usersTable.getItem( usersTable.getValue()) != null )
+							logger.debug( "  User was selected: " + ( OrgUser ) usersTable.getItem( usersTable.getValue()).getItemProperty( "data" ).getValue());
+						
+					}
 					
-					logger.debug( "UserSelected Event. User was selected: " + model.getSelectedUser().getFirstAndLastNames());
+					Item item = usersTable.getItem( usersTable.getValue());
+					model.setSelectedUser( ( OrgUser ) item.getItemProperty( "data" ).getValue());
+					
 					
 				} catch ( Exception e ) {
-					logger.error( "Could not fetch OrgUser from StuffList table for UserId = " + event.getProperty().getValue());
+					logger.debug( "No selection. OrgUser cannot be fetched from StuffList " );
+					model.setSelectedUser( null );
 				}
 			}
 		});
@@ -91,21 +101,50 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 	}
 
 	@Override
-	public void wasAdded(OrgUser user) {
-		// TODO Auto-generated method stub
+	public void wasAdded( OrgUser user ) {
+
+		logger.debug( "StuffList receives notification: User was Added!" );
+		
+		// Find correct Item. Start from selected one
+		// update row with data 
+		addOrUpdateItem( user );
+		
+		// set correct selection
+		usersTable.setValue( user.getId());
 		
 	}
 
 	@Override
-	public void wasChanged(OrgUser user) {
-		// TODO Auto-generated method stub
+	public void wasChanged( OrgUser user ) {
+		
+		logger.debug( "StuffList receives notification: User was Changed!" );
+		
+		// Find correct Item. Start from selected one
+		// update row with data 
+		addOrUpdateItem( user );
+		
+		// set correct selection
+		usersTable.setValue( user.getId());
 		
 	}
 
 	@Override
-	public void wasDeleted(OrgUser user) {
-		// TODO Auto-generated method stub
+	public void wasDeleted( OrgUser user ) {
+
+		Object futureId;
+		try {
+			futureId = usersTable.prevItemId( usersTable.getValue());
+		} catch ( Exception e ) {
+			futureId = null;
+		}
 		
+		usersTable.removeItem( user.getId());
+		
+		if ( futureId != null ) 
+			usersTable.setValue( futureId );
+		else
+			usersTable.setValue( usersTable.firstItemId());
+			
 	}
 
 	@Override
@@ -128,9 +167,9 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 		if ( logger.isDebugEnabled()) logger.debug( "Data from model will be read!" );
 		
 		// Store selection for recovery at the end of this method
-		OrgUser selectedUser = ( OrgUser )usersTable.getValue();
-		OrgUser newSelectedUser = null;
-		boolean selected = ( selectedUser != null );
+		Long selectedId = ( Long )usersTable.getValue();
+		Long newSelectedId = null;
+		boolean selected = ( selectedId != null );
 		
 		// remove old content
 		usersTable.removeAllItems();
@@ -143,20 +182,20 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 					addOrUpdateItem( user );
 					
 					// Check that selection can be restored
-					if ( selected && user.getId() == selectedUser.getId()) {
-						newSelectedUser = user;
+					if ( selected && user.getId() == selectedId ) {
+						newSelectedId = user.getId();
 						selected = false;
 					}
 				}
 			}
 		}
 		
-		usersTable.setSortContainerPropertyId( "fio" );
+		usersTable.setSortContainerPropertyId( "name" );
 
 		usersTable.sort();
 		
-		if ( newSelectedUser != null ) {
-			usersTable.setValue( newSelectedUser );
+		if ( newSelectedId != null ) {
+			usersTable.setValue( newSelectedId );
 		} else {
 			usersTable.setValue( usersTable.firstItemId());
 		}
@@ -166,7 +205,7 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 	
 	private void addOrUpdateItem( OrgUser user ) {
 		
-		Item item = usersTable.getItem( user.getId() );
+		Item item = usersTable.getItem( user.getId());
 		
 		if ( item == null ) {
 
@@ -178,11 +217,22 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 		}
 
 		item.getItemProperty( "code" ).setValue( user.getCode());
-		item.getItemProperty( "fio" ).setValue( user.getLastAndFirstNames());
+		item.getItemProperty( "name" ).setValue( user.getLastAndFirstNames());
 		item.getItemProperty( "data" ).setValue( user );
 		
 	}
 	
+	@Override
+	protected void addButtonHandler() {
+		
+		logger.debug( "add button was pressed to add new Personnel" );
+		
+		OrgUser newUser = new OrgUser();
+		newUser.setOrganisation( model.getSessionOwner().getOrganisation());
+
+		model.setSelectedUser( newUser );
+		
+	}
 	
 	
 }

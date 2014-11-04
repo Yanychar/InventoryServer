@@ -14,22 +14,22 @@ import com.c2point.tools.entity.authentication.Account;
 @XmlType(propOrder = { "name", "sessionId", "date" })
 public class AuthenticationStub {
 	
-	private String 	name;
-	private String 	sessionId = "";
-	private String 	date;
+	private OrgUserStub 	user;
+	private String 			sessionId = "";
+	private String 			date;
 	
 	protected AuthenticationStub() {
 		
 	}
 	
 	public AuthenticationStub( Account account, DateTime date ) {
-		this.name = account.getUser().getFirstAndLastNames();
+		this.user = new OrgUserStub( account.getUser());
 		this.sessionId = account.getUniqueSessionID();
 		this.date = date.toString( DateTimeFormat.forPattern( "ddMMyyyyHHmm" ));
 	}
 
-	public String getName() { return name; }
-	public void setName(String name) { this.name = name; }
+	public OrgUserStub getUser() { return user; }
+	public void setUser( OrgUserStub user ) { this.user = user; }
 
 	@XmlElement( name="sessionid" )
 	public String getSessionId() { return sessionId; }
@@ -41,7 +41,7 @@ public class AuthenticationStub {
 	@Override
 	public String toString() {
 		return "AuthenticationStub ["
-				+ (name != null ? "name=" + name + ", " : "")
+				+ (user != null ? "user=" + user + ", " : "")
 				+ (sessionId != null ? "sessionId=" + sessionId + ", " : "")
 				+ (date != null ? "date=" + date : "") + "]";
 	}

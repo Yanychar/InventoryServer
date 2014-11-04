@@ -9,9 +9,7 @@ import com.c2point.tools.datalayer.PresenceFilterType;
 import com.c2point.tools.datalayer.UsersFacade;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.ui.AbstractModel;
-import com.c2point.tools.ui.category.CategoryModelListener;
 
 public class StuffListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( StuffListModel.class.getName());
@@ -106,7 +104,10 @@ public class StuffListModel extends AbstractModel {
 	public void setPresenceFilter( PresenceFilterType presenceFilter ) { this.presenceFilter = presenceFilter; }
 
 	public OrgUser getSelectedUser() { return selectedUser; }
-	public void setSelectedUser( OrgUser selectedUser ) { this.selectedUser = selectedUser; }
+	public void setSelectedUser( OrgUser selectedUser ) { 
+		this.selectedUser = selectedUser; 
+		fireSelected( selectedUser );
+	}
 
 	public Organisation getOrg() { return org; }
 	public void setOrg( Organisation org ) { this.org = org; }
@@ -122,6 +123,70 @@ public class StuffListModel extends AbstractModel {
 		return getApp().getSessionData().getOrgUser().isSuperUserFlag();
 		
 	}
-	
 
+	public OrgUser add( OrgUser addedUser ) {
+		
+		OrgUser newUser = null;
+		
+		// Add to DB
+		if ( addedUser != null ) {
+
+			newUser = UsersFacade.getInstance().add( addedUser );
+			
+			if ( newUser != null ) {
+				
+				fireAdded( newUser );
+			
+			} 
+			
+		}
+		
+		return newUser;
+		
+	}
+	
+	public OrgUser update( OrgUser updatedUser ) {
+		
+		OrgUser newUser = null;
+		
+		// Update DB
+		if ( updatedUser != null ) {
+
+			newUser = UsersFacade.getInstance().update( updatedUser );
+			
+			if ( newUser != null ) {
+				
+				fireChanged( newUser );
+			
+			} 
+			
+		}
+		
+		return newUser;
+		
+	}
+	
+	public OrgUser delete( OrgUser deletedUser ) {
+		
+		OrgUser newUser = null;
+
+		deletedUser.setDeleted();
+		
+		// Update DB
+		if ( deletedUser != null ) {
+
+			newUser = UsersFacade.getInstance().update( deletedUser );
+			
+			if ( newUser != null ) {
+				
+				fireDeleted( newUser );
+			
+			} 
+			
+		}
+		
+		return newUser;
+		
+	}
+	
 }

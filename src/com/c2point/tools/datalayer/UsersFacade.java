@@ -1,9 +1,6 @@
 package com.c2point.tools.datalayer;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -13,11 +10,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.entity.repository.ToolItem;
-import com.c2point.tools.entity.tool.Category;
-import com.c2point.tools.entity.tool.Tool;
-import com.c2point.tools.entity.tool.identity.ToolIdentity;
-import com.c2point.tools.entity.tool.identity.ToolIdentityType;
 
 public class UsersFacade extends DataFacade {
 
@@ -39,7 +31,7 @@ public class UsersFacade extends DataFacade {
 		}
 		
 		UsersFacade ret = instances[ next_instance_number ];
-		if ( logger.isDebugEnabled()) logger.debug( "ToolsAndItemsFacade instance number retirned is " + next_instance_number + " from " + MAX_INSTANCE_NUMBER + " available!" );
+		if ( logger.isDebugEnabled()) logger.debug( "ToolsAndItemsFacade instance number returned is " + next_instance_number + " from " + MAX_INSTANCE_NUMBER + " available!" );
 		
 		next_instance_number = ++next_instance_number % MAX_INSTANCE_NUMBER ;
 		
@@ -103,6 +95,103 @@ public class UsersFacade extends DataFacade {
 		return results;
 		
 	}
+
+	public OrgUser update( OrgUser user ) {
+
+		OrgUser newUser = null;
+		
+		if ( user == null )
+			throw new IllegalArgumentException( "Valid User cannot be null!" );
+		
+		try {
+			newUser = DataFacade.getInstance().merge( user );
+		} catch ( Exception e ) {
+			logger.error( "Failed to update OrgUser: " + user );
+			logger.error( e );
+			return null;
+		}
+		
+
+		if ( logger.isDebugEnabled() && newUser != null ) 
+			logger.debug( "OrgUser has been updated: " + newUser );
+		
+		
+		return newUser;
+		
+	}
+	
+	public OrgUser add( OrgUser user ) {
+
+		OrgUser newUser = null;
+		
+		if ( user == null )
+			throw new IllegalArgumentException( "Valid User cannot be null!" );
+		
+		try {
+			newUser = DataFacade.getInstance().insert( user );
+		} catch ( Exception e ) {
+			logger.error( "Failed to add OrgUser: " + user );
+			logger.error( e );
+			return null;
+		}
+		
+
+		if ( logger.isDebugEnabled() && newUser != null ) 
+			logger.debug( "OrgUser has been added: " + newUser );
+		
+		
+		return newUser;
+		
+	}
+
+	public boolean doesExistByFIO( Organisation org, String firstName, String lastName ) {
+		
+		boolean bRes = false;
+		
+		if ( org == null )
+			throw new IllegalArgumentException( "Valid Organisation cannot be null!" );
+
+		Collection<OrgUser> results = null;
+		
+		EntityManager em = DataFacade.getInstance().createEntityManager();
+
+		TypedQuery<OrgUser> query;
+
+		try {
+			query = em.createNamedQuery( "listByFIO", OrgUser.class )
+					.setParameter( "org", org )
+					.setParameter( "firstname", firstName )
+					.setParameter( "lastname", lastName );
+
+				results = query.getResultList();
+
+				if ( results.size() > 0 ) {
+					if ( logger.isDebugEnabled()) 
+						logger.debug( "User '" 
+								+ firstName + " " + lastName
+								+ "' exists!!!"
+						);
+					
+					
+					bRes = true;
+					
+				}
+				
+		} catch ( NoResultException e ) {
+			if ( logger.isDebugEnabled()) logger.debug( "No users found!" );
 			
+			bRes = false;
+			
+		} catch ( Exception e ) {
+			logger.error( e );
+		} finally {
+			em.close();
+		}
+		
+		return bRes;
+	}
+	
+	
+	
 }
 

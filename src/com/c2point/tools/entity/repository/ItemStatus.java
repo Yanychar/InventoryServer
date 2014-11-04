@@ -9,11 +9,12 @@ import org.apache.logging.log4j.Logger;
 public enum ItemStatus {
 
 	UNKNOWN( 0 ),
-	FREE( 1 ),
-	USED( 2 ),
-	BROCKEN( 3 ),
+	FREE( 1 ),		// AVAILABLE
+	INUSE( 2 ),		// In Use
+	BROCKEN( 3 ),	//
 	REPAIRING( 4 ),
-	BORROWEDTO( 5 );
+	STOLEN( 5 ),
+	RESERVED( 6 );
 	
 	
 	private static Logger logger = LogManager.getLogger( ItemStatus.class.getName());

@@ -1,14 +1,18 @@
 package com.c2point.tools.entity.person;
 
+import java.util.Date;
 import java.util.Map;
 
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import com.c2point.tools.entity.SimplePojo;
@@ -25,9 +29,8 @@ public class Person extends SimplePojo {
 	private String		firstName;
 	private String		lastName;
 	
-//	@Convert(converter = LocalDateConverterForJPA.class)
-	@Transient
-	private LocalDate	birthday;
+	@Temporal(TemporalType.DATE)
+	private Date		birthdayForDB;
 	
 	private Address		address;
 
@@ -68,9 +71,12 @@ public class Person extends SimplePojo {
 	public String getLastName() { return lastName; }
 	public void setLastName( String lastName ) { this.lastName = lastName; }
 
-	public LocalDate getBirthdDay() { return birthday; }
-	public void setBirthday( LocalDate birthday ) { this.birthday = birthday; }
+	public LocalDate getBirthday() { return ( getBirthdayForDB() != null ? new LocalDate( getBirthdayForDB()) : null ); }
+	public void setBirthday( LocalDate birthday ) { setBirthdayForDB( birthday != null ? birthday.toDate() : null ); }
 
+	protected Date getBirthdayForDB() { return this.birthdayForDB; }
+	protected void setBirthdayForDB( Date birthdayForDB ) { this.birthdayForDB = birthdayForDB; }	
+	
 	public Address getAddress() { return address; }
 	public void setAddress( Address address ) { this.address = address; }
 

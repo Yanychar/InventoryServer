@@ -30,7 +30,7 @@ public class BorrowRequestResource extends BaseResource {
 		) {
 
 		if ( logger.isDebugEnabled()) {
-			logger.debug( "Start SendMessageResource.get()..." );
+			logger.debug( "Start BorrowRequestResource.get()..." );
 			// Show received parameters
 			logger.debug( "  Request parameters: " 
 							+ "sessionId='" + sessionId + "' "
@@ -43,7 +43,7 @@ public class BorrowRequestResource extends BaseResource {
 		if ( account == null ) {
 			if ( logger.isDebugEnabled()) {
 				logger.debug( "  FAILED because account not found");
-				logger.debug( "... end SendMessageResource.get()");
+				logger.debug( "... end BorrowRequestResource.get()");
 			}
 			
 			throw new WebApplicationException( Response.Status.NOT_FOUND );
@@ -59,7 +59,7 @@ public class BorrowRequestResource extends BaseResource {
 		
 		if ( toolId <= 0 ) {
 
-			logger.error( "Wrong parameters specified in SendMessageResource.get( toolId): " 
+			logger.error( "Wrong parameters specified in BorrowRequestResource.get( toolId): " 
 								+ toolId
 			);
 

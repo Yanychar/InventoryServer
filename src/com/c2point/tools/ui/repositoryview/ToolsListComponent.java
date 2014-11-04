@@ -11,7 +11,6 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -253,22 +252,21 @@ public class ToolsListComponent extends VerticalLayout implements CategoryModelL
 	private String getStatusString( ItemStatus status ) {
 		
 		switch ( status ) {
-			case UNKNOWN: {
-				return "Unknown";
-			}
-			case BORROWEDTO:
-				return "Borrowed";
+			case RESERVED:
+				return "Reserved";
 			case BROCKEN:
 				return "Brocken";
 			case FREE:
-				return "Free";
+				return "Available";
 			case REPAIRING:
 				return "Under repairing";
-			case USED:
+			case INUSE:
 				return "In use";
+			case STOLEN:
+				return "Stolen";
+			default:
+				return "Unknown";
 		}
-		
-		return "???";
 		
 	}
 	

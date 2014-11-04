@@ -10,8 +10,8 @@ import javax.xml.bind.annotation.XmlEnum;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.entity.GeoLocation;
 import com.c2point.tools.entity.SimplePojo;
+import com.c2point.tools.entity.location.GeoLocation;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.tool.Tool;
@@ -82,7 +82,7 @@ import com.c2point.tools.entity.tool.Tool;
 				+ "item.org = :org AND "
 				+ "item.barcode = :barcode "
 				+ "ORDER BY item.tool.name ASC"
-),
+	),
 })
 public class ToolItem extends SimplePojo {
 

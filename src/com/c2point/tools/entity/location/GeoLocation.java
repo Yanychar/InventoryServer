@@ -1,4 +1,4 @@
-package com.c2point.tools.entity;
+package com.c2point.tools.entity.location;
 
 import javax.persistence.Embeddable;
 

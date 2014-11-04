@@ -261,4 +261,20 @@ public class MsgFacade {
 		return bResult;
 	}
 
+	public boolean addToolBorrowedInfo( OrgUser newUser, OrgUser oldUser, ToolItem item ) {
+
+		boolean bResult = false;
+
+		bResult = 	( addMessage( 
+				MessageType.INFO, 
+				newUser,
+				oldUser,
+				item,
+				newUser.getFirstAndLastNames() 
+				+ " took over "
+				+ item.getTool().getName()
+			) != null );
+		
+		return bResult;
+	}
 }

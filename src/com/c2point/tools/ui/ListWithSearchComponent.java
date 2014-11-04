@@ -1,5 +1,7 @@
 package com.c2point.tools.ui;
 
+import com.c2point.tools.InventoryUI;
+import com.c2point.tools.entity.SimplePojo;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Or;
@@ -16,6 +18,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -35,22 +38,36 @@ public class ListWithSearchComponent extends VerticalLayout {
 	
 	protected Container			dataSource;
 
-	protected HorizontalLayout	searchLayout;
+	protected HorizontalLayout	toolBarLayout;
 	protected TextField			searchText;
 	protected AbstractSelect	listComponent;
 	
+	protected Button			addButton;
+	protected boolean			addNecessary = false;		
+	
 	protected ListWithSearchComponent() {
-		super();
+		this( false );
 		
 		this.dataSource = null;
 	}
 	
+	protected ListWithSearchComponent( boolean withAddButton ) {
+		super();
+		
+		this.dataSource = null;
+		
+		this.addNecessary = withAddButton;
+		
+	}
+	
+	
+/*	
 	protected ListWithSearchComponent( Container dataSource ) {
 		this();
 		
 		setContainerForSearch( dataSource );
 	}
-
+*/
 	protected String [] getFieldsForSearch() {
 		
 		return searchFields;
@@ -80,12 +97,12 @@ public class ListWithSearchComponent extends VerticalLayout {
 	protected Component getSearchBar() {
 		
 		// Add search field
-		if ( searchLayout == null ) {
+		if ( toolBarLayout == null ) {
 
-			searchLayout = new HorizontalLayout();
+			toolBarLayout = new HorizontalLayout();
 			
-			searchLayout.setWidth( "100%");
-			searchLayout.setMargin( new MarginInfo( false, true, false, true ));
+			toolBarLayout.setWidth( "100%");
+			toolBarLayout.setMargin( new MarginInfo( false, true, false, true ));
 	
 			Label searchIcon = new Label();
 			searchIcon.setIcon(new ThemeResource("icons/16/search.png"));
@@ -136,16 +153,39 @@ public class ListWithSearchComponent extends VerticalLayout {
 				
 			});
 			
+			if ( this.addNecessary ) {
+				
+				addButton = new Button((( InventoryUI )UI.getCurrent()).getResourceStr( "personnel.add.caption" ));
+				addButton.addClickListener( new ClickListener() {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+
+						addButtonHandler();
+						
+					}
+					
+				});
+				
+			}
 	
-			searchLayout.addComponent( searchIcon );
-			searchLayout.addComponent( searchText );
-			searchLayout.addComponent( deleteIcon );
+			
+			
+			
+			toolBarLayout.addComponent( searchIcon );
+			toolBarLayout.addComponent( searchText );
+			toolBarLayout.addComponent( deleteIcon );
 			Label glue = new Label( "" );
-			searchLayout.addComponent( glue );
-			searchLayout.setExpandRatio( glue,  1.0f );
+			toolBarLayout.addComponent( glue );
+			toolBarLayout.setExpandRatio( glue,  1.0f );
+
+			if ( this.addNecessary ) {
+				toolBarLayout.addComponent( addButton );
+			}
 		}
 		
-		return searchLayout;
+		return toolBarLayout;
 	}
 
 	private boolean searchFieldUpdated( String searchStr ) {
@@ -178,4 +218,9 @@ public class ListWithSearchComponent extends VerticalLayout {
 		
 		return found;
 	}
+
+	protected void addButtonHandler() {
+		
+	}
+	
 }

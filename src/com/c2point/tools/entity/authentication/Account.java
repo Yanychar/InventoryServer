@@ -85,12 +85,12 @@ public class Account extends SimplePojo {
 
 	public String getUsrName() { return usrName; }
 	public void setUsrName( String usrName ) {
-		this.usrName = ( usrName != null ? usrName : "" );
+		this.usrName = ( usrName != null ? usrName : null );
 	}
 	
 	public String getPwd() { return pwd; }
 	public void setPwd( String pwd ) {
-		this.pwd = ( pwd != null ? pwd : "" );
+		this.pwd = ( pwd != null ? pwd : null );
 	}
 
 	public OrgUser getUser() { return user; }

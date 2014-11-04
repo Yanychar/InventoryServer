@@ -4,6 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.ui.AbstractMainView;
+import com.c2point.tools.ui.upload.ImportComponent;
+import com.c2point.tools.ui.upload.PersonnelImportProcessor;
+import com.c2point.tools.ui.upload.UploadComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -23,17 +26,12 @@ public class PersonnelListView extends AbstractMainView {
 	
 	private HorizontalLayout	toolbar;
 	private ComboBox			filter;
-	private Button				importButton;
+	private UploadComponent		importButton;
 	private Button				exportButton;
 	
 	private StuffListView 		stuffList;
 
 	private StuffView			stuffView;
-	private Button				saveButton;
-	private Button				cancelButton;
-	private Button				editButton;
-	
-
 	
 	public PersonnelListView() {
 		super();
@@ -108,8 +106,19 @@ public class PersonnelListView extends AbstractMainView {
 		
 		Label filterLabel = new Label( "Filter:" );
 		filter = new ComboBox();
-		importButton = new Button( "Import" );
+		
+		importButton = new UploadComponent( this.model.getApp().getResourceStr( "general.button.import" ));
+		PersonnelImportProcessor processor = new PersonnelImportProcessor( model, importButton.getUploadFile());
+		
+		ImportComponent importComponent = new ImportComponent( processor );
+
+		importButton.addStartedListener( importComponent );
+		importButton.addSucceededListener( importComponent );
+		importButton.addFailedListener( importComponent );
+		importButton.addProgressListener( importComponent );
+
 		exportButton = new Button( "Export" );
+		exportButton.setEnabled( false );
 		
 		Label glue = new Label( " " );
 		glue.setHeight("100%");
@@ -141,6 +150,5 @@ public class PersonnelListView extends AbstractMainView {
 		
 		
 	}
-	
-	
+
 }
