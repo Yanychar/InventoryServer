@@ -453,6 +453,7 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 	}
 	
 	private List<Pair> listenersList = new ArrayList<Pair>(); 
+	@SuppressWarnings("rawtypes")
 	private void listenForChanges( final AbstractField field ) {
 
 		ValueChangeListener listener = new ValueChangeListener() {

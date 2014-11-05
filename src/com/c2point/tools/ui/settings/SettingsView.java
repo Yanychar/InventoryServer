@@ -4,9 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.ui.personnelmgmt.PersonnelListView;
+import com.c2point.tools.ui.toolsmgmt.ToolsListView;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 
@@ -40,7 +39,7 @@ public class SettingsView extends HorizontalLayout {
 		TabSheet tabsheet = new SettingsTabSheet();		
 		tabsheet.addTab( new VerticalLayout(), "Organisations" );
 		tabsheet.addTab( new PersonnelListView(), "Personnel" );
-		tabsheet.addTab( new VerticalLayout(), "Tools" );
+		tabsheet.addTab( new ToolsListView(), "Tools" );
 		
 				
 		this.addComponent( tabsheet );

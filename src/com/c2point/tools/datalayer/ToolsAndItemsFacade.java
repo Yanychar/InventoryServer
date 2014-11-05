@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
@@ -19,6 +17,7 @@ import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
+import com.c2point.tools.entity.tool.Producer;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.tool.identity.ToolIdentity;
 import com.c2point.tools.entity.tool.identity.ToolIdentityType;
@@ -189,6 +188,33 @@ public class ToolsAndItemsFacade extends DataFacade {
 		
 	}
 
+	public Collection<Producer> getProducers() {
+		
+		Collection<Producer> results = null;
+		
+		EntityManager em = DataFacade.getInstance().createEntityManager();
+
+		TypedQuery<Producer> query;
+
+		try {
+			query = em.createNamedQuery( "listActive", Producer.class );
+
+			results = query.getResultList();
+
+			if ( logger.isDebugEnabled()) logger.debug( "**** Fetched list of Producers. Size = " + results.size());
+			
+		} catch ( NoResultException e ) {
+			if ( logger.isDebugEnabled()) logger.debug( "No Producers found!" );
+			
+		} catch ( Exception e ) {
+			logger.error( e );
+		} finally {
+			em.close();
+		}
+		
+		return results;
+	}
+
 	
 	public ToolItem updateTakeOwer( ToolItem item, OrgUser newUser ) {
 		
@@ -341,5 +367,5 @@ public class ToolsAndItemsFacade extends DataFacade {
 		}
 		
 	}
-	
+
 }

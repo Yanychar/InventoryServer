@@ -1,9 +1,12 @@
 package com.c2point.tools.ui.upload;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,11 +23,18 @@ public class CSVFileReader {
 
 		try {
 			if ( logger.isDebugEnabled()) logger.debug( "  Try to open file..." );
-			csvReader = new CSVReader( new FileReader( inputFile ), delim );
+			
+			csvReader = new CSVReader( 
+					new InputStreamReader( new FileInputStream( inputFile ), "UTF-8" ), delim );
+						
 			result = true;
 		} catch (FileNotFoundException e) {
 			logger.error( "Did not find specified file: " + inputFile.getName());
 			return false;
+		} catch ( UnsupportedEncodingException e ) {
+			logger.error( "Unsupported Encoding of specified file: " + inputFile.getName());
+		} catch ( Exception e) {
+			logger.error( "Unknown error when reads the specified file: " + inputFile.getName());
 		}
 		
 		return result;
@@ -44,8 +54,9 @@ public class CSVFileReader {
 				csvReader.close();
 			} catch (IOException e) {
 				logger.error( "Cannot close CSVReader properly" );
+			} finally {
+				csvReader = null;
 			}
-			csvReader = null;
 		}
 	}
 }

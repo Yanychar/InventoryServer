@@ -17,11 +17,11 @@ public abstract class FileProcessor {
 
 	private EventListenerList	listenerList = new EventListenerList();
 	
-	FileProcessor() {
+	protected FileProcessor() {
 		
 	}
 		
-	FileProcessor( File processFile ) {
+	protected FileProcessor( File processFile ) {
 		
 		setFile( processFile );
 		
@@ -192,5 +192,27 @@ public abstract class FileProcessor {
 	 *  	FAILED
 	 */
 	protected abstract ProcessedStatus processLine( String [] nextLine, int lineNumber );
+
+	
+	public class PatternLen {
+		
+		String pattern;
+		int length;
+		
+		public PatternLen( String pattern, int length ) {
+			this.pattern = pattern; 
+			this.length = length;
+		}
+		
+		public String getPattern() { return pattern; }
+		public int getLength() { return length; }
+		
+		public String toString() {
+			
+			return "PatternLen[ '" + this.pattern + "', " + this.length + " ]"; 
+		}
+	}
+	
+	
 	
 }

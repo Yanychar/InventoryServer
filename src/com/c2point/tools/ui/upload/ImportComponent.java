@@ -85,6 +85,7 @@ public class ImportComponent implements StartedListener, SucceededListener, Fail
 				importProcessor.process();
 					
 			} catch ( Exception e ) {
+				writeLog( "ERROR!!! ... Failed import file: " + event.getFilename());
 				logger.error( "Failed to import file: " + event.getFilename());
 				logger.error( e );
 			}

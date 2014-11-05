@@ -14,16 +14,19 @@
  *   6. Superuser Flag: 	optional, "true" or "false". Default "false"
  *   
  */
-package com.c2point.tools.ui.upload;
+package com.c2point.tools.ui.upload.personnel;
 
 import java.io.File;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import com.c2point.tools.datalayer.UsersFacade;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.personnelmgmt.StuffListModel;
+import com.c2point.tools.ui.upload.FileProcessor;
+import com.c2point.tools.ui.upload.ProcessedStatus;
 
 public class PersonnelImportProcessor extends FileProcessor {
 	private static Logger logger = LogManager.getLogger( PersonnelImportProcessor.class.getName());
@@ -64,8 +67,8 @@ public class PersonnelImportProcessor extends FileProcessor {
 		// 1. Firstly check that Line is not comment (start from #) and not empty)
 		if ( nextLine == null 
 				|| nextLine.length == 0 
-				|| nextLine[0].trim().length() == 0 
-				|| nextLine[ 0 ].trim().charAt( 0 ) == '#' ) {
+				|| nextLine.length == 1 && nextLine[0].trim().length() == 0
+				|| nextLine[0].trim().length() > 0 && nextLine[ 0 ].trim().charAt( 0 ) == '#' ) {
 			
 			// Comment or empty line
 			if ( logger.isDebugEnabled()) logger.debug( "   Validation passed: Line #"+lineNumber+" is empty or commented out" );
@@ -84,16 +87,16 @@ public class PersonnelImportProcessor extends FileProcessor {
 		// 3. validate each column
 		for ( int i = 0; i < columnPatterns.length; i++ ) {
 			
-			if (	columnPatterns[ i ].pattern != null 
-				&& 	columnPatterns[ i ].pattern.length() > 0 
-				&& !Pattern.matches( columnPatterns[ i ].pattern, nextLine[ i ] )) {
+			if (	columnPatterns[ i ].getPattern() != null 
+				&& 	columnPatterns[ i ].getPattern().length() > 0 
+				&& !Pattern.matches( columnPatterns[ i ].getPattern(), nextLine[ i ] )) {
 
 				
 				logger.debug( "    Validation failed: " );
-				logger.debug( "       Pattern length (should be > 0): " + columnPatterns[ i ].length );
+				logger.debug( "       Pattern length (should be > 0): " + columnPatterns[ i ].getLength() );
 				logger.debug( "       Validation failed: String '" 
 								+ nextLine[ i ] + "' should matches pattern "+ columnPatterns[ i ] + ". "
-								+ "Matches: " + Pattern.matches( columnPatterns[ i ].pattern, nextLine[ i ] )
+								+ "Matches: " + Pattern.matches( columnPatterns[ i ].getPattern(), nextLine[ i ] )
 					);//+ "': " + Pattern.matches( pattern, str ));
 				
 				return ProcessedStatus.VALIDATION_FAILED;
@@ -116,7 +119,6 @@ public class PersonnelImportProcessor extends FileProcessor {
 		return ProcessedStatus.VALIDATED;
 	}
 
-	int i = 1;
 	@Override
 	protected ProcessedStatus processLine(String[] nextLine, int lineNumber) {
 
@@ -147,20 +149,4 @@ public class PersonnelImportProcessor extends FileProcessor {
 		return res;
 	}
 
-	class PatternLen {
-		
-		String pattern;
-		int length;
-		
-		PatternLen( String pattern, int length ) {
-			this.pattern = pattern; 
-			this.length = length;
-		}
-		
-		public String toString() {
-			
-			return "PatternLen[ '" + this.pattern + "', " + this.length + " ]"; 
-		}
-	}
-	
 }

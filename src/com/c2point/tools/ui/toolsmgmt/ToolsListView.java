@@ -1,4 +1,4 @@
-package com.c2point.tools.ui.personnelmgmt;
+package com.c2point.tools.ui.toolsmgmt;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import com.c2point.tools.ui.AbstractMainView;
 import com.c2point.tools.ui.upload.ImportComponent;
 import com.c2point.tools.ui.upload.UploadComponent;
-import com.c2point.tools.ui.upload.personnel.PersonnelImportProcessor;
+import com.c2point.tools.ui.upload.tools.ToolItemsImportProcessor;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -14,13 +14,13 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-public class PersonnelListView extends AbstractMainView {
+public class ToolsListView extends AbstractMainView {
 	
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LogManager.getLogger( PersonnelListView.class.getName());
+	private static Logger logger = LogManager.getLogger( ToolsListView.class.getName());
 
 	
-	private StuffListModel		model;
+	private ToolsManagementModel		model;
 
 	private ComboBox			orgSelector;
 	
@@ -29,11 +29,11 @@ public class PersonnelListView extends AbstractMainView {
 	private UploadComponent		importButton;
 	private Button				exportButton;
 	
-	private StuffListView 		stuffList;
-
-	private StuffView			stuffView;
+	private CatAndToolItemsListView categoriesList;
+	private ToolItemView			toolItemView;
 	
-	public PersonnelListView() {
+	
+	public ToolsListView() {
 		super();
 
 	}
@@ -44,18 +44,18 @@ public class PersonnelListView extends AbstractMainView {
 		this.setSizeFull();
 		this.setSpacing( true );
 
-		this.model = new StuffListModel();
+		this.model = new ToolsManagementModel();
 		
 		initToolbar();
-		initStuffListView();
-		initStuffView();
+		initToolItemsListView();
+		initItemView();
 		
 		VerticalLayout vtSplit = new VerticalLayout(); 
 		HorizontalSplitPanel hzSplit = new HorizontalSplitPanel();
 		
 
-		hzSplit.addComponent( stuffList );
-		hzSplit.addComponent( stuffView );
+		hzSplit.addComponent( categoriesList );
+		hzSplit.addComponent( toolItemView );
 		
 		if ( model.isSuperUser()) {
 		
@@ -108,7 +108,7 @@ public class PersonnelListView extends AbstractMainView {
 		filter = new ComboBox();
 		
 		importButton = new UploadComponent( this.model.getApp().getResourceStr( "general.button.import" ));
-		PersonnelImportProcessor processor = new PersonnelImportProcessor( model, importButton.getUploadFile());
+		ToolItemsImportProcessor processor = new ToolItemsImportProcessor( model, importButton.getUploadFile());
 		
 		ImportComponent importComponent = new ImportComponent( processor );
 
@@ -135,18 +135,18 @@ public class PersonnelListView extends AbstractMainView {
 		
 	}
 	
-	private void initStuffListView() {
+	private void initToolItemsListView() {
 
 		if ( logger.isDebugEnabled()) logger.debug( "Data from model will be read!" );
 		
-		stuffList = new StuffListView( this.model );
+		categoriesList = new CatAndToolItemsListView( this.model );
 		
 		
 	}
 	
-	private void initStuffView() {
+	private void initItemView() {
 
-		stuffView = new StuffView( this.model );
+		toolItemView = new ToolItemView( this.model );
 		
 		
 	}

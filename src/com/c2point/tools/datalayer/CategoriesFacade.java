@@ -9,6 +9,7 @@ import javax.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.tool.Category;
 
 public class CategoriesFacade {
@@ -65,6 +66,29 @@ public class CategoriesFacade {
 		
 		return results;
 		
+	}
+
+	public Category add( Category category ) {
+
+		Category newCategory = null;
+		
+		if ( category == null )
+			throw new IllegalArgumentException( "Valid category cannot be null!" );
+		
+		try {
+			newCategory = DataFacade.getInstance().insert( category );
+		} catch ( Exception e ) {
+			logger.error( "Failed to add Category: " + category );
+			logger.error( e );
+			return null;
+		}
+		
+
+		if ( logger.isDebugEnabled() && newCategory != null ) 
+			logger.debug( "Category has been added: " + newCategory );
+		
+		
+		return newCategory;
 	}
 	
 }
