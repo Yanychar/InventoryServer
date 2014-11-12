@@ -1,6 +1,8 @@
 package com.c2point.tools.datalayer;
 
 import java.util.Collection;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -144,14 +146,13 @@ public class UsersFacade extends DataFacade {
 		
 	}
 
-	public boolean doesExistByFIO( Organisation org, String firstName, String lastName ) {
+	public List<OrgUser> listByFIO( Organisation org, String firstName, String lastName ) {
 		
-		boolean bRes = false;
+		List<OrgUser> results = null;
 		
 		if ( org == null )
 			throw new IllegalArgumentException( "Valid Organisation cannot be null!" );
 
-		Collection<OrgUser> results = null;
 		
 		EntityManager em = DataFacade.getInstance().createEntityManager();
 
@@ -165,30 +166,32 @@ public class UsersFacade extends DataFacade {
 
 				results = query.getResultList();
 
-				if ( results.size() > 0 ) {
+				if ( results != null && results.size() > 0 ) {
 					if ( logger.isDebugEnabled()) 
 						logger.debug( "User '" 
 								+ firstName + " " + lastName
 								+ "' exists!!!"
 						);
 					
+				} else {
 					
-					bRes = true;
+					results = null;
 					
 				}
 				
+				
 		} catch ( NoResultException e ) {
 			if ( logger.isDebugEnabled()) logger.debug( "No users found!" );
-			
-			bRes = false;
+			results = null;
 			
 		} catch ( Exception e ) {
 			logger.error( e );
+			results = null;
 		} finally {
 			em.close();
 		}
 		
-		return bRes;
+		return results;
 	}
 	
 	

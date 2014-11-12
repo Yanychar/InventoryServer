@@ -9,7 +9,7 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinServlet;
 
 @WebServlet(value = "/*", asyncSupported = true)
-@VaadinServletConfiguration( productionMode = false, ui = InventoryUI.class )
+@VaadinServletConfiguration( productionMode = false, ui = InventoryUI.class, widgetset = "com.c2point.tools.widgetset.InventoryserverWidgetset" )
 public class InventoryServlet extends VaadinServlet {
 
 	private static final long serialVersionUID = -1217432343436715198L;

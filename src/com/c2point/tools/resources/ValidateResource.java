@@ -15,7 +15,7 @@ import org.joda.time.format.DateTimeFormat;
 
 import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.MsgFacade;
-import com.c2point.tools.datalayer.ToolsAndItemsFacade;
+import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.location.GeoLocation;
 import com.c2point.tools.entity.location.LocationRecord;
@@ -110,7 +110,7 @@ public class ValidateResource extends BaseResource {
 		}
 		
 		// Update last location within toolitem
-		ToolItem updatedItem = ToolsAndItemsFacade.getInstance().updateLocation( item, location );
+		ToolItem updatedItem = ItemsFacade.getInstance().updateLocation( item, location );
 		
 		if ( updatedItem != null ) {
 			if ( logger.isDebugEnabled()) logger.debug( "Specified Tool Item with Id=" + item.getId() + " has been updated" );

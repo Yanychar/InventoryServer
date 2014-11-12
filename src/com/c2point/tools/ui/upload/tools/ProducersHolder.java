@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.DataFacade;
-import com.c2point.tools.datalayer.ToolsAndItemsFacade;
+import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.entity.tool.Producer;
 
 public class ProducersHolder {
@@ -27,7 +27,7 @@ public class ProducersHolder {
 			existingProducers = new HashMap<String, Producer>();
 		} 
 		
-		Collection<Producer> pList = ToolsAndItemsFacade.getInstance().getProducers();
+		Collection<Producer> pList = ItemsFacade.getInstance().getProducers();
 		
 		if ( pList != null ) {
 			

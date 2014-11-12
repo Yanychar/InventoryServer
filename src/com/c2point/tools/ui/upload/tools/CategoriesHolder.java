@@ -161,8 +161,11 @@ public class CategoriesHolder {
 				category = CategoriesFacade.getInstance().add( category );
 				
 				if ( category != null ) {
-					if ( parent != null ) 
+					if ( parent != null ) {
 						parent.getChilds().add( category );
+					} else {
+						existingCategories.add( category );
+					}
 					
 					arrayIndex++;
 					parent = category;

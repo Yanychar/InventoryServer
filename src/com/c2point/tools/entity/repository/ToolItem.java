@@ -5,14 +5,11 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.xml.bind.annotation.XmlEnum;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.entity.SimplePojo;
 import com.c2point.tools.entity.location.GeoLocation;
-import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.tool.Tool;
 
@@ -23,7 +20,7 @@ import com.c2point.tools.entity.tool.Tool;
 			query = "SELECT item FROM ToolItem item " +
 				"WHERE " 
 				+ "item.deleted = false AND " 
-				+ "item.org = :org AND "
+				+ "item.tool.org = :org AND "
 				+ "item.personalFlag = false "
 				+ "ORDER BY item.tool.name ASC"
 	),
@@ -31,7 +28,7 @@ import com.c2point.tools.entity.tool.Tool;
 			query = "SELECT item FROM ToolItem item " +
 				"WHERE " 
 				+ "item.deleted = false AND " 
-				+ "item.org = :org "
+				+ "item.tool.org = :org "
 				+ "ORDER BY item.tool.name ASC"
 	),
 	@NamedQuery( name = "listAllBelongTo", 
@@ -45,7 +42,7 @@ import com.c2point.tools.entity.tool.Tool;
 		query = "SELECT item FROM ToolItem item " +
 			"WHERE " 
 			+ "item.deleted = false AND "
-			+ "item.org = :org AND " 
+			+ "item.tool.org = :org AND "
 			+ "item.tool.category = :category AND "
 			+ "item.personalFlag = false "
 			+ "ORDER BY item.tool.name ASC"
@@ -54,7 +51,7 @@ import com.c2point.tools.entity.tool.Tool;
 			query = "SELECT item FROM ToolItem item " +
 				"WHERE " 
 				+ "item.deleted = false AND "
-				+ "item.org = :org AND " 
+				+ "item.tool.org = :org AND "
 				+ "item.tool.category = :category "
 				+ "ORDER BY item.tool.name ASC"
 	),
@@ -62,7 +59,7 @@ import com.c2point.tools.entity.tool.Tool;
 		query = "SELECT item FROM ToolItem item " +
 			"WHERE " 
 			+ "item.deleted = false AND "
-			+ "item.org = :org AND " 
+			+ "item.tool.org = :org AND "
 			+ "item.tool.category = :category AND "
 			+ "item.currentUser = :user "
 			+ "ORDER BY item.tool.name ASC"
@@ -71,7 +68,7 @@ import com.c2point.tools.entity.tool.Tool;
 			query = "SELECT item FROM ToolItem item " +
 				"WHERE "
 				+ "item.deleted = false AND "
-				+ "item.org = :org AND "
+				+ "item.tool.org = :org AND "
 	 			+ "item.tool = :tool "
 				+ "ORDER BY item.tool.name ASC"
 	),
@@ -79,7 +76,7 @@ import com.c2point.tools.entity.tool.Tool;
 			query = "SELECT item FROM ToolItem item " +
 				"WHERE "
 				+ "item.deleted = false AND "
-				+ "item.org = :org AND "
+				+ "item.tool.org = :org AND "
 				+ "item.barcode = :barcode "
 				+ "ORDER BY item.tool.name ASC"
 	),
@@ -89,7 +86,7 @@ public class ToolItem extends SimplePojo {
 	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( ToolItem.class.getName());
 	
-	private Organisation	org;
+//	private Organisation	org;
 	private Tool			tool;
 	
 	private	int				quantity;
@@ -126,8 +123,8 @@ public class ToolItem extends SimplePojo {
 	}
 
 
-	public Organisation getOrg() { return org; }
-	public void setOrg( Organisation org ) { this.org = org; }
+//	public Organisation getOrg() { return org; }
+//	public void setOrg( Organisation org ) { this.org = org; }
 
 	public Tool getTool() { return tool; }
 	public void setTool( Tool tool ) { this.tool = tool; }

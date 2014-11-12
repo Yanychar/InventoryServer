@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.MsgFacade;
-import com.c2point.tools.datalayer.ToolsAndItemsFacade;
+import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.msg.MessageType;
 import com.c2point.tools.entity.person.OrgUser;
@@ -80,7 +80,7 @@ public class TakeOverResource extends BaseResource {
 		// Set new user and change status
 		OrgUser oldUser = item.getCurrentUser();
 		
-		ToolItem updatedItem = ToolsAndItemsFacade.getInstance().updateTakeOwer( item, account.getUser());
+		ToolItem updatedItem = ItemsFacade.getInstance().updateTakeOwer( item, account.getUser());
 		
 		if ( updatedItem != null ) {
 			if ( logger.isDebugEnabled()) logger.debug( "Specified Tool Item with Id=" + item.getId() + " has been updated" );

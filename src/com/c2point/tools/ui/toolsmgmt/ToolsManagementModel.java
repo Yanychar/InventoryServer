@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.datalayer.ToolsAndItemsFacade;
+import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.ui.AbstractModel;
@@ -108,7 +108,7 @@ public class ToolsManagementModel extends AbstractModel {
 
 	public Collection<ToolItem> getItems() {
 	
-		return ToolsAndItemsFacade.getInstance().getItems( org );
+		return ItemsFacade.getInstance().getItems( org );
 		
 	}
 

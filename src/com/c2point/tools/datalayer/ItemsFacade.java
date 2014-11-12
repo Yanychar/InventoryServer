@@ -22,26 +22,26 @@ import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.tool.identity.ToolIdentity;
 import com.c2point.tools.entity.tool.identity.ToolIdentityType;
 
-public class ToolsAndItemsFacade extends DataFacade {
+public class ItemsFacade extends DataFacade {
 
-	private static Logger logger = LogManager.getLogger( ToolsAndItemsFacade.class.getName()); 
+	private static Logger logger = LogManager.getLogger( ItemsFacade.class.getName()); 
 
 	private static int						MAX_INSTANCE_NUMBER = 4;
-	private static ToolsAndItemsFacade []	instances;
+	private static ItemsFacade []	instances;
 	private static int						next_instance_number;
 	
-	public static ToolsAndItemsFacade getInstance() {
+	public static ItemsFacade getInstance() {
 		
 		if ( instances == null ) {
-			instances = new ToolsAndItemsFacade[ MAX_INSTANCE_NUMBER ];
+			instances = new ItemsFacade[ MAX_INSTANCE_NUMBER ];
 			for ( int i = 0; i < MAX_INSTANCE_NUMBER; i++ ) {
-				instances[ i ] = new ToolsAndItemsFacade();  
+				instances[ i ] = new ItemsFacade();  
 			}
 			next_instance_number = 0;
 			
 		}
 		
-		ToolsAndItemsFacade ret = instances[ next_instance_number ];
+		ItemsFacade ret = instances[ next_instance_number ];
 		if ( logger.isDebugEnabled()) logger.debug( "ToolsAndItemsFacade instance number retirned is " + next_instance_number + " from " + MAX_INSTANCE_NUMBER + " available!" );
 		
 		next_instance_number = ++next_instance_number % MAX_INSTANCE_NUMBER ;
@@ -49,7 +49,7 @@ public class ToolsAndItemsFacade extends DataFacade {
 		return ret;
 	}
 	
-	private ToolsAndItemsFacade() {
+	private ItemsFacade() {
 		super();
 	}
 	
@@ -122,7 +122,7 @@ public class ToolsAndItemsFacade extends DataFacade {
 	public Collection<ToolItem> getItemsPublic( Category category, Organisation org ) {
 		return getItems( org, category, null, true );
 	}
-		public Collection<ToolItem> getItems( Organisation org, Tool tool ) {
+	public Collection<ToolItem> getItems( Organisation org, Tool tool ) {
 		
 		if ( org == null )
 			throw new IllegalArgumentException( "Valid Organisation cannot be null!" );
@@ -368,4 +368,30 @@ public class ToolsAndItemsFacade extends DataFacade {
 		
 	}
 
+	
+	public ToolItem add( ToolItem item ) {
+
+		ToolItem newItem = null;
+		
+		if ( item == null )
+			throw new IllegalArgumentException( "Valid ToolItem to add cannot be null!" );
+		
+		try {
+			newItem = DataFacade.getInstance().insert( item );
+		} catch ( Exception e ) {
+			logger.error( "Failed to add ToolItem: " + item );
+			logger.error( e );
+			return null;
+		}
+		
+
+		if ( logger.isDebugEnabled() && newItem != null ) 
+			logger.debug( "ToolItem has been added: " + newItem );
+		
+		
+		return newItem;
+		
+	}
+
+	
 }

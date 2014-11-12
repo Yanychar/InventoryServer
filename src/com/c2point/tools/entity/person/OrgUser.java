@@ -26,8 +26,8 @@ import com.c2point.tools.entity.organisation.Organisation;
 	@NamedQuery( name = "listByFIO", 
 		query = "SELECT user FROM OrgUser user " +
 					"WHERE user.organisation = :org AND " +
-					  "lower( user.firstName ) = lower( :firstname ) AND " + 
-					  "lower( user.lastName ) = lower( :lastname )"
+					  "trim( lower( user.firstName )) = trim( lower( :firstname )) AND " + 
+					  "trim( lower( user.lastName )) = trim( lower( :lastname ))"
 	),
 })
 public class OrgUser extends Person {

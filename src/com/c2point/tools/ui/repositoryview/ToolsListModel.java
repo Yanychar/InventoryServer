@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.CategoriesFacade;
 import com.c2point.tools.datalayer.MsgFacade;
-import com.c2point.tools.datalayer.ToolsAndItemsFacade;
+import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.entity.msg.Message;
 import com.c2point.tools.entity.msg.MessageType;
 import com.c2point.tools.entity.repository.ToolItem;
@@ -190,7 +190,7 @@ public class ToolsListModel extends AbstractModel {
 	public Collection<ToolItem> getItems() {
 		
 		Collection<ToolItem> list = 
-			ToolsAndItemsFacade.getInstance().getItems( getOrg());
+			ItemsFacade.getInstance().getItems( getOrg());
 			
 		return list;
 	}
@@ -204,7 +204,7 @@ public class ToolsListModel extends AbstractModel {
 			return getItems();
 		}
 		
-		return ToolsAndItemsFacade.getInstance().getItems( category, getOrg());
+		return ItemsFacade.getInstance().getItems( category, getOrg());
 		
 	}
 

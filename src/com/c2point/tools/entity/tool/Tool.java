@@ -1,13 +1,27 @@
 package com.c2point.tools.entity.tool;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.entity.SimplePojo;
+import com.c2point.tools.entity.organisation.Organisation;
 
 @Entity
+@NamedQueries({
+	@NamedQuery( name = "listCategoryTools", 
+			query = "SELECT tool FROM Tool tool " +
+				"WHERE " 
+				+ "tool.deleted = false AND "
+				+ "tool.org = :org AND " 
+				+ "tool.category = :category "
+				+ "ORDER BY tool.name ASC"
+	),
+})
 public class Tool extends SimplePojo {
 
 	@SuppressWarnings("unused")
@@ -23,7 +37,10 @@ public class Tool extends SimplePojo {
 	private Producer	producer;
 
 	private boolean 	personalFlag;
-	
+
+	@ManyToOne
+	private Organisation org;
+
 	public Tool() {
 		
 		setPersonalFlag( false );
@@ -47,6 +64,16 @@ public class Tool extends SimplePojo {
 	
 	public boolean isPersonalFlag() { return personalFlag; }
 	public void setPersonalFlag( boolean personalFlag ) { this.personalFlag = personalFlag; }
+
+	public Organisation getOrg() { return org; }
+	public void setOrg( Organisation org ) { this.org = org; }
+
+	@Override
+	public String toString() {
+		return "Tool [code=" + code + ", name=" + name + ", description="
+				+ description + ", category=" + category + ", producer="
+				+ producer + ", personalFlag=" + personalFlag + "]";
+	}
 
 	
 }
