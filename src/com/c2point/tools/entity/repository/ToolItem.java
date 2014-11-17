@@ -117,7 +117,7 @@ public class ToolItem extends SimplePojo {
 		
 		setQuantity( 1 );
 
-		setStatus( ItemStatus.UNKNOWN );
+		setStatus( ItemStatus.FREE );
 
 		setPersonalFlag( tool != null ? tool.isPersonalFlag() : false );
 	}

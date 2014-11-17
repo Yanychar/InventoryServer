@@ -29,6 +29,10 @@ import com.c2point.tools.entity.organisation.Organisation;
 					  "trim( lower( user.firstName )) = trim( lower( :firstname )) AND " + 
 					  "trim( lower( user.lastName )) = trim( lower( :lastname ))"
 	),
+	@NamedQuery( name = "countAll", 
+		query = "SELECT COUNT( user.id ) FROM OrgUser user " +
+					"WHERE user.organisation = :org"
+	),
 })
 public class OrgUser extends Person {
 

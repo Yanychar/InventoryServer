@@ -188,5 +188,12 @@ public class StuffListModel extends AbstractModel {
 		return newUser;
 		
 	}
+
+	public void setUserCode( OrgUser user ) {
+		
+		// Code will be set by UsersFacade
+		UsersFacade.getInstance().setUniqueCode( user );
+		
+	}
 	
 }

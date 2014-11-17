@@ -81,6 +81,7 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 		setSizeUndefined();
 
 		code = new TextField( "Code:" );
+		code.setRequired(true);
 		code.setRequiredError("The Field may not be empty.");
 		code.setNullRepresentation( "" );
 		code.setImmediate( true );
@@ -169,7 +170,6 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 	private void dataToView() {
 
 		if ( this.shownUser != null ) {
-			code.setValue( this.shownUser.getCode());
 			firstName.setValue( this.shownUser.getFirstName());
 			lastName.setValue( this.shownUser.getLastName());
 			
@@ -186,6 +186,14 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 	
 			email.setValue( this.shownUser.getEmail());
 			mobile.setValue( this.shownUser.getPhoneNumber());
+			
+			// If this is a new user than it is necessary to set up Code. 
+			// user can change code if he wants
+			if ( this.shownUser.getId() <= 0 ) {
+				model.setUserCode( this.shownUser );
+			}
+			code.setValue( this.shownUser.getCode());
+			
 		} 
 		
 	}
@@ -211,6 +219,7 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 	
 			this.shownUser.setEmail( email.getValue());
 			this.shownUser.setPhoneNumber( mobile.getValue());
+			
 		} 
 		
 	}

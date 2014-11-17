@@ -7,6 +7,7 @@ import com.c2point.tools.ui.AbstractMainView;
 import com.vaadin.ui.TabSheet;
 
 public class SettingsTabSheet extends TabSheet implements TabSheet.SelectedTabChangeListener {
+	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( SettingsTabSheet.class.getName());
 
 	public SettingsTabSheet() {

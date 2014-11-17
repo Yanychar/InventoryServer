@@ -42,7 +42,7 @@ public class ItemsFacade extends DataFacade {
 		}
 		
 		ItemsFacade ret = instances[ next_instance_number ];
-		if ( logger.isDebugEnabled()) logger.debug( "ToolsAndItemsFacade instance number retirned is " + next_instance_number + " from " + MAX_INSTANCE_NUMBER + " available!" );
+		if ( logger.isDebugEnabled()) logger.debug( "ItemsFacade instance number retirned is " + next_instance_number + " from " + MAX_INSTANCE_NUMBER + " available!" );
 		
 		next_instance_number = ++next_instance_number % MAX_INSTANCE_NUMBER ;
 		
