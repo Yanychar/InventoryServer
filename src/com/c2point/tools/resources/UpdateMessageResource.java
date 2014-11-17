@@ -2,7 +2,6 @@ package com.c2point.tools.resources;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -12,13 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.DataFacade;
-import com.c2point.tools.datalayer.MsgFacade;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.msg.Message;
 import com.c2point.tools.entity.msg.MessageStatus;
-import com.c2point.tools.entity.msg.MessageType;
-import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.entity.repository.ToolItem;
 
 @Path("/updatemessage")
 public class UpdateMessageResource extends BaseResource {

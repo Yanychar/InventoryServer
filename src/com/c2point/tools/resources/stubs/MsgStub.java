@@ -36,7 +36,7 @@ public class MsgStub {
 		setDate( msg.getDate().toString( DateTimeFormat.forPattern( "ddMMyyyy" )));
 		setFrom( new OrgUserStub( msg.getFrom()));
 		setTo( new OrgUserStub( msg.getTo()));
-		setItem( new ToolItemStub( msg.getItem()));
+		setItem( msg.getItem() != null ? new ToolItemStub( msg.getItem()) : null );
 		setText( msg.getText());
 		
 	}
