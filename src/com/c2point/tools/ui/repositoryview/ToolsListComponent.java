@@ -109,7 +109,7 @@ public class ToolsListComponent extends VerticalLayout implements CategoryModelL
 //		categoriesTree.addContainerProperty( "code",		String.class, 	null );
 		table.addContainerProperty( "photo",		Embedded.class, null );
 		table.addContainerProperty( "tool", 		Label.class, 	null );
-		table.addContainerProperty( "producer", 	String.class, 	"" );
+		table.addContainerProperty( "manufacturer", 	String.class, 	"" );
 		table.addContainerProperty( "status", 		String.class, 	"" );
 		table.addContainerProperty( "user", 		String.class, 	"" );
 
@@ -201,9 +201,9 @@ public class ToolsListComponent extends VerticalLayout implements CategoryModelL
 		item.getItemProperty( "tool" ).setValue( toolLabel );
 		
 		try {
-			item.getItemProperty( "producer" ).setValue( repItem.getTool().getProducer().getName());
+			item.getItemProperty( "manufacturer" ).setValue( repItem.getTool().getManufacturer().getName());
 		} catch ( Exception e ) {
-			item.getItemProperty( "producer" ).setValue( "???" );
+			item.getItemProperty( "manufacturer" ).setValue( "" );
 		}
 		
 		try {

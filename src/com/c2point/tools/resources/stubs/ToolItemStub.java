@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.c2point.tools.entity.location.GeoLocation;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
@@ -17,6 +16,7 @@ public class ToolItemStub {
 	private String	code;
 	private String	name;
 	private String 	description;
+	private String 	manufacturer;
 
 	private	int			quantity;
 	
@@ -42,6 +42,10 @@ public class ToolItemStub {
 		setCode( item.getTool().getCode());
 		setName( item.getTool().getName());
 		setDescription( item.getTool().getDescription());
+		try {
+			setManufacturer( item.getTool().getManufacturer().getName());
+		} catch( Exception e ) {
+		}
 		
 		setQuantity( item.getQuantity());
 
@@ -71,6 +75,9 @@ public class ToolItemStub {
 	
 	public String getDescription() { return description; }
 	public void setDescription( String description ) { this.description = description; }
+
+	public String getManufacturer() { return manufacturer; }
+	public void setManufacturer( String manufacturer ) { this.manufacturer = manufacturer; }
 
 	public int getQuantity() { return quantity; }
 	public void setQuantity( int quantity ) { this.quantity = quantity; }

@@ -11,16 +11,9 @@ import javax.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.entity.location.GeoLocation;
 import com.c2point.tools.entity.organisation.Organisation;
-import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.entity.repository.ItemStatus;
-import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
-import com.c2point.tools.entity.tool.Producer;
 import com.c2point.tools.entity.tool.Tool;
-import com.c2point.tools.entity.tool.identity.ToolIdentity;
-import com.c2point.tools.entity.tool.identity.ToolIdentityType;
 
 public class ToolsFacade extends DataFacade {
 
@@ -68,7 +61,7 @@ public class ToolsFacade extends DataFacade {
 					&& tool.getCode().trim().compareToIgnoreCase( searchTool.getCode().trim()) == 0
 					&& tool.getName().trim().compareToIgnoreCase( searchTool.getName().trim()) == 0
 					&& tool.getDescription().trim().compareToIgnoreCase( searchTool.getDescription().trim()) == 0
-					&& tool.getProducer().getId() == searchTool.getProducer().getId()
+					&& tool.getManufacturer().getId() == searchTool.getManufacturer().getId()
 			){
 				resTool = tool;
 				break;
@@ -130,6 +123,36 @@ public class ToolsFacade extends DataFacade {
 		
 		
 		return newTool;
+		
+	}
+
+	public long count( Organisation org ) {
+		
+		long result = 0;
+
+		if ( org == null )
+			throw new IllegalArgumentException( "Valid Organisation cannot be null!" );
+		
+		EntityManager em = DataFacade.getInstance().createEntityManager();
+		TypedQuery<Long> query = null;
+		
+		try {
+			query = em.createNamedQuery( "countAllOrgTools", Long.class )
+					.setParameter( "org", org );
+			
+			result = query.getSingleResult();
+			
+			if ( logger.isDebugEnabled()) logger.debug( "**** Number of all Tool Types in Org = " + result );
+			
+		} catch ( NoResultException e ) {
+			if ( logger.isDebugEnabled()) logger.debug( "No users found!" );
+		} catch ( Exception e ) {
+			logger.error( e );
+		} finally {
+			em.close();
+		}
+		
+		return result;
 		
 	}
 

@@ -21,6 +21,10 @@ import com.c2point.tools.entity.organisation.Organisation;
 				+ "tool.category = :category "
 				+ "ORDER BY tool.name ASC"
 	),
+	@NamedQuery( name = "countAllOrgTools", 
+			query = "SELECT COUNT( tool.id ) FROM Tool tool " +
+				"WHERE tool.org = :org"
+),
 })
 public class Tool extends SimplePojo {
 
@@ -34,7 +38,7 @@ public class Tool extends SimplePojo {
 	
 	private Category 	category;
 	
-	private Producer	producer;
+	private Manufacturer	manufacturer;
 
 	private boolean 	personalFlag;
 
@@ -59,8 +63,8 @@ public class Tool extends SimplePojo {
 	public Category getCategory() { return category; }
 	public void setCategory( Category category ) { this.category = category; }
 
-	public Producer getProducer() { return producer; }
-	public void setProducer( Producer producer ) { this.producer = producer; }
+	public Manufacturer getManufacturer() { return manufacturer; }
+	public void setManufacturer( Manufacturer manufacturer ) { this.manufacturer = manufacturer; }
 	
 	public boolean isPersonalFlag() { return personalFlag; }
 	public void setPersonalFlag( boolean personalFlag ) { this.personalFlag = personalFlag; }
@@ -71,8 +75,8 @@ public class Tool extends SimplePojo {
 	@Override
 	public String toString() {
 		return "Tool [code=" + code + ", name=" + name + ", description="
-				+ description + ", category=" + category + ", producer="
-				+ producer + ", personalFlag=" + personalFlag + "]";
+				+ description + ", category=" + category + ", manufacturer="
+				+ manufacturer + ", personalFlag=" + personalFlag + "]";
 	}
 
 	

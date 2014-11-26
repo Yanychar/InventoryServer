@@ -17,7 +17,7 @@ import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
-import com.c2point.tools.entity.tool.Producer;
+import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.tool.identity.ToolIdentity;
 import com.c2point.tools.entity.tool.identity.ToolIdentityType;
@@ -188,23 +188,23 @@ public class ItemsFacade extends DataFacade {
 		
 	}
 
-	public Collection<Producer> getProducers() {
+	public Collection<Manufacturer> getManufacturers() {
 		
-		Collection<Producer> results = null;
+		Collection<Manufacturer> results = null;
 		
 		EntityManager em = DataFacade.getInstance().createEntityManager();
 
-		TypedQuery<Producer> query;
+		TypedQuery<Manufacturer> query;
 
 		try {
-			query = em.createNamedQuery( "listActive", Producer.class );
+			query = em.createNamedQuery( "listActive", Manufacturer.class );
 
 			results = query.getResultList();
 
-			if ( logger.isDebugEnabled()) logger.debug( "**** Fetched list of Producers. Size = " + results.size());
+			if ( logger.isDebugEnabled()) logger.debug( "**** Fetched list of Manufacturers. Size = " + results.size());
 			
 		} catch ( NoResultException e ) {
-			if ( logger.isDebugEnabled()) logger.debug( "No Producers found!" );
+			if ( logger.isDebugEnabled()) logger.debug( "No Manufacturers found!" );
 			
 		} catch ( Exception e ) {
 			logger.error( e );

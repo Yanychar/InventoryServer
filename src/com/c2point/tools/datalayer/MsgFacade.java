@@ -154,6 +154,12 @@ public class MsgFacade {
 	
 	public Message addMessage( Message msg ) {
 		
+		if ( msg.getTo() == null ) {
+			
+			return null;
+			
+		}
+		
 		msg.setStatus( MessageStatus.UNREAD );
 		
 		Message newMsg = DataFacade.getInstance().insert( msg );
@@ -239,7 +245,7 @@ public class MsgFacade {
 		//   2.Send Info Message to Owner that somebody wants to borrow the Tool if Owner != Current User
 		if ( bResult ) {
 			
-			if( infoMsgIsNecessary ) {
+			if( infoMsgIsNecessary && item != null && item.getResponsible() != null ) {
 
 				addMessage(  
 						MessageType.INFO, 

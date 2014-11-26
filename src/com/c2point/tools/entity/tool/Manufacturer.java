@@ -3,6 +3,7 @@ package com.c2point.tools.entity.tool;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,24 +11,25 @@ import org.apache.logging.log4j.Logger;
 import com.c2point.tools.entity.SimplePojo;
 
 @Entity
+//@Table( name="producer" )
 @NamedQueries({
 	@NamedQuery( name = "listActive", 
-	query = "SELECT producer FROM Producer producer "
-				+ "WHERE producer.deleted = false"
+	query = "SELECT manufacturer FROM Manufacturer manufacturer "
+				+ "WHERE manufacturer.deleted = false"
 	),
 })
-public class Producer extends SimplePojo {
+public class Manufacturer extends SimplePojo {
 
 	@SuppressWarnings("unused")
-	private static Logger logger = LogManager.getLogger( Producer.class.getName());
+	private static Logger logger = LogManager.getLogger( Manufacturer.class.getName());
 	
 	private String	name;
 
 	private String 	description;
 	
-	public Producer() {}
+	public Manufacturer() {}
 	
-	public Producer( String name ) {
+	public Manufacturer( String name ) {
 		
 		this();
 		setName( name );

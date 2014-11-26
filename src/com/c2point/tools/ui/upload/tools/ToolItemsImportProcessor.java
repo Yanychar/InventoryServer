@@ -1,42 +1,41 @@
 /*
 
- * Process string array to import personnel info.
+ * Process string array to import Tools (categories, manufacturers, tools, toolitems)  info.
  * Firstly validate it according to patterns.
  * 
  * Current columns and their patterns:
  * (d-digit, C-character, length-length of field
  *   
- *   1. Code: 				optional, D, length <=10
- *   2. First name:			optional, C, length <=40
- *   3. Last Name: 			mandatory,  C, length <=40
- *   4. Phone Number: 		mandatory,  C, length <=20
- *   5. Email: 				mandatory,  C, length <=60. Email pattern
- *   6. Superuser Flag: 	optional, "true" or "false". Default "false"
+ *   1. 
+ *   2. 
+ *   3. 
+ *   4. 
+ *   5. 
+ *   6. 
  *   
  */
 package com.c2point.tools.ui.upload.tools;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.ItemsFacade;
+import com.c2point.tools.datalayer.SettingsFacade;
 import com.c2point.tools.datalayer.ToolsFacade;
 import com.c2point.tools.datalayer.UsersFacade;
-import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
-import com.c2point.tools.entity.tool.Producer;
+import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.ui.toolsmgmt.ToolsManagementModel;
 import com.c2point.tools.ui.upload.FileProcessor;
 import com.c2point.tools.ui.upload.ProcessedStatus;
-import com.c2point.tools.ui.upload.FileProcessor.PatternLen;
 
 public class ToolItemsImportProcessor extends FileProcessor {
 	private static Logger logger = LogManager.getLogger( ToolItemsImportProcessor.class.getName());
@@ -44,7 +43,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 	private ToolsManagementModel	model;
 
 	private CategoriesHolder		catHolder;
-	private ProducersHolder			prodHolder;
+	private ManufacturersHolder			prodHolder;
 	
 	
 	private PatternLen [] columnPatterns = {
@@ -54,7 +53,6 @@ public class ToolItemsImportProcessor extends FileProcessor {
 			new PatternLen( "", 10 ),  // Tool Code				//"(\\d|\\+)[\\d\\s\\-]{8,40}", 20 ),
 			new PatternLen( "", 50 ),  // Tool Name				//"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", 60 ),
 			new PatternLen( "",255 ),  // Tool Description
-			new PatternLen( "", 10 ),  // Personal Tool Flag (default: false)
 			new PatternLen( "", 20 ),  // Manufacturer
 			new PatternLen( "", 50 ),  // Barcode
 			new PatternLen( "", 40 ),	// First Name of User
@@ -138,12 +136,12 @@ public class ToolItemsImportProcessor extends FileProcessor {
 			
 		}
 		
-		// 4.2 Producer validation
-		if ( prodHolder == null ) prodHolder = new ProducersHolder();
+		// 4.2 Manufacturer validation
+		if ( prodHolder == null ) prodHolder = new ManufacturersHolder();
 		
-		if ( nextLine[ 7 ] == null || nextLine[ 0 ].length() == 0 ) {
+		if ( nextLine[ 6 ] == null || nextLine[ 0 ].length() == 0 ) {
 
-			logger.debug( "    Producer is not specified but this is OK" );
+			logger.debug( "    Manufacturer is not specified but this is OK" );
 			
 		}
 		
@@ -169,12 +167,12 @@ public class ToolItemsImportProcessor extends FileProcessor {
 				logger.debug( "   Category '" + CategoriesHolder.getCategoryPath( nextLine ) + "' was NOT found or added." );
 		}
 		
-		Producer producer = prodHolder.findOrAddProducer( nextLine, 7 );
+		Manufacturer manufacturer = prodHolder.findOrAddManufacturer( nextLine, 6 );
 
-		logger.debug( "   Producer '" + nextLine[7] + "' was" + ( producer != null ? "" : " NOT" ) + " found or added" ); 
+		logger.debug( "   Manufacturer '" + nextLine[6] + "' was" + ( manufacturer != null ? "" : " NOT" ) + " found or added" ); 
 		
 		
-		Tool tool = createTool( nextLine, category, producer );
+		Tool tool = createTool( nextLine, category, manufacturer );
 		Tool existingTool = null; 
 		
 		if ( tool != null ) {
@@ -255,7 +253,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 	}
 
 	
-	private Tool createTool( String [] nextLine, Category category, Producer producer ) {
+	private Tool createTool( String [] nextLine, Category category, Manufacturer manufacturer ) {
 	
 		if (   	( nextLine[ 4 ] == null || nextLine[ 4 ].length() == 0 ) 
 			&& 
@@ -273,14 +271,13 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		// 	code;			nextLine[3]    
 		// 	name;    		nextLine[4]
 		// 	description;	nextLine[5]
-		//	personalFlag;	nextLine[6]
-		resTool.setCode( nextLine [ 3 ] );
+		
+		setupCode( resTool, nextLine [ 3 ] );
 		resTool.setName( nextLine [ 4 ] );
 		resTool.setDescription( nextLine [ 5 ] );
-		resTool.setPersonalFlag( Boolean.parseBoolean(nextLine [ 6 ] ));
 
 		resTool.setCategory( category );
-		resTool.setProducer( producer );
+		resTool.setManufacturer( manufacturer );
 		
 		resTool.setOrg( model.getOrg());
 
@@ -308,8 +305,8 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		ToolItem resItem = 	new ToolItem( tool, null, null );
 
 		// If Barcode exist than this item definitely shall be created 
-		if ( nextLine[ 8 ] != null && nextLine[ 8 ].length() > 0 ) {
-			resItem.setBarcode( nextLine[ 8 ]);
+		if ( nextLine[ 7 ] != null && nextLine[ 7 ].length() > 0 ) {
+			resItem.setBarcode( nextLine[ 7 ]);
 			resItem.setCurrentUser( model.getSessionOwner());
 
 			logger.debug( "Not necessary to create Tools Item from imported record. Toll is enough (no user specified)");
@@ -332,13 +329,13 @@ public class ToolItemsImportProcessor extends FileProcessor {
 
 	private void setCurrentUserIfNecessary( String [] nextLine,  ToolItem item ) {
 	
-		if ( nextLine[ 9 ] != null && nextLine[ 9 ].length() > 0 
+		if ( nextLine[ 8 ] != null && nextLine[ 8 ].length() > 0 
 			&&
-			 nextLine[ 10 ] != null && nextLine[ 10 ].length() > 0
+			 nextLine[ 9 ] != null && nextLine[ 9 ].length() > 0
 		) {
 			
 			// Find User (org, firstName, lastName)
-			List< OrgUser > userList = UsersFacade.getInstance().listByFIO( model.getOrg(), nextLine[ 9 ], nextLine[ 10 ] );
+			List< OrgUser > userList = UsersFacade.getInstance().listByFIO( model.getOrg(), nextLine[ 8 ], nextLine[ 9 ] );
 			// If user found set it as current user
 			if ( userList != null ) {
 				item.setCurrentUser( userList.get( 0 ));
@@ -370,6 +367,61 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		return addedItem;
 	}
 
+	private void setupCode( Tool tool, String code ) {
+		
+		if ( tool != null ) {
+			
+			if ( code != null && code.length() > 0 ) {
+				tool.setCode( code );
+			} else {
+				
+				// Code will be generated
+				long lastUniqueCode = 0;
+				
+				try {
+					lastUniqueCode = Long.parseLong( 
+							SettingsFacade.getInstance().getProperty( model.getOrg(), "lastToolCode" ));
+				} catch ( NumberFormatException e ) {
+					
+					logger.error( "Wrong value for lastToolCode was written in properties: " + 
+							SettingsFacade.getInstance().getProperty( model.getOrg(), "lastToolCode" ));	
+				}
+				
+				if ( lastUniqueCode == 0 ) {
+					
+					lastUniqueCode = ToolsFacade.getInstance().count( model.getOrg());
+
+				}
+
+				int codeLength = 6;
+				try {
+					codeLength = Integer.parseInt( 
+							SettingsFacade.getInstance().getProperty( model.getOrg(), "toolCodeLength", "4" ));
+				} catch ( NumberFormatException e ) {
+					
+					logger.error( "Wrong value for length of ToolCode was written in properties: " + 
+							SettingsFacade.getInstance().getProperty( model.getOrg(), "toolCodeLength" ));	
+				}
+				
+				lastUniqueCode++;
+				
+				String newCode = StringUtils.leftPad(
+						Long.toString( lastUniqueCode ),
+						codeLength,	
+						'0'
+				);
+
+				// Store new lastUniqueCode
+				SettingsFacade.getInstance().setProperty( model.getOrg(), 
+														  "lastToolCode", 
+														  Long.toString( lastUniqueCode ));
+				// set up User code
+				tool.setCode( newCode );
+				
+			}
+		}
+	}
+	
 	
 	
 }
