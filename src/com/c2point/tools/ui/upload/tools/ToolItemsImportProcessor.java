@@ -124,7 +124,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		// 4. Specific validation if necessary
 		
 		// 4.1 Categories validation
-		if ( catHolder == null ) catHolder = new CategoriesHolder();
+		if ( catHolder == null ) catHolder = new CategoriesHolder( model.getOrg());
 		
 		if ( nextLine[ 0 ] == null || nextLine[ 0 ].length() == 0 ) {
 

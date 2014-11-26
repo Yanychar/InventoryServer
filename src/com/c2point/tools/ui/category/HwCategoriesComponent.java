@@ -143,6 +143,7 @@ public class HwCategoriesComponent extends ListWithSearchComponent implements Ca
 		categoriesTree.removeAllItems();
 
 		topCategory = new Category( "000000", "All Categories", true );
+		topCategory.setOrg( model.getOrg());
 
 		addTopCategory( topCategory );
 		

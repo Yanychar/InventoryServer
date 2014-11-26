@@ -16,14 +16,27 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.entity.SimplePojo;
+import com.c2point.tools.entity.organisation.Organisation;
 
 @Entity
 @NamedQueries({
 	@NamedQuery( name = "listTop", 
-	query = "SELECT category FROM Category category "
-				+ "WHERE category.parent = null AND "
-				+ "category.deleted = false"
-	),
+		query = "SELECT category FROM Category category "
+					+ "WHERE category.parent = null AND "
+					+ "category.org = :org AND " 
+					+ "category.deleted = false "
+					+ "ORDER BY category.name ASC"
+		),
+	@NamedQuery( name = "listTopNotEmpty", 
+		query = "SELECT category FROM Category category "
+					+ "JOIN Tool tool "
+					+ "WHERE category.parent = null AND "
+					+ "category.org = :org AND "
+					+ "tool.category = category AND "
+					+ "category.deleted = false "
+					+ "GROUP BY category.id "
+					+ "ORDER BY category.name ASC"
+		),
 })
 
 public class Category extends SimplePojo {
@@ -32,6 +45,9 @@ public class Category extends SimplePojo {
 
 	private String code;
 	private String name;
+	
+	@ManyToOne
+	private Organisation org;
 	
 	@Transient
 	private boolean	topCategoryFlag;  // Just for Top Category "All Categories" in UI
@@ -81,6 +97,9 @@ public class Category extends SimplePojo {
 
 	public boolean isTopCategoryFlag() { return topCategoryFlag; }
 	public void setTopCategoryFlag( boolean topCategoryFlag ) { this.topCategoryFlag = topCategoryFlag; }
+
+	public Organisation getOrg() { return org; }
+	public void setOrg( Organisation org ) { this.org = org; }
 
 	public boolean belongedTo( Category parentOrItself ) {
 		

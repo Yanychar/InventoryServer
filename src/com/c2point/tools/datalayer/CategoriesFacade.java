@@ -9,8 +9,11 @@ import javax.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.InventoryUI;
+import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.tool.Category;
+import com.vaadin.ui.UI;
 
 public class CategoriesFacade {
 	
@@ -39,18 +42,37 @@ public class CategoriesFacade {
 		return ret;
 	}
 	
-	// TODO: Categories shall be specific fo each organisation
-	public List<Category> listTop( /* Organisation org */ ) {
-/*		
-		if ( org == null )
-			throw new IllegalArgumentException( "Valid Organisation cannot be null!" );
-*/
+	public List<Category> listTop() {
+		
+		return listTop( null, true ); 
+	}
+
+	public List<Category> listTop( boolean showEvenEmpty) {
+			
+		return listTop( null, showEvenEmpty ); 
+	}
+
+	public List<Category> listTop( Organisation org, boolean showEvenEmpty ) {
+		
+		if ( org == null ) {
+			throw new IllegalArgumentException( "Valid Organisation should be specified!" );
+
+		}
+
 		EntityManager em = DataFacade.getInstance().createEntityManager();
 		TypedQuery<Category> query = null;
 		List<Category> results = null;
 		
 		try {
-			query = em.createNamedQuery( "listTop", Category.class );
+			
+			if ( showEvenEmpty ) {
+				query = em.createNamedQuery( "listTop", Category.class )
+								.setParameter( "org", org );
+			} else {
+				query = em.createNamedQuery( "listTopNotEmpty", Category.class )
+						.setParameter( "org", org );
+				
+			}
 
 			results = query.getResultList();
 			if ( logger.isDebugEnabled()) logger.debug( "**** Fetched list of Top Categories. Size = " + results.size());

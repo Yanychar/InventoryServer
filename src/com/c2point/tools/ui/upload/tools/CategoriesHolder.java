@@ -7,15 +7,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.CategoriesFacade;
+import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.tool.Category;
 
 public class CategoriesHolder {
 	private static Logger logger = LogManager.getLogger( CategoriesHolder.class.getName());
 
-	private List<Category>			existingCategories;
+	private List<Category>	existingCategories;
+	
+	private Organisation	org;
 
-	public CategoriesHolder() {
+	public CategoriesHolder( Organisation org ) {
 		
+		this.org = org;
 	}
 	
 	private List<Category> init() {
@@ -156,6 +160,7 @@ public class CategoriesHolder {
 				// Create category
 				category = new Category( "", arrayOfCats[ arrayIndex ], ( parent == null ));
 				category.setParent( parent );
+				category.setOrg( this.org );
 				
 				// Add category to DB
 				category = CategoriesFacade.getInstance().add( category );

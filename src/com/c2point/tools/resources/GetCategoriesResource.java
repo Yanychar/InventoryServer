@@ -1,6 +1,5 @@
 package com.c2point.tools.resources;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.DefaultValue;
@@ -11,8 +10,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -53,9 +50,13 @@ public class GetCategoriesResource extends BaseResource {
 		}
 		
 		// Fetch categories
-		List<Category> list = CategoriesFacade.getInstance().listTop();
+		List<Category> list = CategoriesFacade.getInstance()
+								.listTop( 
+											account.getUser().getOrganisation(), 
+											showEvenEmpty 
+								);
 
-		if ( logger.isDebugEnabled()) {
+		if ( logger.isDebugEnabled() && list != null ) {
 			for ( Category member : list ) {
 				logger.debug( member.toString( true ));
 			}
