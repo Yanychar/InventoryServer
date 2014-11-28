@@ -14,10 +14,10 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-public class ToolsListView extends AbstractMainView {
+public class ToolsManagementView extends AbstractMainView {
 	
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LogManager.getLogger( ToolsListView.class.getName());
+	private static Logger logger = LogManager.getLogger( ToolsManagementView.class.getName());
 
 	
 	private ToolsManagementModel		model;
@@ -33,7 +33,7 @@ public class ToolsListView extends AbstractMainView {
 	private ToolItemView			toolItemView;
 	
 	
-	public ToolsListView() {
+	public ToolsManagementView() {
 		super();
 
 	}

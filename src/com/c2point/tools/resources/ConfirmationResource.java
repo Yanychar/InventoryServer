@@ -88,7 +88,6 @@ public class ConfirmationResource extends BaseResource {
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
 
-		//   Mark ToolItem as reserverd by New User and store Item
 		item.setReservedBy( null );
 		item.setCurrentUser( account.getUser());
 

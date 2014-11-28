@@ -14,10 +14,10 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-public class PersonnelListView extends AbstractMainView {
+public class StuffManagementView extends AbstractMainView {
 	
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LogManager.getLogger( PersonnelListView.class.getName());
+	private static Logger logger = LogManager.getLogger( StuffManagementView.class.getName());
 
 	
 	private StuffListModel		model;
@@ -33,7 +33,7 @@ public class PersonnelListView extends AbstractMainView {
 
 	private StuffView			stuffView;
 	
-	public PersonnelListView() {
+	public StuffManagementView() {
 		super();
 
 	}

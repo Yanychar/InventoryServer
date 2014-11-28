@@ -1,9 +1,6 @@
 package com.c2point.tools.datalayer;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -17,8 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.entity.Settings;
 import com.c2point.tools.entity.organisation.Organisation;
-import com.c2point.tools.entity.tool.Category;
-import com.c2point.tools.entity.tool.Tool;
 
 public class SettingsFacade extends DataFacade {
 	private static Logger logger = LogManager.getLogger( SettingsFacade.class.getName()); 
