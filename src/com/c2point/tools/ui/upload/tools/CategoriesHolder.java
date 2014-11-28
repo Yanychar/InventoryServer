@@ -24,7 +24,7 @@ public class CategoriesHolder {
 	
 	private List<Category> init() {
 		
-		existingCategories = CategoriesFacade.getInstance().listTop();
+		existingCategories = CategoriesFacade.getInstance().listTop( org );
 		if ( existingCategories == null ) {
 			existingCategories = new ArrayList<Category>();
 		}

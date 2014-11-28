@@ -9,11 +9,8 @@ import javax.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.organisation.Organisation;
-import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.tool.Category;
-import com.vaadin.ui.UI;
 
 public class CategoriesFacade {
 	
@@ -42,14 +39,9 @@ public class CategoriesFacade {
 		return ret;
 	}
 	
-	public List<Category> listTop() {
-		
-		return listTop( null, true ); 
-	}
-
-	public List<Category> listTop( boolean showEvenEmpty) {
+	public List<Category> listTop( Organisation org ) {
 			
-		return listTop( null, showEvenEmpty ); 
+		return listTop( org, true ); 
 	}
 
 	public List<Category> listTop( Organisation org, boolean showEvenEmpty ) {

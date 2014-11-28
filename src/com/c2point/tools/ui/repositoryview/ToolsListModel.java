@@ -6,10 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.CategoriesFacade;
-import com.c2point.tools.datalayer.MsgFacade;
 import com.c2point.tools.datalayer.ItemsFacade;
-import com.c2point.tools.entity.msg.Message;
-import com.c2point.tools.entity.msg.MessageType;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Tool;
@@ -37,7 +34,7 @@ public class ToolsListModel extends AbstractModel {
 		
 		Collection<Category> retList = null;
 		
-		retList = CategoriesFacade.getInstance().listTop();
+		retList = CategoriesFacade.getInstance().listTop( this.getApp().getSessionData().getOrg());
 		
 		// Read data from DB here 
 		
