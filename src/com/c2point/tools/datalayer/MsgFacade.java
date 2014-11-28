@@ -136,8 +136,6 @@ public class MsgFacade {
 								ToolItem item, 
 								String text ) {
 
-		boolean bResult = false;
-		
 		// 1. Create Request Message
 		Message msg = new Message( 
 			type, 
@@ -191,6 +189,31 @@ public class MsgFacade {
 		}
 			
 		
+		
+		return newMsg;
+	}
+
+	public Message updateMessage( Message msg, MessageStatus newStatus ) {
+		
+		Message newMsg = null;
+		
+		if ( logger.isDebugEnabled()) logger.debug( "  Search existing Message using uniqueId: " + msg.getId() );
+		Message oldMsg = DataFacade.getInstance().find( Message.class, msg.getId());
+		
+		if ( oldMsg != null && oldMsg.getStatus() != newStatus ) {
+			if ( logger.isDebugEnabled()) logger.debug( "  Found Message" );
+
+			oldMsg.setStatus( newStatus );
+			
+			newMsg = DataFacade.getInstance().merge( oldMsg );
+			if ( newMsg != null )
+				logger.debug( "Message with id:" + newMsg.getId() + " was updated" );
+			else
+				logger.error( "Failed to update Message with id: " + oldMsg.getId() );
+			
+		} else {
+			logger.error( "  Existing Msg with id: " + msg.getId() + " not found!" );
+		}
 		
 		return newMsg;
 	}

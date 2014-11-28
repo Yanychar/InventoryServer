@@ -10,7 +10,8 @@ public enum MessageType {
 	AGREEMENT( 3 ),
 	REJECTION( 4 ),
 	CONFIRMATION( 5 ),
-	INFO( 6 );
+	NOTNEEDED( 6 ),
+	INFO( 7 );
 	
 	private int value = 0;
 	
