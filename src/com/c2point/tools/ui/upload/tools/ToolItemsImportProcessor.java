@@ -33,14 +33,14 @@ import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.entity.tool.Tool;
-import com.c2point.tools.ui.toolsmgmt.ToolsManagementModel;
+import com.c2point.tools.ui.toolsmgmt.ToolsListModel;
 import com.c2point.tools.ui.upload.FileProcessor;
 import com.c2point.tools.ui.upload.ProcessedStatus;
 
 public class ToolItemsImportProcessor extends FileProcessor {
 	private static Logger logger = LogManager.getLogger( ToolItemsImportProcessor.class.getName());
 	
-	private ToolsManagementModel	model;
+	private ToolsListModel	model;
 
 	private CategoriesHolder		catHolder;
 	private ManufacturersHolder			prodHolder;
@@ -60,7 +60,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 	};
 	
 	
-	public ToolItemsImportProcessor( ToolsManagementModel model, File processFile ) {
+	public ToolItemsImportProcessor( ToolsListModel model, File processFile ) {
 		
 		super(processFile);
 		

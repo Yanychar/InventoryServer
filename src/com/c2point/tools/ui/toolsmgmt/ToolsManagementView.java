@@ -20,18 +20,18 @@ public class ToolsManagementView extends AbstractMainView {
 	private static Logger logger = LogManager.getLogger( ToolsManagementView.class.getName());
 
 	
-	private ToolsManagementModel		model;
+	private ToolsListModel		model;
 
 	private ComboBox			orgSelector;
 	
 	private HorizontalLayout	toolbar;
-	private ComboBox			filter;
 	private UploadComponent		importButton;
 	private Button				exportButton;
 	
-	private CatAndToolItemsListView categoriesList;
-	private ToolItemView			toolItemView;
-	
+	private ToolsListView		toolsList;
+	private ToolItemView		toolItemView;
+
+
 	
 	public ToolsManagementView() {
 		super();
@@ -44,7 +44,7 @@ public class ToolsManagementView extends AbstractMainView {
 		this.setSizeFull();
 		this.setSpacing( true );
 
-		this.model = new ToolsManagementModel();
+		this.model = new ToolsListModel();
 		
 		initToolbar();
 		initToolItemsListView();
@@ -54,7 +54,7 @@ public class ToolsManagementView extends AbstractMainView {
 		HorizontalSplitPanel hzSplit = new HorizontalSplitPanel();
 		
 
-		hzSplit.addComponent( categoriesList );
+		hzSplit.addComponent( toolsList );
 		hzSplit.addComponent( toolItemView );
 		
 		if ( model.isSuperUser()) {
@@ -95,6 +95,9 @@ public class ToolsManagementView extends AbstractMainView {
 		// 1. Fill combo box
 		// Select activi item: model.getsession.getOrg()
 		
+		// For now
+		orgSelector.setVisible( false );
+		
 	}
 	
 	private void initToolbar() {
@@ -104,10 +107,7 @@ public class ToolsManagementView extends AbstractMainView {
 		toolbar.setSpacing( true );
 		toolbar.setMargin( true );
 		
-		Label filterLabel = new Label( "Filter:" );
-		filter = new ComboBox();
-		
-		importButton = new UploadComponent( this.model.getApp().getResourceStr( "general.button.import" ));
+		importButton = new UploadComponent( this.model.getApp().getResourceStr( "toolsmgmt.button.import" ));
 		ToolItemsImportProcessor processor = new ToolItemsImportProcessor( model, importButton.getUploadFile());
 		
 		ImportComponent importComponent = new ImportComponent( processor );
@@ -117,16 +117,15 @@ public class ToolsManagementView extends AbstractMainView {
 		importButton.addFailedListener( importComponent );
 		importButton.addProgressListener( importComponent );
 
-		exportButton = new Button( "Export" );
+		exportButton = new Button( this.model.getApp().getResourceStr( "toolsmgmt.button.export" ));
 		exportButton.setEnabled( false );
 		
 		Label glue = new Label( " " );
 		glue.setHeight("100%");
 
 		
-		toolbar.addComponent( filterLabel );
-		toolbar.addComponent( filter );
 		toolbar.addComponent( glue );
+		
 		toolbar.addComponent( importButton );
 		toolbar.addComponent( exportButton );
 		
@@ -139,7 +138,7 @@ public class ToolsManagementView extends AbstractMainView {
 
 		if ( logger.isDebugEnabled()) logger.debug( "Data from model will be read!" );
 		
-		categoriesList = new CatAndToolItemsListView( this.model );
+		toolsList = new ToolsListView( this.model );
 		
 		
 	}
@@ -151,4 +150,6 @@ public class ToolsManagementView extends AbstractMainView {
 		
 	}
 
+
+	
 }

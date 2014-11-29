@@ -11,14 +11,14 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( ToolItemView.class.getName());
 
-	private ToolsManagementModel	model;
+	private ToolsListModel	model;
 	
 	
 	
 	private boolean		editMode;	 
 	private boolean		editedFlag;
 	
-	public ToolItemView( ToolsManagementModel model ) {
+	public ToolItemView( ToolsListModel model ) {
 		super();
 		
 		setModel( model );
@@ -39,8 +39,8 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 		
 	}
 	
-	public ToolsManagementModel getModel() { return model; }
-	public void setModel( ToolsManagementModel model ) { this.model = model; }
+	public ToolsListModel getModel() { return model; }
+	public void setModel( ToolsListModel model ) { this.model = model; }
 
 	public boolean isEditMode() { return this.editMode; }
 	public void setEditMode( boolean editMode ) { this.editMode = editMode; }

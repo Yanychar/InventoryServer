@@ -5,33 +5,31 @@ import java.util.Collection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.datalayer.CategoriesFacade;
 import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.repository.ToolItem;
+import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.ui.AbstractModel;
 
-public class ToolsManagementModel extends AbstractModel {
-	private static Logger logger = LogManager.getLogger( ToolsManagementModel.class.getName());
+public class ToolsListModel extends AbstractModel {
+	private static Logger logger = LogManager.getLogger( ToolsListModel.class.getName());
 
 	private Organisation 		org;
 	private ToolItem 			selectedItem;
-	
+	private Category 			selectedCategory = null;	
 
-	public ToolsManagementModel() {
+	public ToolsListModel() {
 		this( null );
 
 		
 	}
 	
-	public ToolsManagementModel( Organisation org ) {
+	public ToolsListModel( Organisation org ) {
 		super();
 		
-		setOrg( 
-				org != null ? 
-					org 
-				: 
-					getApp().getSessionData().getOrg()
-		);
+		setOrg( org != null ? org : getApp().getSessionData().getOrg());
+		
 	}
 	
 	public void initModel() {
@@ -107,8 +105,18 @@ public class ToolsManagementModel extends AbstractModel {
 	public void setOrg( Organisation org ) { this.org = org; }
 
 	public Collection<ToolItem> getItems() {
-	
-		return ItemsFacade.getInstance().getItems( org );
+
+		if ( selectedCategory == null ) {
+			
+			if ( logger.isDebugEnabled()) logger.debug( "Read all ToolItems has been call!" );
+			
+			return ItemsFacade.getInstance().getItems( org );
+			
+		}
+		
+		if ( logger.isDebugEnabled()) logger.debug( "Read Category related ToolItems has been call!" );
+
+		return ItemsFacade.getInstance().getItems( selectedCategory, org );
 		
 	}
 
@@ -118,5 +126,33 @@ public class ToolsManagementModel extends AbstractModel {
 		
 	}
 
+	public Collection<Category> getCategories() {
+		
+		return CategoriesFacade.getInstance().listTop( org, true );
+	}
+
+	private Category topCat = null; 
+	public Category getTopCategory() { 
+	
+		if ( this.topCat == null ) {
+			topCat = new Category( "", getApp().getResourceStr( "category.top.caption" ));
+			
+		}
+	
+		return topCat;
+	}
+	
+	public Category getSelectedCategory() { return selectedCategory; }
+	public void setSelectedCategory( Category category ) {
+
+		if ( category == this.topCat ) {
+			this.selectedCategory = null;
+		} else {
+			this.selectedCategory = category;
+		}
+		
+		initModel();
+		
+	}
 	
 }

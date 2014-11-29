@@ -1,5 +1,7 @@
 package com.c2point.tools.entity.repository;
 
+import java.util.ResourceBundle;
+
 import javax.xml.bind.annotation.XmlEnum;
 
 import org.apache.logging.log4j.LogManager;
@@ -46,6 +48,18 @@ public enum ItemStatus {
     	}
 
     	return null;
+    }
+	
+    public String toString( ResourceBundle bundle ) {
+    	
+    	try {
+    		return bundle.getString( "tool.item.status." + this.toString().toLowerCase());
+    	} catch ( Exception e ) {
+    		
+    	}
+    	
+    	return this.toString();
+    	
     }
 	
 }

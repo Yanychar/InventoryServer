@@ -27,6 +27,7 @@ public class ToolItemStub {
 	private ItemStatus	status;
 	
 	private String		barcode;
+	private String		serialNumber;
 	private boolean		personalFlag;
 
 	private GeoLocationStub		lastKnownLocation;
@@ -56,6 +57,7 @@ public class ToolItemStub {
 		setStatus( item.getStatus());
 		
 		setBarcode( item.getBarcode());
+		setSerialNumber( item.getSerialNumber());
 		
 		setupCategoriesTree( item );
 	
@@ -97,6 +99,9 @@ public class ToolItemStub {
 	public String getBarcode() { return barcode; }
 	public void setBarcode( String barcode ) { this.barcode = barcode; }
 
+	public String getSerialNumber() { return serialNumber; }
+	public void setSerialNumber( String serialNumber ) { this.serialNumber = serialNumber; }
+	
 	public boolean isPersonalFlag() { return personalFlag; }
 	public void setPersonalFlag( boolean personalFlag ) { this.personalFlag = personalFlag; }
 	
@@ -148,6 +153,7 @@ public class ToolItemStub {
 				+ ( getReservedBy() != null ? "\n  Reserved By:"+getReservedBy() : "" )
 				+ ( getStatus() != null ? "\n  Status:"+getStatus() : "" )
 				+ ( getBarcode() != null ? "\n  Barcode:"+getBarcode() : "" )
+				+ ( getSerialNumber() != null ? "\n  SN:"+getSerialNumber() : "" )
 				+ "\n  Is it personal Tool?: "+isPersonalFlag()
 				+ ( getCategoriesTree() != null ? "\n Category: " + categoriesTreeToString() : "" )
 				+ ( getLastKnownLocation() != null ? "\n Location: [" 

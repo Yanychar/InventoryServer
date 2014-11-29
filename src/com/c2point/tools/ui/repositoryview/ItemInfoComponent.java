@@ -76,8 +76,6 @@ public class ItemInfoComponent extends GridLayout implements ToolsModelListener 
 	
 	public void showItem( ToolItem repItem ) {
 		
-		String str;
-	
 		// Name label value
 		try {
 			nameLabel.setValue( repItem.getTool().getName());

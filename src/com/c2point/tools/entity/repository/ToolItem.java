@@ -101,6 +101,7 @@ public class ToolItem extends SimplePojo {
 	
 	private GeoLocation		lastKnownLocation;
 	
+	private String			serialNumber;
 	private String			barcode;
 	
 	private boolean 		personalFlag;
@@ -150,6 +151,9 @@ public class ToolItem extends SimplePojo {
 	public String getBarcode() { return barcode; }
 	public void setBarcode( String barcode ) { this.barcode = barcode; }
 
+	public String getSerialNumber() { return serialNumber; }
+	public void setSerialNumber( String serialNumber ) { this.serialNumber = serialNumber; }
+	
 	public boolean isPersonalFlag() { return personalFlag; }
 	public void setPersonalFlag( boolean personalFlag ) { this.personalFlag = personalFlag; }
 
