@@ -13,6 +13,13 @@ import com.c2point.tools.entity.organisation.Organisation;
 
 @Entity
 @NamedQueries({
+	@NamedQuery( name = "listTools", 
+			query = "SELECT tool FROM Tool tool " +
+				"WHERE " 
+				+ "tool.deleted = false AND "
+				+ "tool.org = :org " 
+				+ "ORDER BY tool.name ASC"
+	),
 	@NamedQuery( name = "listCategoryTools", 
 			query = "SELECT tool FROM Tool tool " +
 				"WHERE " 
@@ -40,14 +47,11 @@ public class Tool extends SimplePojo {
 	
 	private Manufacturer	manufacturer;
 
-	private boolean 	personalFlag;
-
 	@ManyToOne
 	private Organisation org;
 
 	public Tool() {
 		
-		setPersonalFlag( false );
 	}
 
 	public String getCode() { return code; }
@@ -66,9 +70,6 @@ public class Tool extends SimplePojo {
 	public Manufacturer getManufacturer() { return manufacturer; }
 	public void setManufacturer( Manufacturer manufacturer ) { this.manufacturer = manufacturer; }
 	
-	public boolean isPersonalFlag() { return personalFlag; }
-	public void setPersonalFlag( boolean personalFlag ) { this.personalFlag = personalFlag; }
-
 	public Organisation getOrg() { return org; }
 	public void setOrg( Organisation org ) { this.org = org; }
 
@@ -76,7 +77,7 @@ public class Tool extends SimplePojo {
 	public String toString() {
 		return "Tool [code=" + code + ", name=" + name + ", description="
 				+ description + ", category=" + category + ", manufacturer="
-				+ manufacturer + ", personalFlag=" + personalFlag + "]";
+				+ manufacturer + "]";
 	}
 
 	

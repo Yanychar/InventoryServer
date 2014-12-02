@@ -56,6 +56,8 @@ public class ToolsManagementView extends AbstractMainView {
 
 		hzSplit.addComponent( toolsList );
 		hzSplit.addComponent( toolItemView );
+
+		hzSplit.setSplitPosition( 65, Unit.PERCENTAGE );
 		
 		if ( model.isSuperUser()) {
 		
@@ -67,9 +69,10 @@ public class ToolsManagementView extends AbstractMainView {
 		vtSplit.addComponent( toolbar );
 		vtSplit.addComponent( hzSplit );
 		
+		vtSplit.setHeight( "100%" );
+		vtSplit.setExpandRatio( hzSplit, 1f );
 		
 		this.addComponent( vtSplit );
-		this.setExpandRatio( vtSplit, 1f );
 		
 	}
 

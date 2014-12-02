@@ -30,6 +30,7 @@ public class SettingsView extends HorizontalLayout {
 	
 		setWidth( "100%" );
 		this.setHeight( "100%" );
+		this.setSizeFull();
 
 		// Setup menu on top
 /*		

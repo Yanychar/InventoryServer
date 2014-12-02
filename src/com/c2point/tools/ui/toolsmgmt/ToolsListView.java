@@ -87,7 +87,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		itemsTable.setColumnHeaders( new String[] { 
 				model.getApp().getResourceStr( "toolsmgmt.list.header.category" ),
 				model.getApp().getResourceStr( "toolsmgmt.list.header.tool" ),
-				model.getApp().getResourceStr( "toolsmgmt.list.header.Status" ),
+				model.getApp().getResourceStr( "toolsmgmt.list.header.status" ),
 				model.getApp().getResourceStr( "toolsmgmt.list.header.user" )
 		
 		});
@@ -273,7 +273,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			categoryFilter.setFilteringMode( FilteringMode.CONTAINS );
 			categoryFilter.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
 			categoryFilter.setNullSelectionAllowed( false );
-			categoryFilter.setInputPrompt( "Search" );
+			categoryFilter.setInputPrompt( this.model.getApp().getResourceStr( "toolsmgmt.text.search" ));
 			categoryFilter.setInvalidAllowed( false );
 			categoryFilter.setImmediate(true);
 			
@@ -360,6 +360,24 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 
 	private void addButtonHandler() {
 		
+		logger.debug( "Add button was pressed to add new Tool/ToolItem" );
+		
+		
+		Tool	 newTool = new Tool();
+		//	Set code, category, org
+		model.setToolCode( newTool );
+		newTool.setCategory( model.getSelectedCategory());
+		newTool.setOrg( model.getOrg());
+
+//		ToolItem newItem = new ToolItem( newTool, model.getSessionOwner(), model.getSessionOwner());
+		ToolItem newItem = new ToolItem( null, model.getSessionOwner(), model.getSessionOwner());
+		// Set tool, user as session owner, status, personal flag
+		// Done in constructor
+		
+		model.setSelectedItem( newItem );
+		
+		model.addToPerform();
+			
 	}
 	
 	private boolean searchFieldUpdated( String searchStr ) {

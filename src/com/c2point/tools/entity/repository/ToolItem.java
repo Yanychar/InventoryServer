@@ -1,10 +1,14 @@
 package com.c2point.tools.entity.repository;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -87,6 +91,7 @@ public class ToolItem extends SimplePojo {
 	private static Logger logger = LogManager.getLogger( ToolItem.class.getName());
 	
 //	private Organisation	org;
+	@ManyToOne( cascade = { CascadeType.ALL }, fetch=FetchType.EAGER, optional=false )
 	private Tool			tool;
 	
 	private	int				quantity;
@@ -120,7 +125,7 @@ public class ToolItem extends SimplePojo {
 
 		setStatus( ItemStatus.FREE );
 
-		setPersonalFlag( tool != null ? tool.isPersonalFlag() : false );
+		setPersonalFlag( false );
 	}
 
 

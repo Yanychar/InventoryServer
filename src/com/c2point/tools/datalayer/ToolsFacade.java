@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -73,7 +74,35 @@ public class ToolsFacade extends DataFacade {
 	}
 
 	
-	private Collection<Tool> getTools( Organisation org, Category category ) {
+	public Collection<Tool> getTools( Organisation org ) {
+		
+		if ( org == null )
+			throw new IllegalArgumentException( "Valid Organisation cannot be null when add Tool!" );
+
+		EntityManager em = DataFacade.getInstance().createEntityManager();
+		
+		TypedQuery<Tool> query = null;
+		List<Tool> results = new ArrayList<Tool>();
+
+		try {
+			
+			query = em.createNamedQuery( "listTools", Tool.class )
+				.setParameter( "org", org );
+	
+			results = query.getResultList();
+			
+			
+		} catch ( IllegalArgumentException e ) {
+			logger.error( e );
+		} finally {
+			em.close();
+		}
+			
+		return results;
+		
+	}
+
+	public Collection<Tool> getTools( Organisation org, Category category ) {
 		
 		if ( org == null && category == null )
 			throw new IllegalArgumentException( "Valid Organisation and/or Category cannot be null when add Tool!" );
@@ -156,5 +185,51 @@ public class ToolsFacade extends DataFacade {
 		
 	}
 
+
+	public void setUniqueCode( Tool tool, Organisation org ) {
+
+		long lastUniqueCode = 0;
+		
+		try {
+			lastUniqueCode = Long.parseLong( 
+					SettingsFacade.getInstance().getProperty( org, "lastToolCode" ));
+		} catch ( NumberFormatException e ) {
+			
+			logger.error( "Wrong value for lastToolCode was written in properties: " + 
+					SettingsFacade.getInstance().getProperty( org, "lastToolCode" ));	
+		}
+		
+		if ( lastUniqueCode == 0 ) {
+			
+			lastUniqueCode = this.count( org );
+
+		}
+
+		int codeLength = 6;
+		try {
+			codeLength = Integer.parseInt( 
+					SettingsFacade.getInstance().getProperty( org, "toolCodeLength", "6" ));
+		} catch ( NumberFormatException e ) {
+			
+			logger.error( "Wrong value for length of PersonnelCode was written in properties: " + 
+					SettingsFacade.getInstance().getProperty( org, "toolCodeLength" ));	
+		}
+		
+		lastUniqueCode++;
+		
+		String newCode = StringUtils.leftPad(
+				Long.toString( lastUniqueCode ),
+				codeLength,	
+				'0'
+		);
+
+		// Store new lastUniqueCode
+		SettingsFacade.getInstance().setProperty( org, 
+												  "lastToolCode", 
+												  Long.toString( lastUniqueCode ));
+		// set up Tool code
+		tool.setCode( newCode );
+		
+	}
 	
 }

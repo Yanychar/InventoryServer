@@ -286,6 +286,80 @@ public class ItemsFacade extends DataFacade {
 		
 		return newItem;
 	}
+
+	public ToolItem update( ToolItem item ) { 
+
+		ToolItem newItem = null;
+
+		if ( item == null )
+			throw new IllegalArgumentException( "Valid ToolItem cannot be null!" );
+		
+		try {
+			
+			newItem = DataFacade.getInstance().find( ToolItem.class, item.getId());
+			
+		} catch ( Exception e ) {
+			logger.error( "Failed to update ToolItem: " + item );
+			logger.error( e );
+			return null;
+		}
+		
+		newItem.setTool( item.getTool());
+		newItem.setQuantity( item.getQuantity());
+		newItem.setResponsible( item.getResponsible());
+		newItem.setCurrentUser( item.getCurrentUser());
+		newItem.setReservedBy( item.getReservedBy());
+		newItem.setStatus( item.getStatus());
+		newItem.setLastKnownLocation( item.getLastKnownLocation());
+		newItem.setSerialNumber( item.getSerialNumber());
+		newItem.setBarcode( item.getBarcode());
+		
+		try {
+			newItem = DataFacade.getInstance().merge( newItem );
+		} catch ( Exception e ) {
+			logger.error( "Failed to update ToolItem: " + item );
+			logger.error( e );
+			return null;
+		}
+
+		if ( logger.isDebugEnabled() && newItem != null ) 
+			logger.debug( "ToolItem has been updated: " + newItem );
+
+		return newItem;
+	}
+	
+	public ToolItem delete( ToolItem item ) { 
+
+		ToolItem newItem = null;
+
+		if ( item == null )
+			throw new IllegalArgumentException( "Valid ToolItem cannot be null!" );
+		
+		try {
+			
+			newItem = DataFacade.getInstance().find( ToolItem.class, item.getId());
+			
+		} catch ( Exception e ) {
+			logger.error( "Failed to delete ToolItem: " + item );
+			logger.error( e );
+			return null;
+		}
+		
+		newItem.setDeleted( true );
+		
+		try {
+			newItem = DataFacade.getInstance().merge( newItem );
+		} catch ( Exception e ) {
+			logger.error( "Failed to delete ToolItem: " + item );
+			logger.error( e );
+			return null;
+		}
+
+		if ( logger.isDebugEnabled() && newItem != null ) 
+			logger.debug( "ToolItem has been deleted: " + newItem );
+
+		return newItem;
+	}
 	
 	private Collection<ToolItem> getItems( Organisation org, Category category, OrgUser user, boolean publicOnly ) {
 		
