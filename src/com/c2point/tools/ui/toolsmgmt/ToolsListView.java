@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Tool;
@@ -27,6 +26,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -36,6 +36,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( ToolsListView.class.getName());
 
+	private static int BUTTON_WIDTH = 25;
 	
 	protected HorizontalLayout	toolBarLayout;
 	private ComboBox			categoryFilter;
@@ -80,17 +81,20 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		itemsTable.addContainerProperty( "name", 		String.class, null );
 		itemsTable.addContainerProperty( "status", 		String.class, null );
 		itemsTable.addContainerProperty( "user", 		String.class, null );
+		itemsTable.addContainerProperty( "buttons", HorizontalLayout.class, null );
 		itemsTable.addContainerProperty( "data", 		ToolItem.class, null );
 
-		itemsTable.setVisibleColumns( new Object [] { "category", "name", "status", "user" } );
+		itemsTable.setVisibleColumns( new Object [] { "category", "name", "status", "user", "buttons" } );
 		
 		itemsTable.setColumnHeaders( new String[] { 
 				model.getApp().getResourceStr( "toolsmgmt.list.header.category" ),
 				model.getApp().getResourceStr( "toolsmgmt.list.header.tool" ),
 				model.getApp().getResourceStr( "toolsmgmt.list.header.status" ),
-				model.getApp().getResourceStr( "toolsmgmt.list.header.user" )
-		
+				model.getApp().getResourceStr( "toolsmgmt.list.header.user" ),
+				""
 		});
+
+		itemsTable.setColumnWidth( "buttons", BUTTON_WIDTH * 3 );
 		
 		itemsTable.addValueChangeListener( new  ValueChangeListener() {
 
@@ -242,6 +246,8 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 
 //			if ( logger.isDebugEnabled()) logger.debug( "Tool Item will be added: " + toolItem );
 			item = itemsTable.addItem( toolItem.getId());
+
+	        item.getItemProperty( "buttons" ).setValue( getButtonSet( item ));
 			
 		} else {
 			if ( logger.isDebugEnabled()) logger.debug( "Tool Item exists already. Will be modified: " + toolItem );
@@ -252,6 +258,8 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		item.getItemProperty( "status" ).setValue( toolItem.getStatus().toString( model.getApp().getSessionData().getBundle()));
 		item.getItemProperty( "user" ).setValue( toolItem.getCurrentUser().getFirstAndLastNames());
 		item.getItemProperty( "data" ).setValue( toolItem );
+		
+		
 		
 	}
 	
@@ -332,12 +340,9 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			addButton = new Button( model.getApp().getResourceStr( "personnel.add.caption" ));
 			addButton.addClickListener( new ClickListener() {
 				private static final long serialVersionUID = 1L;
-
 				@Override
 				public void buttonClick( ClickEvent event) {
-
-					addButtonHandler();
-					
+					addButtonPressed();
 				}
 				
 			});
@@ -358,28 +363,6 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		return toolBarLayout;
 	}
 
-	private void addButtonHandler() {
-		
-		logger.debug( "Add button was pressed to add new Tool/ToolItem" );
-		
-		
-		Tool	 newTool = new Tool();
-		//	Set code, category, org
-		model.setToolCode( newTool );
-		newTool.setCategory( model.getSelectedCategory());
-		newTool.setOrg( model.getOrg());
-
-//		ToolItem newItem = new ToolItem( newTool, model.getSessionOwner(), model.getSessionOwner());
-		ToolItem newItem = new ToolItem( null, model.getSessionOwner(), model.getSessionOwner());
-		// Set tool, user as session owner, status, personal flag
-		// Done in constructor
-		
-		model.setSelectedItem( newItem );
-		
-		model.addToPerform();
-			
-	}
-	
 	private boolean searchFieldUpdated( String searchStr ) {
 		
 		boolean found = false;
@@ -512,6 +495,70 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		}
 	}
 
+    private Component getButtonSet( Item item ) {
+	
+        HorizontalLayout buttonsSet = new HorizontalLayout();
+
+        buttonsSet.setSpacing( true );
+        
+		final NativeButton copyButton = 	createButton( "icons/16/copy.png", "toolsmgmt.copy.tooltip", item ); 
+		final NativeButton editButton = 	createButton( "icons/16/edit.png", "toolsmgmt.edit.tooltip", item );
+		final NativeButton deleteButton = createButton( "icons/16/delete.png", "toolsmgmt.delete.tooltip", item );
+        
+        copyButton.addClickListener( new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick( ClickEvent event ) {
+				// Button data is Item. Item's data property is ToolItem
+				copyButtonPressed( (ToolItem) ((Item) copyButton.getData()).getItemProperty( "data" ).getValue());
+			}
+        });
+        editButton.addClickListener( new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick( ClickEvent event ) {
+				// Button data is Item. Item's data property is ToolItem
+				editButtonPressed( (ToolItem) ((Item) copyButton.getData()).getItemProperty( "data" ).getValue());
+			}
+        });
+        deleteButton.addClickListener( new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick( ClickEvent event ) {
+				// Button data is Item. Item's data property is ToolItem
+				deleteButtonPressed( (ToolItem) ((Item) copyButton.getData()).getItemProperty( "data" ).getValue());
+			}
+        });
+        
+        
+        
+        buttonsSet.addComponent( copyButton );
+        buttonsSet.addComponent( editButton );
+        buttonsSet.addComponent( deleteButton );
+    	
+    	return buttonsSet;
+    }
+
+	private NativeButton createButton( String iconPath, String tooltipKey, Item item ) {
+	
+		NativeButton button = new NativeButton(); 
+		
+		button.setIcon( new ThemeResource( iconPath ));
+		button.setDescription( model.getApp().getResourceStr( tooltipKey ));
+
+		button.setHeight( Integer.toString( BUTTON_WIDTH ) + "px" );
+//		button.setStyleName( "v-nativebutton-deleteButton" );
+//		button.addStyleName( "v-nativebutton-link" );
+		button.setStyleName( BaseTheme.BUTTON_LINK );
+
+		button.setData( item );
+		button.setImmediate( true );
+		
+		return button;
+		
+	}
+	
+	
 	class ToolsViewFilter implements Container.Filter {
 
 		private static final long serialVersionUID = 1L;
@@ -571,5 +618,61 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		}
 
 	}	
+
+	private void addButtonPressed() {
+		
+		logger.debug( "Add button was pressed to add new Tool/ToolItem" );
+		
+		Tool	 newTool = new Tool();
+		//	Set code, category, org
+		model.setToolCode( newTool );
+		newTool.setCategory( model.getSelectedCategory());
+		newTool.setOrg( model.getOrg());
+
+		ToolItem newItem = new ToolItem( newTool, model.getSessionOwner(), model.getSessionOwner());
+		// Set tool, user as session owner, status, personal flag
+		// Done in constructor
+		
+		model.setSelectedItem( newItem );
+		
+		model.initiateAdd();
+			
+	}
+	
+	private void copyButtonPressed( ToolItem item ) {
+		logger.debug( "Copybutton was pressed to add new Tool/ToolItem. Copy Tool: " + item.getTool().getName() );
+
+		itemsTable.setValue( item.getId());
+
+		Tool	 tool = item.getTool();
+
+		ToolItem newItem = new ToolItem( tool, model.getSessionOwner(), model.getSessionOwner());
+		// Set tool, user as session owner, status, personal flag
+		// Done in constructor
+		
+		model.setSelectedItem( newItem );
+		
+		model.initiateCopy();
+		
+	}
+	
+	private void editButtonPressed( ToolItem item ) {
+		logger.debug( "Edit button was pressed to add new Tool/ToolItem. Edit Tool: " + item.getTool().getName() );
+
+		itemsTable.setValue( item.getId());
+		
+		model.initiateEdit();
+		
+	}
+	
+	private void deleteButtonPressed( final ToolItem item ) {
+		logger.debug( "Deletebutton was pressed to add new Tool/ToolItem. Delete Tool/ToolItem: " + item.getTool().getName() );
+
+		itemsTable.setValue( item.getId());
+		
+		model.initiateDelete();
+		
+	}
+	
 	
 }

@@ -15,7 +15,9 @@ import com.c2point.tools.entity.SimplePojo;
 @NamedQueries({
 	@NamedQuery( name = "listActive", 
 	query = "SELECT manufacturer FROM Manufacturer manufacturer "
-				+ "WHERE manufacturer.deleted = false"
+				+ "WHERE manufacturer.deleted = false "
+				+ "ORDER BY manufacturer.name ASC"
+			
 	),
 })
 public class Manufacturer extends SimplePojo {

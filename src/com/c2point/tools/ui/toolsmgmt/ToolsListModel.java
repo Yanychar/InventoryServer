@@ -20,7 +20,7 @@ import com.c2point.tools.ui.AbstractModel;
 public class ToolsListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( ToolsListModel.class.getName());
 
-	public enum EditMode { VIEW, EDIT, ADD };
+	public enum EditMode { VIEW, EDIT, ADD, COPY, ALLOWED_ALL };
 	private EditMode			mode;
 	
 	
@@ -122,6 +122,7 @@ public class ToolsListModel extends AbstractModel {
 	public void setViewMode() { setMode( EditMode.VIEW ); }
 	public void setEditMode() { setMode( EditMode.EDIT ); }
 	public void setAddMode() { setMode( EditMode.ADD ); }
+	public void setCopyMode() { setMode( EditMode.COPY ); }
 	public EditMode getMode() { return this.mode; }
 	
 
@@ -203,6 +204,56 @@ public class ToolsListModel extends AbstractModel {
 		
 	}
 
+	public ToolItem add( ToolItem addedItem ) {
+		
+		ToolItem newItem = null;
+		
+		// Add to DB
+		if ( addedItem != null ) {
+
+			newItem = ItemsFacade.getInstance().add( addedItem );
+			
+			if ( newItem != null ) {
+				
+				fireAdded( newItem );
+			
+			} 
+			
+		}
+		
+		return newItem;
+		
+	}
+	
+	public ToolItem addToolAndItem( ToolItem addedItem ) {
+		
+		Tool 		newTool = null;
+		ToolItem 	newItem = null;			
+		
+		// Add to DB
+		if ( addedItem != null && addedItem.getTool() != null ) {
+		
+			newTool = ToolsFacade.getInstance().add( addedItem.getTool());
+			
+			if ( newTool != null ) {
+			
+				addedItem.setTool( newTool );
+			
+				newItem = add( addedItem );			
+			
+				if ( newItem != null ) {
+					
+					fireAdded( newItem );
+				
+				}
+			}
+			
+		}
+		
+		return newItem;
+		
+	}
+	
 	public ToolItem update( ToolItem updatedItem ) {
 		
 		ToolItem newItem = null;
@@ -245,13 +296,49 @@ public class ToolsListModel extends AbstractModel {
 		
 	}
 
-	public void addToPerform() {
+	public void initiateAdd() {
 		
 		Object[] listeners = listenerList.getListenerList();
 
 	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
 	    	if ( listeners[ i ] == EditInitiationListener.class) {
 	    		(( EditInitiationListener )listeners[ i + 1 ] ).initiateAdd();
+	         }
+	     }
+		
+	}
+
+	public void initiateCopy() {
+		
+		Object[] listeners = listenerList.getListenerList();
+
+	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
+	    	if ( listeners[ i ] == EditInitiationListener.class) {
+	    		(( EditInitiationListener )listeners[ i + 1 ] ).initiateCopy();
+	         }
+	     }
+		
+	}
+
+	public void initiateEdit() {
+		
+		Object[] listeners = listenerList.getListenerList();
+
+	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
+	    	if ( listeners[ i ] == EditInitiationListener.class) {
+	    		(( EditInitiationListener )listeners[ i + 1 ] ).initiateEdit();
+	         }
+	     }
+		
+	}
+
+	public void initiateDelete() {
+		
+		Object[] listeners = listenerList.getListenerList();
+
+	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
+	    	if ( listeners[ i ] == EditInitiationListener.class) {
+	    		(( EditInitiationListener )listeners[ i + 1 ] ).initiateDelete();
 	         }
 	     }
 		

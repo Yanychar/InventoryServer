@@ -91,7 +91,7 @@ public class ToolItem extends SimplePojo {
 	private static Logger logger = LogManager.getLogger( ToolItem.class.getName());
 	
 //	private Organisation	org;
-	@ManyToOne( cascade = { CascadeType.ALL }, fetch=FetchType.EAGER, optional=false )
+	@ManyToOne( cascade = { CascadeType.MERGE }, fetch=FetchType.EAGER, optional=false )
 	private Tool			tool;
 	
 	private	int				quantity;

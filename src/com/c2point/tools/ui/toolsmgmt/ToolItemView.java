@@ -11,7 +11,7 @@ import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
-import com.c2point.tools.entity.tool.Tool;
+import com.c2point.tools.ui.toolsmgmt.ToolsListModel.EditMode;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
@@ -38,27 +38,17 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 
 	private ToolsListModel	model;
 	
-	private ComboBox		tool;
 	private TextField 		toolText;
-	
 	private TextField		code;
 	private TextArea 		description;
-	
 	private ComboBox		category;
-	private TextField 		categoryText;
-	
 	private ComboBox		manufacturer;
-	private TextField 		manufacturerText;
 	
-	private ComboBox		currentUser;
-	private TextField 		currentUserText;
-
 	private CheckBox		personalFlag;
+	private ComboBox		currentUser;
 
-	private ComboBox		status;
-	
 	private ComboBox		reservedBy;
-	private TextField 		reservedByText;
+	private ComboBox		status;
 	
 	private TextField		serialNumber;
 	private TextField		barcode;
@@ -70,25 +60,6 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 	private boolean		editedFlag;
 	private ToolItem	shownItem;
 
-/*
- 	code;
-	name;
-	description;
-	
-	category;
-	manufacturer;
-	
-	currentUser;
-	personalFlag;
-	status;
-	
-	reservedBy;
-	
-	serialNumber;
-	barcode;
-
- */
-	
 	public ToolItemView( ToolsListModel model ) {
 		super();
 		
@@ -105,35 +76,6 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 
 		this.setSpacing( true );
 		this.setMargin( true );
-//		this.setSizeFull();
-
-		tool = new ComboBox( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" ));
-		tool.setInputPrompt( model.getApp().getResourceStr( "toolsmgmt.text.select.tool" ));
-		tool.setFilteringMode( FilteringMode.CONTAINS );
-		tool.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
-		tool.setNullSelectionAllowed( false );
-		tool.setInvalidAllowed( false );
-		tool.setImmediate( true );
-		tool.addValueChangeListener( new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void valueChange( ValueChangeEvent event ) {
-				
-				Tool tool = ( Tool )event.getProperty().getValue();
-				
-				ToolItemView.this.toolText.setValue( tool.getName());
-				ToolItemView.this.code.setValue( tool.getCode());
-				ToolItemView.this.description.setValue( tool.getDescription());
-				ToolItemView.this.category.setValue( tool.getCategory());
-				ToolItemView.this.categoryText.setValue( tool.getCategory().getName());
-				ToolItemView.this.manufacturer.setValue( tool.getManufacturer());
-				ToolItemView.this.manufacturerText.setValue( tool.getManufacturer().getName());
-				
-			}
-			
-		});
-		
 
 		toolText = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" ));
 		toolText.setNullRepresentation( "" );
@@ -157,11 +99,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		category.setNullSelectionAllowed( false );
 		category.setInvalidAllowed( false );
 		category.setImmediate( true );
-		
-		categoryText = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.category" ));
-		categoryText.setNullRepresentation( "" );
-		categoryText.setImmediate( true );
-		
+
 		manufacturer = new ComboBox( model.getApp().getResourceStr( "toolsmgmt.view.label.manufacturer" ));
 		manufacturer.setInputPrompt( model.getApp().getResourceStr( "toolsmgmt.text.select.manufacturer" ));
 		manufacturer.setFilteringMode( FilteringMode.CONTAINS );
@@ -170,10 +108,6 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		manufacturer.setInvalidAllowed( false );
 		manufacturer.setImmediate( true );
 
-		manufacturerText = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.manufacturer" ));
-		manufacturerText.setNullRepresentation( "" );
-		manufacturerText.setImmediate( true );
-		
 		currentUser = new ComboBox( model.getApp().getResourceStr( "toolsmgmt.view.label.user" ));
 		currentUser.setInputPrompt( model.getApp().getResourceStr( "toolsmgmt.text.select.user" ));
 		currentUser.setFilteringMode( FilteringMode.CONTAINS );
@@ -182,10 +116,6 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		currentUser.setInvalidAllowed( false );
 		currentUser.setImmediate( true );
 
-		currentUserText = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.user" ));
-		currentUserText.setNullRepresentation( "" );
-		currentUserText.setImmediate( true );
-		
 		personalFlag = new CheckBox( model.getApp().getResourceStr( "toolsmgmt.view.label.personalflag" ));
 
 		status = new ComboBox( model.getApp().getResourceStr( "toolsmgmt.view.label.status" ));
@@ -204,10 +134,6 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		reservedBy.setInvalidAllowed( false );
 		reservedBy.setImmediate( true );
 
-		reservedByText = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.reservedby" ));
-		reservedByText.setNullRepresentation( "" );
-		reservedByText.setImmediate( true );
-		
 		serialNumber = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.sn" ));
 		serialNumber.setNullRepresentation( "" );
 		serialNumber.setImmediate( true );
@@ -220,21 +146,16 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		separator.setWidth( "100%" );
 		
 		
-		addComponent( tool );
 		addComponent( toolText );
+		addComponent( manufacturer );
 		addComponent( code );
 		addComponent( description );
 		addComponent( category );
-		addComponent( categoryText );
-		addComponent( manufacturer );
-		addComponent( manufacturerText );
 		addComponent( separator );
 		addComponent( personalFlag );
 		addComponent( currentUser );
-		addComponent( currentUserText );
 		addComponent( status );
 		addComponent( reservedBy );
-		addComponent( reservedByText );
 		addComponent( serialNumber );
 		addComponent( barcode );
 		
@@ -295,86 +216,11 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		return toolBarLayout;
 	}
 
-	public void addPressed() {
-
-		initToolsComboBox( this.shownItem.getTool());
-		initCategoryComboBox( this.shownItem.getTool().getCategory());
-		initManufacturerComboBox(this.shownItem.getTool().getManufacturer());
-
-		initUserComboBox( this.shownItem.getCurrentUser());
-		initReservedComboBox( this.shownItem.getReservedBy());
-		
-	}
-	
-	private void editSavePressed() {
-
-		switch ( model.getMode()) {
-			case ADD:
-
-				viewToData( true );
-				
-				model.setViewMode();
-				break;
-			case EDIT:
-				
-				viewToData( true );
-				
-				ToolItem updatedItem = model.update( this.shownItem );
-				
-				if ( updatedItem == null ) {
-					// Failed to update
-					String template = model.getApp().getResourceStr( "general.errors.update.header" );
-					Object[] params = { this.shownItem.getTool().getName() };
-					template = MessageFormat.format( template, params );
-
-					Notification.show( template, Notification.Type.ERROR_MESSAGE );
-					
-				} else {
-
-//					currentWasSet( null );
-					
-				}
-				
-				model.setViewMode();
-				break;
-			case VIEW:
-
-				initUserComboBox( this.shownItem.getCurrentUser());
-				initReservedComboBox( this.shownItem.getReservedBy());
-
-				model.setEditMode();
-				break;
-		}
-
-		updateButtons();
-		updateFields();
-		
-	}
-	
-	private void deleteCancelPressed() {
-
-		switch ( model.getMode()) {
-			case ADD:
-			case EDIT:
-				model.setViewMode();
-				break;
-			case VIEW:
-
-				deleteItem();
-				
-//				model.setViewMode();
-				break;
-		}
-
-		updateButtons();
-		updateFields();
-		
-	}
-		
 	private void updateButtons() {
 
 		switch ( model.getMode()) {
 			case ADD:
+			case COPY:
 			case EDIT:
 				editcloseButton.setCaption( model.getApp().getResourceStr( "general.button.ok" ));
 				editcloseButton.setIcon( new ThemeResource("icons/16/approve.png"));
@@ -389,104 +235,48 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 				deleteButton.setCaption( model.getApp().getResourceStr( "general.button.delete" ));
 //				deleteButton.setVisible( true );
 				break;
+			default:
+				break;
 		}
 			
 	}
-
 	private void updateFields() {
-
-		switch ( model.getMode()) {
-			case ADD:
-				tool.setVisible( true );
-				toolText.setVisible( false );
-//				toolText.setEnabled( false );
-				
-				code.setEnabled( true );
-				description.setEnabled( true );
-				
-				category.setVisible( false );
-				categoryText.setVisible( true );
-				categoryText.setEnabled( false );
-
-				manufacturer.setVisible( false );
-				manufacturerText.setVisible( true );
-				manufacturerText.setEnabled( false );
-				
-				currentUser.setVisible( true );
-				currentUserText.setVisible( false );
-
-				personalFlag.setEnabled( true );
-				status.setEnabled( true );
-				
-				reservedBy.setVisible( true );
-				reservedByText.setVisible( false );
-				reservedByText.setEnabled( false );
-				
-				serialNumber.setEnabled( true );
-				barcode.setEnabled( true );
-				break;
-			case EDIT:
-				tool.setVisible( false );
-				toolText.setVisible( true );
-				toolText.setEnabled( false );
-				
-				code.setEnabled( false);
-				description.setEnabled( true );
-				
-				category.setVisible( false );
-				categoryText.setVisible( true );
-				categoryText.setEnabled( false );
-
-				manufacturer.setVisible( false );
-				manufacturerText.setVisible( true );
-				manufacturerText.setEnabled( false );
-				
-				currentUser.setVisible( true );
-				currentUserText.setVisible( false );
-
-				personalFlag.setEnabled( true );
-				status.setEnabled( true );
-				
-				reservedBy.setVisible( true );
-				reservedByText.setVisible( false );
-				reservedByText.setEnabled( false );
-				
-				serialNumber.setEnabled( true );
-				barcode.setEnabled( true );
-				break;
-			case VIEW:
-				tool.setVisible( false );
-				toolText.setVisible( true );
-				toolText.setEnabled( false );
-				
-				code.setEnabled( false);
-				description.setEnabled( false );
-				
-				category.setVisible( false );
-				categoryText.setVisible( true );
-				categoryText.setEnabled( false );
-
-				manufacturer.setVisible( false );
-				manufacturerText.setVisible( true );
-				manufacturerText.setEnabled( false );
-				
-				currentUser.setVisible( false );
-				currentUserText.setVisible( true );
-				currentUserText.setEnabled( false );
-
-				personalFlag.setEnabled( false );
-				status.setEnabled( false );
-				
-				reservedBy.setVisible( false );
-				reservedByText.setVisible( true );
-				reservedByText.setEnabled( false );
-				
-				serialNumber.setEnabled( false );
-				barcode.setEnabled( false );
-				break;
-		}
+		updateFields( model.getMode());
 	}
-	
+	private void updateFields( ToolsListModel.EditMode mode ) {
+		
+		if ( mode == EditMode.ALLOWED_ALL ) {
+			toolText.setReadOnly( false );
+			code.setReadOnly( false );
+			description.setReadOnly( false );
+			category.setReadOnly( false );
+			manufacturer.setReadOnly( false );
+			
+			personalFlag.setReadOnly( false );
+			currentUser.setReadOnly( false );
+			status.setReadOnly( false );
+			reservedBy.setReadOnly( false );
+			serialNumber.setReadOnly( false );
+			barcode.setReadOnly( false );
+			
+		} else {
+			toolText.setReadOnly( mode != EditMode.ADD );
+			code.setReadOnly( mode != EditMode.ADD ); // ( mode == EditMode.COPY || mode == EditMode.VIEW );
+			description.setReadOnly( mode != EditMode.ADD ); //( mode == EditMode.COPY || mode == EditMode.VIEW );
+			category.setReadOnly( mode != EditMode.ADD ); 
+			manufacturer.setReadOnly( mode != EditMode.ADD);
+
+			personalFlag.setReadOnly( mode == EditMode.VIEW );
+			currentUser.setReadOnly( mode == EditMode.VIEW );
+			status.setReadOnly( mode == EditMode.VIEW );
+			reservedBy.setReadOnly( mode == EditMode.VIEW );
+			serialNumber.setReadOnly( mode == EditMode.VIEW );
+			barcode.setReadOnly( mode == EditMode.VIEW );
+		
+		}
+		
+	}
+
 	
 	@Override
 	public void wasAdded(ToolItem item) {
@@ -514,17 +304,18 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		if ( logger.isDebugEnabled()) logger.debug( "ToolItemView received event about user selection. Ready to show:" + item );
 
 		this.shownItem = item;
-		setVisible( item != null );
+//		setVisible( item != null );
+		
 		dataToView();
 
 		switch ( model.getMode()) {
 			case ADD:
+			case COPY:
 			case EDIT:
 				model.setViewMode();
 				break;
-			case VIEW:
+			default:
 				break;
-			
 		}
 		
 		updateButtons();
@@ -534,25 +325,54 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 
 	private void dataToView() {
 
+		updateFields( EditMode.ALLOWED_ALL );
+		
+		
 		if ( this.shownItem != null ) {
 			
 			if ( this.shownItem.getTool() != null ) {
 				
-				code.setValue( this.shownItem.getTool().getCode());
 				toolText.setValue( this.shownItem.getTool().getName());
+				code.setValue( this.shownItem.getTool().getCode());
 				description.setValue( this.shownItem.getTool().getDescription());
 				
-				categoryText.setValue( shownItem.getTool().getCategory() != null ? shownItem.getTool().getCategory().getName() : null );
-				manufacturerText.setValue( shownItem.getTool().getManufacturer() != null ? shownItem.getTool().getManufacturer().getName() : null );
+				Category tmpCat = shownItem.getTool().getCategory();
+				if ( tmpCat != null ) {
+					category.addItem( tmpCat );
+					category.setItemCaption( tmpCat, tmpCat.getName());
+					category.setValue( tmpCat );
+				}
+				
+				Manufacturer tmpMan = shownItem.getTool().getManufacturer();
+				if ( tmpMan != null ) {
+					manufacturer.addItem( tmpMan );
+					manufacturer.setItemCaption( tmpMan, tmpMan.getName());
+					manufacturer.setValue( tmpMan );
+				}
 				
 			}
-			
-			currentUserText.setValue( shownItem.getCurrentUser() != null ? shownItem.getCurrentUser().getLastAndFirstNames() : null );
-			personalFlag.setValue( shownItem.isPersonalFlag());
 
-			initStatusComboBox( shownItem.getStatus());
+			personalFlag.setValue( shownItem.isPersonalFlag());
 			
-			reservedBy.setValue( shownItem.getReservedBy() != null ? shownItem.getReservedBy().getLastAndFirstNames() : null );
+			OrgUser tmpUser = shownItem.getCurrentUser();
+			if ( tmpUser != null ) {
+				currentUser.addItem( tmpUser );
+				currentUser.setItemCaption( tmpUser, tmpUser.getLastAndFirstNames());
+			}
+			currentUser.setValue(  tmpUser );
+
+			ItemStatus tmpStatus = shownItem.getStatus();
+			status.addItem( tmpStatus );
+			status.setItemCaption( tmpStatus, tmpStatus.toString( model.getApp().getSessionData().getBundle()));
+			status.setValue( tmpStatus );
+			
+			tmpUser = shownItem.getReservedBy();
+			if ( tmpUser != null && !reservedCBinited ) {
+				reservedBy.addItem( tmpUser );
+				reservedBy.setItemCaption( tmpUser, tmpUser.getLastAndFirstNames());
+			}
+			reservedBy.setValue(  tmpUser );
+
 			
 			serialNumber.setValue( shownItem.getSerialNumber());
 			barcode.setValue( shownItem.getBarcode());
@@ -561,25 +381,35 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		
 	}
 
-	private void viewToData( boolean justEdit ) {
+	private void viewToData() {
 
 		if ( this.shownItem != null ) {
 			
-			if ( justEdit ) {
-
-				shownItem.setCurrentUser(( OrgUser )currentUser.getValue());
-				shownItem.setStatus(( ItemStatus ) status.getValue());
-				shownItem.setReservedBy(( OrgUser )reservedBy.getValue());
+			if ( model.getMode() == EditMode.ADD ) {
 				
-				shownItem.setSerialNumber( serialNumber.getValue());
-				shownItem.setBarcode( barcode.getValue());
-				
-				shownItem.setPersonalFlag( personalFlag.getValue());
+				shownItem.getTool().setName( toolText.getValue());
+				shownItem.getTool().setCode( code.getValue());
 				shownItem.getTool().setDescription( description.getValue());
+				shownItem.getTool().setCategory(( Category ) category.getValue());
+				shownItem.getTool().setManufacturer(( Manufacturer ) manufacturer.getValue() );
 				
 				
+			} else if ( model.getMode() == EditMode.EDIT ) {
+				
+				shownItem.getTool().setCode( code.getValue());
+				shownItem.getTool().setDescription( description.getValue());
+				shownItem.getTool().setCategory(( Category ) category.getValue());
 			}
 
+			shownItem.setPersonalFlag( personalFlag.getValue());
+			
+			shownItem.setCurrentUser(( OrgUser )currentUser.getValue());
+			shownItem.setStatus(( ItemStatus ) status.getValue());
+			shownItem.setReservedBy(( OrgUser )reservedBy.getValue());
+			
+			shownItem.setSerialNumber( serialNumber.getValue());
+			shownItem.setBarcode( barcode.getValue());
+				
 		}
 		
 	}
@@ -619,7 +449,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		if ( cat != null && combo != null ) {
 			
 			category.addItem( cat );
-			
+/*			
 			switch ( level ) {
 				case 1:
 					caption = ""; 
@@ -634,6 +464,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 					caption = "\u2503     \u2523"; 
 					break;
 			}
+*/			
 			caption = caption + cat.getName(); 
  
 			category.setItemCaption( cat, caption );
@@ -655,7 +486,8 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 	private boolean manufacturerCBinited = false;
 	private  void initManufacturerComboBox( Manufacturer selectedMan ) {
 
-		if ( manufacturerCBinited ) {
+		if ( !manufacturerCBinited ) {
+			
 			for ( Manufacturer m : model.getManufacturers()) {
 				
 				manufacturer.addItem( m );
@@ -673,7 +505,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 				}
 				
 			});
-			
+
 			manufacturerCBinited = true;
 		}
 		
@@ -778,40 +610,148 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		
 	}
 	
-	private boolean toolCBinited = false;
-	public void initToolsComboBox( Tool selectedTool ) {
-		
-		if ( !toolCBinited ) {
-			for ( Tool t : model.getTools()) {
-				
-				tool.addItem( t );
-				tool.setItemCaption( t, t.getName());
-				
-			}
-		
-			tool.addValueChangeListener( new ValueChangeListener() {
-				private static final long serialVersionUID = 1L;
-		
-				@Override
-				public void valueChange( ValueChangeEvent event ) {
-					
-					
-				}
-				
-			});
-			
-			toolCBinited = true;
-		}
-		
-		tool.setValue( selectedTool );
+	@Override
+	public void initiateAdd() {
 
+		updateFields( EditMode.ALLOWED_ALL );
+
+		initCategoryComboBox( model.getSelectedCategory());
+		initManufacturerComboBox( null );
+		initUserComboBox( this.shownItem.getCurrentUser());
+		initReservedComboBox( this.shownItem.getReservedBy());
+
+		model.setAddMode();
+
+		updateButtons();
+		updateFields();
+		
 	}
 
-	private void deleteItem() {
+	@Override
+	public void initiateCopy() {
+
+		updateFields( EditMode.ALLOWED_ALL );
+
+		initUserComboBox( this.shownItem.getCurrentUser());
+		initStatusComboBox( this.shownItem.getStatus());
+		initReservedComboBox( this.shownItem.getReservedBy());
+		
+		model.setCopyMode();
+
+		updateButtons();
+		updateFields();
+		
+	}
+	@Override
+	public void initiateEdit() {
+
+		updateFields( EditMode.ALLOWED_ALL );
+
+//		initCategoryComboBox( model.getSelectedCategory());
+		
+		initUserComboBox( this.shownItem.getCurrentUser());
+		initStatusComboBox( this.shownItem.getStatus());
+		initReservedComboBox( this.shownItem.getReservedBy());
+
+		model.setEditMode();
+
+		updateButtons();
+		updateFields();
+		
+	}
+
+	private void editSavePressed() {
+
+		switch ( model.getMode()) {
+			case ADD:
+
+				viewToData();
+				
+				if ( addToolAndItem( ToolItemView.this.shownItem ) != null ) {
+
+					model.setViewMode();
+				}
+				
+				break;
+			case COPY:
+				viewToData();
+				
+				if ( addToolItem( ToolItemView.this.shownItem ) != null ) {
+
+					model.setViewMode();
+				}
+				
+				break;
+			case EDIT:
+				
+				viewToData();
+				
+				if ( updateToolItem( ToolItemView.this.shownItem ) != null ) {
+
+					model.setViewMode();
+				}
+
+				model.setViewMode();
+				
+				break;
+			case VIEW:
+
+				updateFields( EditMode.ALLOWED_ALL );
+				
+//				initCategoryComboBox( model.getSelectedCategory());
+				
+				initUserComboBox( this.shownItem.getCurrentUser());
+				initStatusComboBox( this.shownItem.getStatus());
+				initReservedComboBox( this.shownItem.getReservedBy());
+
+				model.setEditMode();
+				break;
+			default:
+				break;
+		}
+
+		updateButtons();
+		updateFields();
+		
+	}
+	
+	
+	@Override
+	public void initiateDelete() {
+
+		model.setViewMode();
+		deleteCancelPressed();
+	
+	}
+
+	private void deleteCancelPressed() {
+
+		switch ( model.getMode()) {
+			case ADD:
+			case COPY:
+			case EDIT:
+				model.setViewMode();
+				dataToView();
+				break;
+			case VIEW:
+
+				deleteToolItem( ToolItemView.this.shownItem );
+				
+				break;
+			default:
+				break;
+		}
+
+		updateButtons();
+		updateFields();
+		
+	}
+		
+	private void deleteToolItem( final ToolItem item ) {
 
 		// Confirm removal
 		String template = model.getApp().getResourceStr( "toolsmgmt.confirm.item.delete" );
-		Object[] params = { this.shownItem.getTool().getName() };
+		Object[] params = { item.getTool().getName() };
 		template = MessageFormat.format( template, params );
 
 		ConfirmDialog.show( model.getApp(),
@@ -826,7 +766,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 					public void onClose( ConfirmDialog dialog ) {
 						if ( dialog.isConfirmed()) {
 
-							ToolItem deletedItem = model.delete( ToolItemView.this.shownItem );
+							ToolItem deletedItem = model.delete( item );
 							if ( deletedItem != null) {
 
 								String template = model.getApp().getResourceStr( "toolsmgmt.notify.item.delete" );
@@ -839,7 +779,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 								// Failed to delete
 								// Failed to update
 								String template = model.getApp().getResourceStr( "toolsmgmt.errors.item.delete" );
-								Object[] params = { ToolItemView.this.shownItem.getTool().getName() };
+								Object[] params = { item.getTool().getName() };
 								template = MessageFormat.format( template, params );
 
 								Notification.show( template, Notification.Type.ERROR_MESSAGE );
@@ -853,26 +793,68 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 
 	}
 
-	@Override
-	public void initiateAdd() {
+	private ToolItem addToolAndItem( ToolItem item ) {
+		
+		ToolItem addedItem = model.addToolAndItem( item );
+		
+		if ( addedItem == null ) {
+			// Failed to update
+			String template = model.getApp().getResourceStr( "general.errors.add.header" );
+			Object[] params = { item.getTool().getName() };
+			template = MessageFormat.format( template, params );
 
-		this.initToolsComboBox( null );
-		this.initCategoryComboBox( model.getSelectedCategory());
-		this.initManufacturerComboBox( null );
-		initUserComboBox( this.shownItem.getCurrentUser());
-		initReservedComboBox( this.shownItem.getReservedBy());
+			Notification.show( template, Notification.Type.ERROR_MESSAGE );
+			
+		} else {
 
-		model.setAddMode();
+//			currentWasSet( null );
+			
+		}
 
-		updateButtons();
-		updateFields();
+		return addedItem;
+	}
+	
+	private ToolItem addToolItem( ToolItem item ) {
+		
+		ToolItem addedItem = model.add( item );
+		
+		if ( addedItem == null ) {
+			// Failed to update
+			String template = model.getApp().getResourceStr( "general.errors.add.header" );
+			Object[] params = { item.getTool().getName() };
+			template = MessageFormat.format( template, params );
+
+			Notification.show( template, Notification.Type.ERROR_MESSAGE );
+			
+		} else {
+
+//			currentWasSet( null );
+			
+		}
+
+		return addedItem;
+	}
+	
+	private ToolItem updateToolItem( ToolItem item ) {
+
+		ToolItem updatedItem = model.update( item );
+		
+		if ( updatedItem == null ) {
+			// Failed to update
+			String template = model.getApp().getResourceStr( "general.errors.update.header" );
+			Object[] params = { item.getTool().getName() };
+			template = MessageFormat.format( template, params );
+
+			Notification.show( template, Notification.Type.ERROR_MESSAGE );
+			
+		} else {
+
+//			currentWasSet( null );
+			
+		}
+		
+		return updatedItem;
 		
 	}
-
-	@Override
-	public void initiateEdit() {
-		
-	}
-
 	
 }
