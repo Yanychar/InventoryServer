@@ -104,8 +104,8 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		manufacturer.setInputPrompt( model.getApp().getResourceStr( "toolsmgmt.text.select.manufacturer" ));
 		manufacturer.setFilteringMode( FilteringMode.CONTAINS );
 		manufacturer.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
-		manufacturer.setNullSelectionAllowed( false );
-		manufacturer.setInvalidAllowed( false );
+//		manufacturer.setNullSelectionAllowed( false );
+//		manufacturer.setInvalidAllowed( false );
 		manufacturer.setImmediate( true );
 
 		currentUser = new ComboBox( model.getApp().getResourceStr( "toolsmgmt.view.label.user" ));
