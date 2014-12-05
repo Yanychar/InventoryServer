@@ -33,12 +33,16 @@ public class TestGetToolsWithPersonalFlag {
 		GetToolsResource getToolsRes = new GetToolsResource();
 		
 		ToolItemsListStub listStub;
-		
-		listStub = getToolsRes.get( authStub.getSessionId(), 14, -1, -1, "", true );
+/*		
+		listStub = getToolsRes.get( authStub.getSessionId(), 3231, -1, -1, "", null, true );
 		logger.debug( "Number of Public only Records found:" + ( listStub != null ? listStub.size() : "-1" ));
 		
-		listStub = getToolsRes.get( authStub.getSessionId(), 14, -1, -1, "", false );
+		listStub = getToolsRes.get( authStub.getSessionId(), 3231, -1, -1, "", null, false );
 		logger.debug( "Number of All Records found:" + ( listStub != null ? listStub.size() : "-1" ));
+*/		
+		listStub = getToolsRes.get( authStub.getSessionId(), -1, -1, -1, "", "lineet", false );
+		logger.debug( "Number of Public only Records found:" + ( listStub != null ? listStub.size() : "-1" ));
+		
 	}
 
 }

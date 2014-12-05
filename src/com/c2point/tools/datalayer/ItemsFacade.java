@@ -167,6 +167,11 @@ public class ItemsFacade extends DataFacade {
 				query = em.createNamedQuery( "listToolBarcode", ToolItem.class )
 								.setParameter( "org", org )
 								.setParameter( "barcode", identity.getBarCode());
+			} else if ( identity.getType() == ToolIdentityType.SEARCHSTRING ) {
+				query = em.createNamedQuery( "listSearchSubstr", ToolItem.class )
+						.setParameter( "org", org )
+						.setParameter( "searchStr", identity.getSearchString());
+
 			} else {
 				logger.error( "Unsupported ToolIdentityType had been used!" );
 				return null;

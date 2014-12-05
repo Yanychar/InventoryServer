@@ -84,6 +84,20 @@ import com.c2point.tools.entity.tool.Tool;
 				+ "item.barcode = :barcode "
 				+ "ORDER BY item.tool.name ASC"
 	),
+	@NamedQuery( name = "listSearchSubstr", 
+		query = "SELECT item FROM ToolItem item " +
+			"WHERE "
+			+ "item.deleted = false AND "
+			+ "item.tool.org = :org AND "
+			+ "( LOCATE( :searchStr, UPPER( item.tool.name )) > 0 OR "
+			+ "  LOCATE( :searchStr, UPPER( item.tool.description )) > 0 OR "
+			+ "  LOCATE( :searchStr, UPPER( item.tool.manufacturer.name )) > 0 OR "
+			+ "  LOCATE( :searchStr, UPPER( item.serialNumber )) > 0 OR"
+			+ "  LOCATE( :searchStr, UPPER( item.barcode )) > 0 ) "
+			+ "ORDER BY item.tool.name ASC"
+
+			
+			),
 })
 public class ToolItem extends SimplePojo {
 

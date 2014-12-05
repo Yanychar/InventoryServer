@@ -36,6 +36,7 @@ public class GetToolsResource extends BaseResource {
 			@DefaultValue( "-1" ) @QueryParam("toolid") long toolId, 
 			@DefaultValue( "-1" ) @QueryParam("userid") long userId, 
 			@DefaultValue( "" ) @QueryParam("barcode") String barcode,
+			@DefaultValue( "" ) @QueryParam("searchs") String searchStr,
 			@DefaultValue( "true" ) @QueryParam("barcode") boolean showPublicOnly
 		) {
 
@@ -48,6 +49,7 @@ public class GetToolsResource extends BaseResource {
 							+ "user id='" + userId + "' "
 							+ "tool id='" + toolId + "' "
 							+ "barcode='" + barcode + "' "
+							+ "searchStr='" + searchStr + "' "
 							+ "hide Personal Tools = " + showPublicOnly + "' "
 			);
 			
@@ -80,6 +82,11 @@ public class GetToolsResource extends BaseResource {
 				tList = new ArrayList<ToolItem>();
 				tList.add( item );
 			}
+			
+		} else if ( searchStr != null && searchStr.length() > 0 ) {
+
+			ToolIdentity identity = new ToolIdentity( ToolIdentityType.SEARCHSTRING, searchStr ); 
+			tList = ItemsFacade.getInstance().getItems( account.getUser().getOrganisation(), identity );
 			
 		} else if ( barcode != null && barcode.length() > 0 ) {
 
@@ -140,53 +147,6 @@ public class GetToolsResource extends BaseResource {
 		
 		/* ... end of New selection of fetch */
 		
-/*		
-		if ( toolId >= 0 ) {
-			// fetch exact tool
-			if ( logger.isDebugEnabled()) logger.debug( "  toolId specified. Search it..." );
-			ToolItem item = DataFacade.getInstance().find( ToolItem.class, toolId );
-
-			// Validate that item belongs to specified category if any
-			if ( item != null && categoryId >= 0 ) {
-				if ( logger.isDebugEnabled()) logger.debug( "  Tool found. categoryId specified. Check Tool belongs to Category ..." );
-				
-				Category parentOrItself = DataFacade.getInstance().find( Category.class, categoryId );
-				if ( parentOrItself != null && !item.getTool().getCategory().belongedTo( parentOrItself )) {
-
-					// Found tool does not belong to specified category or its childs
-					if ( logger.isDebugEnabled()) logger.debug( "  Tool found but does not belong to specified Category ==>> NOT FOUND" );
-					
-					item = null;
-				}
-
-			}
-			
-			if ( item != null ) {
-				if ( logger.isDebugEnabled()) logger.debug( "  Tool found. Will be added to resulted list!" );
-				tList = new ArrayList<ToolItem>();
-				tList.add( item );
-			}
-			
-		} else if ( categoryId >= 0 ) {
-			// Fetch tools belonged to specified category
-			if ( logger.isDebugEnabled()) logger.debug( "  Category Id only specified. Will be search all tools belonged to category" );
-			Category category = DataFacade.getInstance().find( Category.class, categoryId );
-			
-			if ( category != null ) {
-				if ( logger.isDebugEnabled()) logger.debug( "  Category found" );
-				tList = ToolsAndItemsFacade.getInstance().getItems( account.getUser().getOrganisation(), category );
-			}
-		} else if ( barcode != null && barcode.length() > 0 ) { 
-			// Search the Tool by BarCode specified
-			ToolIdentity identity = new ToolIdentity( ToolIdentityType.BARCODE, barcode ); 
-			tList = ToolsAndItemsFacade.getInstance().getItems( account.getUser().getOrganisation(), identity );
-			
-		} else {
-			// Fetch all tools
-			if ( logger.isDebugEnabled()) logger.debug( "  toolId == null and categoryId == null ==>> All tools will be returned" );
-			tList = ToolsAndItemsFacade.getInstance().getItems( account.getUser().getOrganisation());
-		}
-*/		
 		if ( logger.isDebugEnabled()) {
 			if ( tList != null ) {
 				for ( ToolItem member : tList ) {

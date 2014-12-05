@@ -13,7 +13,7 @@
   </Appenders>
   <Loggers>
 
-    <Logger name="com.c2point.tools.ui.toolsmgmt" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
+    <Logger name="com.c2point.tools" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
       
 <!--
       <Logger name="com.c2point.tools" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
@@ -21,6 +21,7 @@
 
     <Logger name="com.c2point.tools.ui" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
     <Logger name="com.c2point.tools.ui.repositoryview" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
+    <Logger name="com.c2point.tools.ui.toolsmgmt" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
 
 
 

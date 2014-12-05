@@ -20,15 +20,17 @@ public class ToolIdentity {
 	public ToolIdentity( ToolIdentityType type, String stringValue) {
 		super();
 		
-		this.type = type;
-		this.stringValue = stringValue;
+		setType( type );
+		setStringValue( stringValue );
 	}
 
 	public ToolIdentityType getType() { return type; }
 	public void setType(ToolIdentityType type) { this.type = type; }
 	
 	public String getStringValue() { return stringValue; }
-	public void setStringValue(String stringValue) { this.stringValue = stringValue; }
+	public void setStringValue(String stringValue) { 
+		this.stringValue = ( stringValue != null ? stringValue.trim().toUpperCase() : "" ); 
+	}
 
 	/*
 	 * Business methods
@@ -39,7 +41,13 @@ public class ToolIdentity {
 		return new ToolIdentity( ToolIdentityType.BARCODE, barcode );
 	}
 	
+	public static ToolIdentity createSearchStringIdentity( String str ) {
+		
+		return new ToolIdentity( ToolIdentityType.SEARCHSTRING, str );
+	}
+	
 	public String getBarCode() { return getStringValue(); }
+	public String getSearchString() { return getStringValue(); }
 	
 	
 	@Override
