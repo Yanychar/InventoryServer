@@ -188,7 +188,7 @@ public class ListWithSearchComponent extends VerticalLayout {
 		return toolBarLayout;
 	}
 
-	private boolean searchFieldUpdated( String searchStr ) {
+	protected boolean searchFieldUpdated( String searchStr ) {
 		
 		boolean found = false;
 

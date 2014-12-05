@@ -1,8 +1,6 @@
 package com.c2point.tools.ui.repositoryview;
 
 import java.util.Collection;
-
-import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.ui.category.CategoryModelListener;
@@ -16,57 +14,34 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ToolsListComponent extends VerticalLayout implements CategoryModelListener {
-
+public class ToolsListView extends VerticalLayout implements CategoryModelListener, ToolsModelListener {
 	private static final long serialVersionUID = 1L;
-
-	private static Logger logger = LogManager.getLogger( ToolsListComponent.class.getName());
+	private static Logger logger = LogManager.getLogger( ToolsListView.class.getName());
 	
-	private ToolsListModel		model; 
-	private Table 				table;
+	protected FilterToolbar		toolBarLayout;
 	private ItemInfoComponent	infoComp = new ItemInfoComponent();
 	
-//	private Panel			infoPanel;
 	
-	private boolean 			editMode;
+	private ToolsListModel		model; 
+	private Table 				itemsTable;
 	
-	public ToolsListComponent( ToolsListModel model ) {
-		
-		this( model, false );
-		
-	}
-	
-	public ToolsListComponent( ToolsListModel model, boolean editMode ) {
+	public ToolsListView( ToolsListModel model ) {
 		super();
 		
+		this.model = model; 
+
 		initUI();
 		
-		initModel( model );
-		
-		setEditMode( editMode );
+		model.addChangedListener(( CategoryModelListener ) this );		
+		model.addChangedListener(( ToolsModelListener ) this );		
+//		model.addChangedListener( infoComp );
 		
 	}
 	
-	public void setEditMode() {
-		
-		setEditMode( true );
-	}
-	
-	private void setEditMode( boolean editMode ) {
-		
-		this.editMode = editMode;
-		updateUI();
-	}
-	
-	public void stopEditMode() {
-		
-		setEditMode( false );
-		
-	}
-
 	private void initUI() {
 
 		setSizeFull();
@@ -75,7 +50,7 @@ public class ToolsListComponent extends VerticalLayout implements CategoryModelL
 		setSpacing( true );
 
 		
-		table = new Table();
+		itemsTable = new Table();
 		initTable();
 	
 		Panel infoPanel = new Panel();
@@ -84,8 +59,8 @@ public class ToolsListComponent extends VerticalLayout implements CategoryModelL
 		infoComp = new ItemInfoComponent();
 		infoPanel.setContent( infoComp );
 
-//		this.addComponent( getSearchBar());
-		this.addComponent( table );
+		this.addComponent( getFilterToolBar());
+		this.addComponent( itemsTable );
 		this.addComponent( infoPanel );
 		
 //		this.setExpandRatio( table, 1.0f );
@@ -96,51 +71,49 @@ public class ToolsListComponent extends VerticalLayout implements CategoryModelL
 	private void initTable() {
 
 		// Configure table
-		table.setSelectable( true );
-		table.setMultiSelect( false );
+		itemsTable.setSelectable( true );
+		itemsTable.setMultiSelect( false );
 //		table.setNullSelectionAllowed( false );
-		table.setColumnCollapsingAllowed( false );
-		table.setColumnReorderingAllowed( false );
+		itemsTable.setColumnCollapsingAllowed( false );
+		itemsTable.setColumnReorderingAllowed( false );
 //		table.setColumnHeaderMode( Table.ColumnHeaderMode.HIDDEN );
 //		table.setSortEnabled( false );
-		table.setImmediate( true );
-		table.setSizeFull();
+		itemsTable.setImmediate( true );
+		itemsTable.setSizeFull();
 		
 //		categoriesTree.addContainerProperty( "code",		String.class, 	null );
-		table.addContainerProperty( "photo",		Embedded.class, null );
-		table.addContainerProperty( "tool", 		Label.class, 	null );
-		table.addContainerProperty( "manufacturer", 	String.class, 	"" );
-		table.addContainerProperty( "status", 		String.class, 	"" );
-		table.addContainerProperty( "user", 		String.class, 	"" );
+		itemsTable.addContainerProperty( "photo",		Embedded.class, null );
+		itemsTable.addContainerProperty( "tool", 		Label.class, 	null );
+		itemsTable.addContainerProperty( "manufacturer", 	String.class, 	"" );
+		itemsTable.addContainerProperty( "status", 		String.class, 	"" );
+		itemsTable.addContainerProperty( "user", 		String.class, 	"" );
 
 		
 		// New User has been selected. Send event to model
-		table.addValueChangeListener( new ValueChangeListener() {
+		itemsTable.addValueChangeListener( new ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
 
 			public void valueChange( ValueChangeEvent event) {
 				if ( logger.isDebugEnabled()) logger.debug( "List of Tools selection were changed" );
 
-				model.toolSelected( table.getValue());
+				model.toolSelected( itemsTable.getValue());
 				
 			}
 		});
 		
 	}
 	
-	private void updateUI() {
+	private FilterToolbar getFilterToolBar() {
 		
+		if ( toolBarLayout == null ) {
+			toolBarLayout = new FilterToolbar( model );
+		}
+		return toolBarLayout;
 	}
-
-	private void initModel( ToolsListModel model ) {
-		
-		this.model = model; 
-		model.addChangedListener( this );		
-		model.addChangedListener( infoComp );
-		
+	private void dataFromModel() {
+		dataFromModel( model.getSelectedCategory());
 	}
-
 	
 	private void dataFromModel( Category category ) {
 
@@ -148,7 +121,7 @@ public class ToolsListComponent extends VerticalLayout implements CategoryModelL
 							model.getItems( category );
 		
 		
-		table.removeAllItems();
+		itemsTable.removeAllItems();
 		
 		if ( itemList != null && itemList.size() > 0 ) {
 			for ( ToolItem repItem : itemList ) {
@@ -158,15 +131,15 @@ public class ToolsListComponent extends VerticalLayout implements CategoryModelL
 			}
 		}
 		
-		table.setSortContainerPropertyId( "tool" );
+		itemsTable.setSortContainerPropertyId( "tool" );
 
-		table.sort();
+		itemsTable.sort();
 		
 	}
 	
 	private void addItem( ToolItem repItem ) {
 
-		Item item = table.addItem( repItem );
+		Item item = itemsTable.addItem( repItem );
 
 		if ( logger.isDebugEnabled()) logger.debug( "Item will be added. Repository Item id: " + repItem.getId());
 
@@ -176,6 +149,7 @@ public class ToolsListComponent extends VerticalLayout implements CategoryModelL
 
 	int num = 1;
 
+	@SuppressWarnings("unchecked")
 	private void updateItem( Item item, ToolItem repItem ) {
 		
 		// Item Photo column 
@@ -212,7 +186,7 @@ public class ToolsListComponent extends VerticalLayout implements CategoryModelL
 			item.getItemProperty( "user" ).setValue( "No user" );
 		}
 		
-		item.getItemProperty( "status" ).setValue( getStatusString( repItem.getStatus()));
+		item.getItemProperty( "status" ).setValue( repItem.getStatus().toString( model.getApp().getSessionData().getBundle()));
 		
 	
 		
@@ -226,8 +200,26 @@ public class ToolsListComponent extends VerticalLayout implements CategoryModelL
 	@Override
 	public void wasDeleted(Category category) {}
 	@Override
-	public void listWasChanged() {}
+	public void listWasChanged() {
 
+		if ( logger.isDebugEnabled()) logger.debug( "Category List was changed event received!" );
+		dataFromModel();
+		
+	}
+
+	@Override
+	public void wasChanged( ToolItem repItem ) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void selected(ToolItem repItem) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 	@Override
 	public void selected( Category category ) {
 
@@ -249,25 +241,4 @@ public class ToolsListComponent extends VerticalLayout implements CategoryModelL
 		
 	}
 
-	private String getStatusString( ItemStatus status ) {
-		
-		switch ( status ) {
-			case RESERVED:
-				return "Reserved";
-			case BROCKEN:
-				return "Brocken";
-			case FREE:
-				return "Available";
-			case REPAIRING:
-				return "Under repairing";
-			case INUSE:
-				return "In use";
-			case STOLEN:
-				return "Stolen";
-			default:
-				return "Unknown";
-		}
-		
-	}
-	
 }

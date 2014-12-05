@@ -5,28 +5,28 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 
-public class RepositoryView extends HorizontalLayout {
-
+public class RepositoryManagementView extends HorizontalLayout {
 	private static final long serialVersionUID = 1L;
 
-	private HwCategoriesComponent	categoriesComponent;
-	private ToolsListComponent		toolsListComponent;
-	private ActionsListComponent	actionsListComponent;
-	
 	private ToolsListModel			model;
 
-	public RepositoryView() {
+	private HwCategoriesComponent	categoriesComponent;
+	private ToolsListView		toolsListComponent;
+	private ActionsListComponent	actionsListComponent;
+	
+
+	public RepositoryManagementView( ToolsListModel model ) {
 		super();
 
-		initModel();
+		this.model = model;
 		
 		initUI();
 	}
 	
 	public void initUI() {
 	
-		setWidth( "100%" );
-		this.setHeight( "100%" );
+		this.setSizeFull();
+		this.setSpacing( true );
 
 		Component component;
 		
@@ -59,7 +59,7 @@ public class RepositoryView extends HorizontalLayout {
 
 	private Component createToolsListComponent() {
 		
-		toolsListComponent = new ToolsListComponent( this.model );
+		toolsListComponent = new ToolsListView( this.model );
 
 		Panel panel = new Panel( "List of Tools" );
 		panel.setContent( toolsListComponent );
@@ -77,12 +77,6 @@ public class RepositoryView extends HorizontalLayout {
 		panel.setHeight( "100%" );
 		
 		return panel;
-	}
-	
-	private void initModel() {
-		
-		this.model = new ToolsListModel();
-	
 	}
 	
 }

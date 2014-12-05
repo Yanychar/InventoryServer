@@ -5,9 +5,13 @@ import java.util.Collection;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.ui.ListWithSearchComponent;
 import com.c2point.tools.ui.repositoryview.ToolsListModel;
+import com.vaadin.data.Container;
 import com.vaadin.data.Item;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.filter.Or;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Tree;
 
@@ -71,6 +75,8 @@ public class HwCategoriesComponent extends ListWithSearchComponent implements Ca
 		
 		categoriesTree = new Tree();
 	
+		setContainerForSearch( categoriesTree );
+		
 		// Configure table
 		categoriesTree.setSelectable( true );
 		categoriesTree.setMultiSelect( false );
@@ -84,7 +90,7 @@ public class HwCategoriesComponent extends ListWithSearchComponent implements Ca
 		categoriesTree.setItemCaptionPropertyId( "name" );
 		categoriesTree.setItemCaptionMode( ItemCaptionMode.PROPERTY );		
 		
-		// New User has been selected. Send event to model
+		// New Category has been selected. Send event to model
 		categoriesTree.addValueChangeListener( new ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
@@ -92,7 +98,9 @@ public class HwCategoriesComponent extends ListWithSearchComponent implements Ca
 			public void valueChange( ValueChangeEvent event) {
 				if ( logger.isDebugEnabled()) logger.debug( "CategoriesList selection were changed" );
 
-				model.categorySelected(( Category ) categoriesTree.getValue());
+				Category selectedCat = ( Category ) categoriesTree.getValue();
+				model.categorySelected( selectedCat != topCategory ? selectedCat : null );
+					
 				
 			}
 		});
@@ -242,6 +250,34 @@ public class HwCategoriesComponent extends ListWithSearchComponent implements Ca
 		}
 		
 		return ret;
+	}
+
+	protected boolean searchFieldUpdated( String searchStr ) {
+		
+		boolean found = false;
+
+		if ( dataSource != null ) {
+		
+			(( Container.Filterable )dataSource ).removeAllContainerFilters();
+		
+			if ( searchStr != null && searchStr.length() > 0 ) {
+				Filter filter = new SimpleStringFilter( "name",	searchStr, true, false );
+				
+				(( Container.Filterable )dataSource ).addContainerFilter( filter );
+				
+				
+			}
+			
+			found = dataSource.size() > 0;
+			
+			if ( dataSource instanceof Container.Ordered && this.listComponent != null ) {
+				this.listComponent.setValue( found ? (( Container.Ordered )dataSource ).firstItemId() : null );
+			}
+			
+		}
+		
+		
+		return found;
 	}
 
 	

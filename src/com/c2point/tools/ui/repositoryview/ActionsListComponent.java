@@ -34,8 +34,6 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 	
 	private ToolItem 	selectedItem;
 	
-	private boolean 		editMode;
-	
 	public ActionsListComponent( ToolsListModel model ) {
 		
 		this( model, false );
@@ -50,29 +48,10 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 		
 		initUI();
 		
-		setEditMode( editMode );
-		
 		model.addChangedListener( this );
 		
 	}
 	
-	public void setEditMode() {
-		
-		setEditMode( true );
-	}
-	
-	private void setEditMode( boolean editMode ) {
-		
-		this.editMode = editMode;
-		updateUI();
-	}
-	
-	public void stopEditMode() {
-		
-		setEditMode( false );
-		
-	}
-
 	private void initUI() {
 
 		setSizeFull();
@@ -95,10 +74,6 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 		
 	}	
 
-	private void updateUI() {
-		
-	}
-	
 	private Component createCommandButtonComponent( String header, final CommandListener listener ) {
 
 		HorizontalLayout hl = new HorizontalLayout();
@@ -155,19 +130,7 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 	}
 
 	@Override
-	public void wasAdded(ToolItem repItem) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void wasChanged(ToolItem repItem) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void wasDeleted(ToolItem repItem) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -185,8 +148,6 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 		
 		this.selectedItem = repItem;
 
-		updateUI();
-		
 	}
 
 	private void showNotification( CommandListener.ExitStatus exitStatus, Message msg ) {

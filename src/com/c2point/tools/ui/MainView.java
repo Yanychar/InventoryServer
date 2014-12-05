@@ -7,7 +7,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.Configuration;
 import com.c2point.tools.ui.msg.MessagesView;
-import com.c2point.tools.ui.repositoryview.RepositoryView;
+import com.c2point.tools.ui.repositoryview.RepositoryManagementView;
+import com.c2point.tools.ui.repositoryview.ToolsListModel;
 import com.c2point.tools.ui.settings.SettingsView;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -294,7 +295,9 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 			
 		}
     	
-		mainSplit.setSecondComponent( new RepositoryView());
+		ToolsListModel model = new ToolsListModel();
+
+		mainSplit.setSecondComponent( new RepositoryManagementView( model ));
 		
     }
     

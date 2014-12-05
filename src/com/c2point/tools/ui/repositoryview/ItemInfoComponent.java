@@ -179,21 +179,8 @@ public class ItemInfoComponent extends GridLayout implements ToolsModelListener 
 		return chain;
 	}
 
-
-	@Override
-	public void wasAdded(ToolItem repItem) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	public void wasChanged(ToolItem repItem) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void wasDeleted(ToolItem repItem) {
 		// TODO Auto-generated method stub
 		
 	}
