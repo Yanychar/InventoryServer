@@ -17,6 +17,7 @@ public class ToolItemStub {
 	private String	name;
 	private String 	description;
 	private String 	manufacturer;
+	private String 	model;
 
 	private	int			quantity;
 	
@@ -29,6 +30,9 @@ public class ToolItemStub {
 	private String		barcode;
 	private String		serialNumber;
 	private boolean		personalFlag;
+	// Flag that identifies if short borrowing process is used in particular company for particular tool
+	// In ver. 1.0.3 till 1.0.x short process only is valid ==>> shortWayOnlyFlag == TRUE 
+	private boolean		shortWayOnlyFlag;
 
 	private GeoLocationStub		lastKnownLocation;
 	
@@ -47,6 +51,7 @@ public class ToolItemStub {
 			setManufacturer( item.getTool().getManufacturer().getName());
 		} catch( Exception e ) {
 		}
+		setModel( item.getTool().getModel());
 		
 		setQuantity( item.getQuantity());
 
@@ -58,11 +63,14 @@ public class ToolItemStub {
 		
 		setBarcode( item.getBarcode());
 		setSerialNumber( item.getSerialNumber());
-		
+		setPersonalFlag( item.isPersonalFlag());
+		setShortWayOnlyFlag( true );
+
 		setupCategoriesTree( item );
 	
 		if ( item.getLastKnownLocation() != null ) 
 			setLastKnownLocation( new GeoLocationStub( item.getLastKnownLocation()));
+
 		
 	}
 
@@ -80,6 +88,9 @@ public class ToolItemStub {
 
 	public String getManufacturer() { return manufacturer; }
 	public void setManufacturer( String manufacturer ) { this.manufacturer = manufacturer; }
+
+	public String getModel() { return model; }
+	public void setModel(String model) { this.model = model; }
 
 	public int getQuantity() { return quantity; }
 	public void setQuantity( int quantity ) { this.quantity = quantity; }
@@ -104,7 +115,10 @@ public class ToolItemStub {
 	
 	public boolean isPersonalFlag() { return personalFlag; }
 	public void setPersonalFlag( boolean personalFlag ) { this.personalFlag = personalFlag; }
-	
+
+	public boolean isShortWayOnlyFlag() { return shortWayOnlyFlag; }
+	public void setShortWayOnlyFlag( boolean shortWayOnlyFlag ) { this.shortWayOnlyFlag = shortWayOnlyFlag; }
+
 	@XmlElement( name="location" )
 	public GeoLocationStub getLastKnownLocation() { return lastKnownLocation; }
 	public void setLastKnownLocation( GeoLocationStub lastKnownLocation ) { this.lastKnownLocation = lastKnownLocation; }
@@ -148,6 +162,8 @@ public class ToolItemStub {
 		String output = 
 				"ToolItemStub[" + getId() + ", '" + getCode() + "', " + getName() + ", quantity="+getQuantity()+"]"
 				+ ( getDescription() != null ? "\n  Description: "+getDescription() : "" )
+				+ ( getManufacturer() != null ? "\n Manufacturer: " + getManufacturer() : "" )
+				+ ( getModel() != null ? "\n Model: " + getModel() : "" )
 				+ ( getResponsible() != null ? "\n  Responsible: "+getResponsible() : "" )
 				+ ( getCurrentUser() != null ? "\n  Current User:"+getCurrentUser() : "" )
 				+ ( getReservedBy() != null ? "\n  Reserved By:"+getReservedBy() : "" )

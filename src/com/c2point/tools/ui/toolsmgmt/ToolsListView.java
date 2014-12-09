@@ -1,9 +1,9 @@
 package com.c2point.tools.ui.toolsmgmt;
 
 import java.util.Collection;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Tool;
@@ -256,7 +256,11 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		item.getItemProperty( "category" ).setValue( getCategoryChain( toolItem.getTool().getCategory()));
 		item.getItemProperty( "name" ).setValue( toolItem.getTool().getName());
 		item.getItemProperty( "status" ).setValue( toolItem.getStatus().toString( model.getApp().getSessionData().getBundle()));
-		item.getItemProperty( "user" ).setValue( toolItem.getCurrentUser().getFirstAndLastNames());
+		try {
+			item.getItemProperty( "user" ).setValue( toolItem.getCurrentUser().getLastAndFirstNames());
+		} catch ( Exception e ) {
+			item.getItemProperty( "user" ).setValue( "No user" );
+		}
 		item.getItemProperty( "data" ).setValue( toolItem );
 		
 		
@@ -644,11 +648,12 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 
 		itemsTable.setValue( item.getId());
 
-		Tool	 tool = item.getTool();
-
-		ToolItem newItem = new ToolItem( tool, model.getSessionOwner(), model.getSessionOwner());
+		ToolItem newItem = new ToolItem( item.getTool(), model.getSessionOwner(), model.getSessionOwner());
 		// Set tool, user as session owner, status, personal flag
 		// Done in constructor
+		newItem.setPersonalFlag( item.isPersonalFlag());
+		newItem.setPrice( item.getPrice());
+		newItem.setTakuu( item.getTakuu());
 		
 		model.setSelectedItem( newItem );
 		

@@ -12,6 +12,7 @@ import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.ui.toolsmgmt.ToolsListModel.EditMode;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
@@ -43,6 +44,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 	private TextArea 		description;
 	private ComboBox		category;
 	private ComboBox		manufacturer;
+	private TextField		toolModel;
 	
 	private CheckBox		personalFlag;
 	private ComboBox		currentUser;
@@ -108,6 +110,10 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 //		manufacturer.setInvalidAllowed( false );
 		manufacturer.setImmediate( true );
 
+		toolModel = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.model" ));
+		toolModel.setNullRepresentation( "" );
+		toolModel.setImmediate( true );
+		
 		currentUser = new ComboBox( model.getApp().getResourceStr( "toolsmgmt.view.label.user" ));
 		currentUser.setInputPrompt( model.getApp().getResourceStr( "toolsmgmt.text.select.user" ));
 		currentUser.setFilteringMode( FilteringMode.CONTAINS );
@@ -148,6 +154,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		
 		addComponent( toolText );
 		addComponent( manufacturer );
+		addComponent( toolModel );
 		addComponent( code );
 		addComponent( description );
 		addComponent( category );
@@ -251,6 +258,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 			description.setReadOnly( false );
 			category.setReadOnly( false );
 			manufacturer.setReadOnly( false );
+			toolModel.setReadOnly( false );
 			
 			personalFlag.setReadOnly( false );
 			currentUser.setReadOnly( false );
@@ -265,6 +273,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 			description.setReadOnly( mode != EditMode.ADD ); //( mode == EditMode.COPY || mode == EditMode.VIEW );
 			category.setReadOnly( mode != EditMode.ADD ); 
 			manufacturer.setReadOnly( mode != EditMode.ADD);
+			toolModel.setReadOnly( mode != EditMode.ADD );
 
 			personalFlag.setReadOnly( mode == EditMode.VIEW );
 			currentUser.setReadOnly( mode == EditMode.VIEW );
@@ -335,20 +344,32 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 				toolText.setValue( this.shownItem.getTool().getName());
 				code.setValue( this.shownItem.getTool().getCode());
 				description.setValue( this.shownItem.getTool().getDescription());
-				
+
 				Category tmpCat = shownItem.getTool().getCategory();
 				if ( tmpCat != null ) {
-					category.addItem( tmpCat );
-					category.setItemCaption( tmpCat, tmpCat.getName());
-					category.setValue( tmpCat );
+					if ( logger.isDebugEnabled()) logger.debug( "Tool has Category set up" );
+					if ( logger.isDebugEnabled()) logger.debug( "length of Category Combo = " + category.getItemIds().size());
+					
+					if ( category.getItem( tmpCat ) == null ) {
+						if ( logger.isDebugEnabled()) logger.debug( "Category NOT found in the Combo" );
+						category.addItem( tmpCat );
+						category.setItemCaption( tmpCat, tmpCat.getName());
+					} else {
+						if ( logger.isDebugEnabled()) logger.debug( "Category was found in the Combo" );
+					}
 				}
+				category.setValue( tmpCat );
 				
 				Manufacturer tmpMan = shownItem.getTool().getManufacturer();
 				if ( tmpMan != null ) {
-					manufacturer.addItem( tmpMan );
-					manufacturer.setItemCaption( tmpMan, tmpMan.getName());
-					manufacturer.setValue( tmpMan );
+					if ( manufacturer.getItem( tmpMan ) == null ) {
+						manufacturer.addItem( tmpMan );
+						manufacturer.setItemCaption( tmpMan, tmpMan.getName());
+					}
 				}
+				manufacturer.setValue( tmpMan );
+
+				toolModel.setValue( this.shownItem.getTool().getModel());
 				
 			}
 
@@ -356,8 +377,10 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 			
 			OrgUser tmpUser = shownItem.getCurrentUser();
 			if ( tmpUser != null ) {
-				currentUser.addItem( tmpUser );
-				currentUser.setItemCaption( tmpUser, tmpUser.getLastAndFirstNames());
+				if ( currentUser.getItem( tmpUser ) == null ) {
+					currentUser.addItem( tmpUser );
+					currentUser.setItemCaption( tmpUser, tmpUser.getLastAndFirstNames());
+				}
 			}
 			currentUser.setValue(  tmpUser );
 
@@ -367,9 +390,11 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 			status.setValue( tmpStatus );
 			
 			tmpUser = shownItem.getReservedBy();
-			if ( tmpUser != null && !reservedCBinited ) {
-				reservedBy.addItem( tmpUser );
-				reservedBy.setItemCaption( tmpUser, tmpUser.getLastAndFirstNames());
+			if ( tmpUser != null ) {
+				if ( reservedBy.getItem( tmpUser ) == null ) {
+					reservedBy.addItem( tmpUser );
+					reservedBy.setItemCaption( tmpUser, tmpUser.getLastAndFirstNames());
+				}
 			}
 			reservedBy.setValue(  tmpUser );
 
@@ -392,6 +417,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 				shownItem.getTool().setDescription( description.getValue());
 				shownItem.getTool().setCategory(( Category ) category.getValue());
 				shownItem.getTool().setManufacturer(( Manufacturer ) manufacturer.getValue() );
+				shownItem.getTool().setModel( toolModel.getValue());
 				
 				
 			} else if ( model.getMode() == EditMode.EDIT ) {
@@ -448,7 +474,8 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		
 		if ( cat != null && combo != null ) {
 			
-			category.addItem( cat );
+			if ( category.getItem( cat ) == null ) {
+				category.addItem( cat );
 /*			
 			switch ( level ) {
 				case 1:
@@ -465,9 +492,10 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 					break;
 			}
 */			
-			caption = caption + cat.getName(); 
- 
-			category.setItemCaption( cat, caption );
+				caption = caption + cat.getName(); 
+	 
+				category.setItemCaption( cat, caption );
+			}
 			
 			if ( cat.getChilds() != null && cat.getChilds().size() > 0 ) {
 				
@@ -549,7 +577,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 			status.addItem( ItemStatus.UNKNOWN );
 			status.addItem( ItemStatus.FREE );
 			status.addItem( ItemStatus.INUSE );
-			status.addItem( ItemStatus.BROCKEN );
+			status.addItem( ItemStatus.BROKEN );
 			status.addItem( ItemStatus.REPAIRING );
 			status.addItem( ItemStatus.STOLEN );
 			status.addItem( ItemStatus.RESERVED );
@@ -557,7 +585,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 			status.setItemCaption( ItemStatus.UNKNOWN, ItemStatus.UNKNOWN.toString( model.getApp().getSessionData().getBundle()));
 			status.setItemCaption( ItemStatus.FREE, ItemStatus.FREE.toString( model.getApp().getSessionData().getBundle()));
 			status.setItemCaption( ItemStatus.INUSE, ItemStatus.INUSE.toString( model.getApp().getSessionData().getBundle()));
-			status.setItemCaption( ItemStatus.BROCKEN, ItemStatus.BROCKEN.toString( model.getApp().getSessionData().getBundle()));
+			status.setItemCaption( ItemStatus.BROKEN, ItemStatus.BROKEN.toString( model.getApp().getSessionData().getBundle()));
 			status.setItemCaption( ItemStatus.REPAIRING, ItemStatus.REPAIRING.toString( model.getApp().getSessionData().getBundle()));
 			status.setItemCaption( ItemStatus.STOLEN, ItemStatus.STOLEN.toString( model.getApp().getSessionData().getBundle()));
 			status.setItemCaption( ItemStatus.RESERVED, ItemStatus.RESERVED.toString( model.getApp().getSessionData().getBundle()));

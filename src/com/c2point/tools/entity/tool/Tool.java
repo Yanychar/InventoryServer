@@ -47,6 +47,8 @@ public class Tool extends SimplePojo {
 	
 	private Manufacturer	manufacturer;
 
+	private String 		model;
+	
 	@ManyToOne
 	private Organisation org;
 
@@ -73,11 +75,14 @@ public class Tool extends SimplePojo {
 	public Organisation getOrg() { return org; }
 	public void setOrg( Organisation org ) { this.org = org; }
 
+	public String getModel() { return model; }
+	public void setModel(String model) { this.model = model; }
+
 	@Override
 	public String toString() {
 		return "Tool [code=" + code + ", name=" + name + ", description="
 				+ description + ", category=" + category + ", manufacturer="
-				+ manufacturer + "]";
+				+ manufacturer + ", model=" + model + "]";
 	}
 
 	

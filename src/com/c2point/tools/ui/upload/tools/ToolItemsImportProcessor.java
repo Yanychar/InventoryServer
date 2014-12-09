@@ -23,6 +23,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.datalayer.SettingsFacade;
@@ -40,23 +43,30 @@ import com.c2point.tools.ui.upload.ProcessedStatus;
 public class ToolItemsImportProcessor extends FileProcessor {
 	private static Logger logger = LogManager.getLogger( ToolItemsImportProcessor.class.getName());
 	
-	private ToolsListModel	model;
+	private ToolsListModel			model;
 
 	private CategoriesHolder		catHolder;
-	private ManufacturersHolder			prodHolder;
+	private ManufacturersHolder		prodHolder;
 	
+	// Internally used status to pass value between methods with occupied return value
+	private ProcessedStatus 		tmpRes = ProcessedStatus.FAILED;
 	
-	private PatternLen [] columnPatterns = {
-			new PatternLen( "", 20 ),  // Top category 				//( "\\d{0,10}", 10 ),
-			new PatternLen( "", 20 ),  // Sub-category 1
-			new PatternLen( "", 20 ),  // Sub-category 2
-			new PatternLen( "", 10 ),  // Tool Code				//"(\\d|\\+)[\\d\\s\\-]{8,40}", 20 ),
-			new PatternLen( "", 50 ),  // Tool Name				//"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", 60 ),
-			new PatternLen( "",255 ),  // Tool Description
-			new PatternLen( "", 20 ),  // Manufacturer
-			new PatternLen( "", 50 ),  // Barcode
-			new PatternLen( "", 40 ),	// First Name of User
-			new PatternLen( "", 40 ),	// Last Name of User
+	private PatternLen [] columnPatterns = {					// Was  Now
+			new PatternLen( "", 20 ),  // Top category 			0		0		
+			new PatternLen( "", 20 ),  // Sub-category 1		1		1		
+			new PatternLen( "", 20 ),  // Sub-category 2		2		2
+			new PatternLen( "", 20 ),  // Manufacturer			6		3
+			new PatternLen( "", 20 ),  // Model							4
+			new PatternLen( "", 10 ),  // Tool Code				3		5		
+			new PatternLen( "", 50 ),  // Tool Name				4		6		
+			new PatternLen( "",255 ),  // Tool Description		5		7
+			new PatternLen( "", 50 ),  // Barcode				7		8
+			new PatternLen( "", 10 ),  // Buy Time						9
+			new PatternLen( "", 10 ),  // Price							10
+			new PatternLen( "",  2 ),  // Guarantee						11
+			new PatternLen( "", 10 ),  // Last Maintenance Time  		12
+			new PatternLen( "", 40 ),	// First Name of User	8		13
+			new PatternLen( "", 40 ),	// Last Name of User	9		14
 	};
 	
 	
@@ -128,7 +138,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		
 		if ( nextLine[ 0 ] == null || nextLine[ 0 ].length() == 0 ) {
 
-			if ( nextLine[ 4 ] != null && nextLine[ 4 ].length() != 0 ) {
+			if ( nextLine[ 6 ] != null && nextLine[ 6 ].length() != 0 ) {
 				logger.debug( "    Validation failed: Top Category for Tool is not specified but Tool is specified" );
 			
 				return ProcessedStatus.VALIDATION_FAILED;
@@ -139,7 +149,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		// 4.2 Manufacturer validation
 		if ( prodHolder == null ) prodHolder = new ManufacturersHolder();
 		
-		if ( nextLine[ 6 ] == null || nextLine[ 0 ].length() == 0 ) {
+		if ( nextLine[ 3 ] == null || nextLine[ 3 ].length() == 0 ) {
 
 			logger.debug( "    Manufacturer is not specified but this is OK" );
 			
@@ -156,95 +166,23 @@ public class ToolItemsImportProcessor extends FileProcessor {
 
 		ProcessedStatus res = ProcessedStatus.FAILED; //( i++ % 10 ) != 0;
 		
-		Category category = catHolder.findOrAddCategory( nextLine, 0 );
+		Category category = handleCategory( nextLine );
+
+		Manufacturer manufacturer = handleManufacturer( nextLine );
 		
-		if ( logger.isDebugEnabled()) {
+		tmpRes = ProcessedStatus.FAILED;
+		Tool tool = handleTool( nextLine, category, manufacturer );
+		
+		if ( tool != null && tmpRes == ProcessedStatus.PROCESSED ) { 
 			
-			if ( category != null )
-				logger.debug( "   Category '" + CategoriesHolder.getCategoryPath( nextLine ) + "' was found. Is it Top Level? " 
-								+ ( category.isTopCategoryFlag() ? "Yes" : "No" ));
-			else
-				logger.debug( "   Category '" + CategoriesHolder.getCategoryPath( nextLine ) + "' was NOT found or added." );
-		}
-		
-		Manufacturer manufacturer = prodHolder.findOrAddManufacturer( nextLine, 6 );
+			handleToolItem( nextLine, tool );
 
-		logger.debug( "   Manufacturer '" + nextLine[6] + "' was" + ( manufacturer != null ? "" : " NOT" ) + " found or added" ); 
-		
-		
-		Tool tool = createTool( nextLine, category, manufacturer );
-		Tool existingTool = null; 
-		
-		if ( tool != null ) {
+			res = tmpRes;
 			
-			existingTool = findExistingTool( tool );
-			
-			if ( existingTool != null ) {
-				// Tool with the same data found in database. Will be used to add ToolItem
-				logger.debug( "Tool exists in DB: " + existingTool );
-				
-				tool = existingTool;
-				
-			} else {
-				// No such tool was found in DB. New one will be added and used
-				logger.debug( "Tool does NOT exists in DB. Will be added" );
-				
-				tool = addTool( tool );
-				
-			}
-
-			// Now after Tool data processing ToolItem data shall be processed 
-			if ( tool != null ) {
-				// Tool was found or new one was added
-				// Tool Item need to be processed
-				ToolItem item = createToolItem( nextLine, tool );
-				ToolItem existingItem = null; 
-				
-				if ( item != null ) {
-					
-					existingItem = findExistingToolItem( item );
-				
-					if ( existingItem != null ) {
-						// Tool Item with the same data found in database. Will be used 
-						logger.debug( "Tool Item exists in DB: " + existingItem );
-						
-						item = existingItem;
-						
-					} else {
-						// No existing Tool Item was found in DB. New one will be added and used
-						logger.debug( "Tool Item does NOT exists in DB. Will be added" );
-						item = addToolItem( item );
-						
-					}
-					
-					// Now if Tool Item was not found or added ==>> Processing of this record failed
-					// Record without Tool and ToolItem info shall be rejected in validation stage
-					if ( item != null ) {
-						
-						res = ProcessedStatus.PROCESSED;
-						
-					}
-				} else {
-
-					logger.debug( "Not necessary to create Tools Item from imported record. Toll is enough (no user specified)");
-
-					res = ProcessedStatus.PROCESSED;
-					
-				}
-					
-				
-			} else {
-				logger.debug( "Tool Item cannot be found or created from imported data");
-				
-			}
-			
-
-		
 		} else {
-			
-			logger.debug( "Could not create Tool from imported record");
-			res = ProcessedStatus.PROCESSED;
 
+			res = tmpRes;
+			
 		}
 		
 		logger.debug( "      Processing " + ( res == ProcessedStatus.PROCESSED ? "passed" : "FAILED" )); 
@@ -254,34 +192,39 @@ public class ToolItemsImportProcessor extends FileProcessor {
 
 	
 	private Tool createTool( String [] nextLine, Category category, Manufacturer manufacturer ) {
-	
-		if (   	( nextLine[ 4 ] == null || nextLine[ 4 ].length() == 0 ) 
-			&& 
-				( nextLine[ 5 ] == null || nextLine[ 5 ].length() == 0 )
-		) {
-			// Not enough information to create the tool
-			return null;
-			
-		}
-		
-		
-		Tool resTool = new Tool();
 
 		// Fields currently imported:
-		// 	code;			nextLine[3]    
-		// 	name;    		nextLine[4]
-		// 	description;	nextLine[5]
-		
-		setupCode( resTool, nextLine [ 3 ] );
-		resTool.setName( nextLine [ 4 ] );
-		resTool.setDescription( nextLine [ 5 ] );
+		//	model:			nextLine[4]
+		// 	code:			nextLine[5]    
+		// 	name:    		nextLine[6]
+		// 	description:	nextLine[7]
 
-		resTool.setCategory( category );
-		resTool.setManufacturer( manufacturer );
-		
-		resTool.setOrg( model.getOrg());
+		// Enough to specify:
+		//	- Name
+		//	- Manufacturer+Model
 
-		logger.debug( "Created " + resTool );
+		Tool resTool = null;
+		
+		if ( nextLine[ 6 ] != null && nextLine[ 6 ].length() != 0 
+			|| 
+			 manufacturer != null && nextLine[ 4 ] != null && nextLine[ 4 ].length() != 0
+		) {
+			
+			resTool = new Tool();
+			
+			resTool.setManufacturer( manufacturer );
+			resTool.setModel( nextLine [ 4 ] );
+			setupCode( resTool, nextLine [ 5 ] );
+			resTool.setName( nextLine [ 6 ] );
+			resTool.setDescription( nextLine [ 7 ] );
+	
+			resTool.setCategory( category );
+			
+			resTool.setOrg( model.getOrg());
+	
+			logger.debug( "Created " + resTool );
+
+		}
 		
 		return resTool;
 	}
@@ -302,14 +245,13 @@ public class ToolItemsImportProcessor extends FileProcessor {
 
 	private ToolItem createToolItem( String [] nextLine, Tool tool ) {
 	
-		ToolItem resItem = 	new ToolItem( tool, null, null );
+		ToolItem resItem = 	new ToolItem( tool, model.getSessionOwner(), model.getSessionOwner() );
 
 		// If Barcode exist than this item definitely shall be created 
-		if ( nextLine[ 7 ] != null && nextLine[ 7 ].length() > 0 ) {
-			resItem.setBarcode( nextLine[ 7 ]);
-			resItem.setCurrentUser( model.getSessionOwner());
+		if ( nextLine[ 8 ] != null && nextLine[ 8 ].length() > 0 ) {
+			resItem.setBarcode( nextLine[ 8 ]);
 
-			logger.debug( "Not necessary to create Tools Item from imported record. Toll is enough (no user specified)");
+			logger.debug( "Not necessary to create Tools Item from imported record. Tool is enough (no user specified)");
 
 		}
 		
@@ -322,6 +264,25 @@ public class ToolItemsImportProcessor extends FileProcessor {
 			logger.debug( "No current user identified. Item shall not be created! Tool is enough" );
 			
 			resItem = null;
+		} else {
+			// Setup other ToolItem specific parameters:
+			//	buyTime
+			//	price
+			//	takuu
+			//	maintenanceTime
+			
+			resItem.setBuyTime( createLocalDate( nextLine[ 9 ] ));
+			try {
+				resItem.setPrice( Double.valueOf( nextLine[ 10 ] ));
+			} catch ( Exception e ) {
+				resItem.setPrice( null );
+			}
+			try {
+				resItem.setTakuu( Integer.valueOf( nextLine[ 11 ] ));
+			} catch ( Exception e ) {
+				resItem.setTakuu( null );
+			}
+			resItem.setMaintenance( createLocalDate( nextLine[ 12 ] ));
 		}
 		
 		return resItem;
@@ -422,6 +383,162 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		}
 	}
 	
+	private Category handleCategory( String[] nextLine ) {
+
+		Category category = catHolder.findOrAddCategory( nextLine, 0 );
+		
+		if ( logger.isDebugEnabled()) {
+			
+			if ( category != null )
+				logger.debug( "   Category '" + CategoriesHolder.getCategoryPath( nextLine ) + "' was found. Is it Top Level? " 
+								+ ( category.isTopCategoryFlag() ? "Yes" : "No" ));
+			else
+				logger.debug( "   Category '" + CategoriesHolder.getCategoryPath( nextLine ) + "' was NOT found or added." );
+		}
+		
+		return category;
+	}
+
+	private Manufacturer handleManufacturer( String[] nextLine ) {
+	
+		Manufacturer manufacturer = prodHolder.findOrAddManufacturer( nextLine, 3 );
+
+		logger.debug( "   Manufacturer '" + nextLine[3] + "' was" + ( manufacturer != null ? "" : " NOT" ) + " found or added" );
+		
+		return manufacturer;
+	}
+
+	private Tool handleTool( String[] nextLine, Category category, Manufacturer manufacturer ) {
+	
+		Tool existingTool = null;
+
+		this.tmpRes = ProcessedStatus.FAILED;
+		
+		Tool tool = createTool( nextLine, category, manufacturer );
+
+		if ( tool != null && category == null ) {
+			logger.error( "Category cannot be null to create tool! " );
+			
+			return null;
+		}
+
+		if ( tool != null ) {
+		
+			existingTool = findExistingTool( tool );
+			
+			if ( existingTool != null ) {
+				// Tool with the same data found in database. Will be used to add ToolItem
+				logger.debug( "Tool exists in DB: " + existingTool );
+				
+				tool = existingTool;
+
+			} else {
+				// No such tool was found in DB. New one will be added and used
+				logger.debug( "Tool does NOT exists in DB. Will be added" );
+				
+				tool = addTool( tool );
+				
+			}
+			
+			if ( tool != null ) {
+
+				this.tmpRes = ProcessedStatus.PROCESSED;
+				
+			}
+			
+		} else {
+			
+			// Not enough info to create the tool!
+			// Everything except Category and Manufacturer shall be null in this case. Otherwise FAILED
+			logger.debug( "Not enough info to create the Tool! But it can be ok" );
+			
+			// Validate the rest of parameters after Manufacturer
+			this.tmpRes = ProcessedStatus.PROCESSED;
+			for ( int i = 4; i < nextLine.length; i++ ) {
+				
+				if ( nextLine[ i ] != null && nextLine[ i ].length() > 0 ) {
+					
+					this.tmpRes = ProcessedStatus.FAILED;
+					break;
+				}
+			}
+			
+		}
+		
+		return tool;
+	}
+
+	private ToolItem handleToolItem( String[] nextLine, Tool tool ) {
+		
+		ToolItem toolItem = null;
+
+		this.tmpRes = ProcessedStatus.FAILED;
+
+		// Now after Tool data processing ToolItem data shall be processed 
+		if ( tool != null ) { 
+			// Tool was found or new one was added
+			// Tool Item need to be processed
+			toolItem = createToolItem( nextLine, tool );
+			ToolItem existingItem = null; 
+			
+			if ( toolItem != null ) {
+				
+				existingItem = findExistingToolItem( toolItem );
+			
+				if ( existingItem != null ) {
+					// Tool Item with the same data found in database. Will be used 
+					logger.debug( "Tool Item exists in DB: " + existingItem );
+					
+					toolItem = existingItem;
+					
+				} else {
+					// No existing Tool Item was found in DB. New one will be added and used
+					logger.debug( "Tool Item does NOT exists in DB. Will be added" );
+					toolItem = addToolItem( toolItem );
+					
+				}
+				
+				// Now if Tool Item was not found or added ==>> Processing of this record failed
+				// Record without Tool and ToolItem info shall be rejected in validation stage
+				if ( toolItem != null ) {
+					
+					this.tmpRes = ProcessedStatus.PROCESSED;
+					
+				}
+			} else {
+
+				logger.debug( "Not necessary to create Tools Item from imported record. Tool is enough (no user specified)");
+
+				this.tmpRes = ProcessedStatus.PROCESSED;
+				
+			}
+				
+			
+		} else {
+			logger.debug( "Tool Item cannot be found or created from imported data");
+			
+		}
+		
+		return toolItem;
+		
+	}
+
+	private LocalDate createLocalDate( String dateStr ) {
+		
+		LocalDate date = null;
+		final DateTimeFormatter df = DateTimeFormat.forPattern("dd.mm.yyyy");
+		
+		try {
+			date = df.parseLocalDate( dateStr );			
+			
+		} catch( Exception e ) {
+			logger.error( "Cannot convert to date: '" + dateStr + "'" );
+			date = null;
+		}
+		
+		return date;
+		
+	}
 	
 	
 }

@@ -1,6 +1,9 @@
 package com.c2point.tools.entity.repository;
 
+import java.util.Date;
+
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -8,9 +11,12 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.LocalDate;
 
 import com.c2point.tools.entity.SimplePojo;
 import com.c2point.tools.entity.location.GeoLocation;
@@ -124,6 +130,17 @@ public class ToolItem extends SimplePojo {
 	private String			barcode;
 	
 	private boolean 		personalFlag;
+
+	@Temporal(TemporalType.DATE)
+	@Column(name="buytime")
+    private Date			buyTimeForDB;
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name="lastmaintenance")
+    private Date			maintenanceForDB;
+	
+	private Double			price;
+	private Integer				takuu;
 	
 	public ToolItem() {
 		this( null, null, null );
@@ -176,4 +193,22 @@ public class ToolItem extends SimplePojo {
 	public boolean isPersonalFlag() { return personalFlag; }
 	public void setPersonalFlag( boolean personalFlag ) { this.personalFlag = personalFlag; }
 
+	protected Date getBuyTimeForDB() { return this.buyTimeForDB; }
+	protected void setBuyTimeForDB( Date buyTimeForDB ) { this.buyTimeForDB = buyTimeForDB; }	
+	
+	protected Date getMaintenanceForDB() { return this.maintenanceForDB; }
+	protected void setMaintenanceForDB( Date maintenanceForDB ) { this.maintenanceForDB = maintenanceForDB; }	
+	
+	public LocalDate getBuyTime() { return LocalDate.fromDateFields( getBuyTimeForDB()); }
+	public void setBuyTime( LocalDate date ) { setBuyTimeForDB( date != null ? date.toDate() : null ); }
+	
+	public LocalDate getMaintenance() { return LocalDate.fromDateFields( getMaintenanceForDB()); }
+	public void setMaintenance( LocalDate date ) { setMaintenanceForDB( date != null ? date.toDate() : null ); }
+
+	public Double getPrice() { return price; }
+	public void setPrice( Double price ) { this.price = price; }
+
+	public Integer getTakuu() { return takuu; }
+	public void setTakuu( Integer takuu ) { this.takuu = takuu; }
+	
 }

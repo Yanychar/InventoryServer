@@ -1,6 +1,8 @@
 package com.c2point.tools.ui.repositoryview;
 
 import java.util.Collection;
+
+import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.ui.category.CategoryModelListener;
@@ -15,6 +17,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -84,10 +87,18 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 //		categoriesTree.addContainerProperty( "code",		String.class, 	null );
 		itemsTable.addContainerProperty( "photo",		Embedded.class, null );
 		itemsTable.addContainerProperty( "tool", 		Label.class, 	null );
-		itemsTable.addContainerProperty( "manufacturer", 	String.class, 	"" );
-		itemsTable.addContainerProperty( "status", 		String.class, 	"" );
+		itemsTable.addContainerProperty( "status", 		Label.class, 	"" );
 		itemsTable.addContainerProperty( "user", 		String.class, 	"" );
+		itemsTable.addContainerProperty( "data", 		ToolItem.class, null );
 
+		itemsTable.setVisibleColumns( new Object [] { "photo", "tool", "status", "user" } );
+		
+		itemsTable.setColumnHeaders( new String[] { 
+				model.getApp().getResourceStr( "repositorymgmt.list.header.photo" ),
+				model.getApp().getResourceStr( "repositorymgmt.list.header.tool" ),
+				model.getApp().getResourceStr( "repositorymgmt.list.header.status" ),
+				model.getApp().getResourceStr( "repositorymgmt.list.header.user" )
+		});
 		
 		// New User has been selected. Send event to model
 		itemsTable.addValueChangeListener( new ValueChangeListener() {
@@ -97,7 +108,13 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 			public void valueChange( ValueChangeEvent event) {
 				if ( logger.isDebugEnabled()) logger.debug( "List of Tools selection were changed" );
 
-				model.toolSelected( itemsTable.getValue());
+				try {
+					Item item = itemsTable.getItem( itemsTable.getValue());
+					model.toolSelected(( ToolItem ) item.getItemProperty( "data" ).getValue());
+				} catch ( Exception e ) {
+					logger.debug( "No selection. Tool Item cannot be fetched from itemsList " );
+					model.toolSelected( null );
+				}
 				
 			}
 		});
@@ -126,7 +143,7 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 		if ( itemList != null && itemList.size() > 0 ) {
 			for ( ToolItem repItem : itemList ) {
 				if ( repItem  != null ) {
-					addItem( repItem );
+					addOrUpdateItem( repItem );
 				}
 			}
 		}
@@ -137,59 +154,38 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 		
 	}
 	
-	private void addItem( ToolItem repItem ) {
-
-		Item item = itemsTable.addItem( repItem );
-
-		if ( logger.isDebugEnabled()) logger.debug( "Item will be added. Repository Item id: " + repItem.getId());
-
-		updateItem( item, repItem );
-			
-	}
-
-	int num = 1;
-
 	@SuppressWarnings("unchecked")
-	private void updateItem( Item item, ToolItem repItem ) {
+	private void addOrUpdateItem( ToolItem toolItem ) {
+
+		Item item = itemsTable.getItem( toolItem.getId());
+		
+		if ( item == null ) {
+
+//			if ( logger.isDebugEnabled()) logger.debug( "Tool Item will be added: " + toolItem );
+			item = itemsTable.addItem( toolItem.getId());
+			item.getItemProperty( "tool" ).setValue( new Label( "", ContentMode.HTML ));
+			item.getItemProperty( "status" ).setValue( new Label( "", ContentMode.HTML ));
+
+		} else {
+			if ( logger.isDebugEnabled()) logger.debug( "Tool Item exists already. Will be modified: " + toolItem );
+		}
+
 		
 		// Item Photo column 
-		item.getItemProperty( "photo" ).setValue( getItemPhoto( repItem ));
+		item.getItemProperty( "photo" ).setValue( getItemPhoto( toolItem ));
 		
-		// Item Name column 
-		Label toolLabel = ( Label )item.getItemProperty( "tool" ).getValue();
-		if ( toolLabel == null ) {
-			toolLabel = new Label( "", ContentMode.HTML );
-		}
+		setToolProperty( item, toolItem );
+		setStatusProperty( item, toolItem );
 
-		String nameStr;
 		try {
-			nameStr = "<b>" + repItem.getTool().getName() + "</b>"
-					+ "<br>"
-					+ ( repItem.getTool().getDescription() != null ? repItem.getTool().getDescription() : "" );
-			
-			toolLabel.setValue( nameStr);
-		} catch ( Exception e ) {
-			logger.error( "  Tool name are missing for Repository Item" );
-			toolLabel.setValue( "Noname" );
-		}
-		item.getItemProperty( "tool" ).setValue( toolLabel );
-		
-		try {
-			item.getItemProperty( "manufacturer" ).setValue( repItem.getTool().getManufacturer().getName());
-		} catch ( Exception e ) {
-			item.getItemProperty( "manufacturer" ).setValue( "" );
-		}
-		
-		try {
-			item.getItemProperty( "user" ).setValue( repItem.getCurrentUser().getLastAndFirstNames());
+			item.getItemProperty( "user" ).setValue( toolItem.getCurrentUser().getLastAndFirstNames());
 		} catch ( Exception e ) {
 			item.getItemProperty( "user" ).setValue( "No user" );
 		}
 		
-		item.getItemProperty( "status" ).setValue( repItem.getStatus().toString( model.getApp().getSessionData().getBundle()));
 		
+		item.getItemProperty( "data" ).setValue( toolItem );
 	
-		
 	}
 	
 	
@@ -241,4 +237,71 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 		
 	}
 
+	@SuppressWarnings("unchecked")
+	private void setToolProperty( Item item, ToolItem toolItem ) {
+
+		try {
+			Label toolLabel = ( Label )item.getItemProperty( "tool" ).getValue();
+			String nameStr;
+				nameStr = "<b>" 
+						+ StringUtils.defaultString( toolItem.getTool().getName()) + " "
+						+ ( toolItem.getTool().getManufacturer() != null ?
+								StringUtils.defaultString( toolItem.getTool().getManufacturer().getName()) :
+								"" ) + " " 
+						+ StringUtils.defaultString( toolItem.getTool().getModel())
+						+ "</b><br>"
+						+ StringUtils.defaultString( toolItem.getTool().getDescription())
+						;
+	
+			toolLabel.setValue( nameStr );
+			
+		} catch ( Exception e ) {
+			logger.error( "Could not create Tool property because unknown reason. Tool Item: " + toolItem );
+			item.getItemProperty( "tool" ).setValue( new Label( "?" ));
+		}
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void setStatusProperty( Item item, ToolItem toolItem ) {
+
+		try {
+			Label statusLabel = ( Label )item.getItemProperty( "status" ).getValue();
+			String nameStr;
+				nameStr = "<b "
+						+ getColorAttribute( toolItem.getStatus())
+						+ ">"
+						+ toolItem.getStatus().toString( model.getApp().getSessionData().getBundle())
+						+ "</b>" 
+						;
+	
+				statusLabel.setValue( nameStr );
+			
+		} catch ( Exception e ) {
+			logger.error( "Could not create Tool property because unknown reason. Tool Item: " + toolItem );
+			item.getItemProperty( "status" ).setValue( new Label( "?" ));
+		}
+		
+	}
+
+	private String getColorAttribute( ItemStatus status ) {
+		
+		switch( status ) {
+			case FREE:
+				return "style='color:green'"; 
+				
+			case BROKEN:
+			case INUSE:
+			case REPAIRING:
+			case RESERVED:
+			case STOLEN:
+			case UNKNOWN:
+				return "style='color:red'"; 
+
+		}
+		
+		return ""; 
+		
+	}
+	
 }

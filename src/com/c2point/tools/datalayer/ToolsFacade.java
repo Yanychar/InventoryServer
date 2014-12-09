@@ -61,8 +61,9 @@ public class ToolsFacade extends DataFacade {
 			if ( tool != null && tool.getName() != null 
 					&& tool.getCode().trim().compareToIgnoreCase( searchTool.getCode().trim()) == 0
 					&& tool.getName().trim().compareToIgnoreCase( searchTool.getName().trim()) == 0
-					&& tool.getDescription().trim().compareToIgnoreCase( searchTool.getDescription().trim()) == 0
+//					&& tool.getDescription().trim().compareToIgnoreCase( searchTool.getDescription().trim()) == 0
 					&& tool.getManufacturer().getId() == searchTool.getManufacturer().getId()
+					&& tool.getModel().trim().compareToIgnoreCase( searchTool.getModel().trim()) == 0
 			){
 				resTool = tool;
 				break;

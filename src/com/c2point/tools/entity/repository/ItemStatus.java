@@ -13,7 +13,7 @@ public enum ItemStatus {
 	UNKNOWN( 0 ),
 	FREE( 1 ),		// AVAILABLE
 	INUSE( 2 ),		// In Use
-	BROCKEN( 3 ),	//
+	BROKEN( 3 ),	//
 	REPAIRING( 4 ),
 	STOLEN( 5 ),
 	RESERVED( 6 );

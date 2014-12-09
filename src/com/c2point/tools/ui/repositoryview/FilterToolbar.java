@@ -124,14 +124,14 @@ public class FilterToolbar extends HorizontalLayout {
 
 		statusFilter.addItem( ItemStatus.FREE );
 		statusFilter.addItem( ItemStatus.INUSE );
-		statusFilter.addItem( ItemStatus.BROCKEN );
+		statusFilter.addItem( ItemStatus.BROKEN );
 		statusFilter.addItem( ItemStatus.REPAIRING );
 		statusFilter.addItem( ItemStatus.STOLEN );
 		statusFilter.addItem( ItemStatus.RESERVED );
 
 		statusFilter.setItemCaption( ItemStatus.FREE, ItemStatus.FREE.toString( model.getApp().getSessionData().getBundle()));
 		statusFilter.setItemCaption( ItemStatus.INUSE, ItemStatus.INUSE.toString( model.getApp().getSessionData().getBundle()));
-		statusFilter.setItemCaption( ItemStatus.BROCKEN, ItemStatus.BROCKEN.toString( model.getApp().getSessionData().getBundle()));
+		statusFilter.setItemCaption( ItemStatus.BROKEN, ItemStatus.BROKEN.toString( model.getApp().getSessionData().getBundle()));
 		statusFilter.setItemCaption( ItemStatus.REPAIRING, ItemStatus.REPAIRING.toString( model.getApp().getSessionData().getBundle()));
 		statusFilter.setItemCaption( ItemStatus.STOLEN, ItemStatus.STOLEN.toString( model.getApp().getSessionData().getBundle()));
 		statusFilter.setItemCaption( ItemStatus.RESERVED, ItemStatus.RESERVED.toString( model.getApp().getSessionData().getBundle()));
