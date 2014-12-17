@@ -6,13 +6,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.c2point.tools.datalayer.SettingsFacade;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.ui.toolsmgmt.ToolsListModel.EditMode;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
@@ -575,13 +575,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 
 		if ( !statusCBinited ) {
 			status.addItem( ItemStatus.UNKNOWN );
-			
-			boolean freeAllowed = Boolean.parseBoolean(
-					SettingsFacade.getInstance().getProperty( model.getOrg(), "FreeStatusAllowed", "false" ));
-			if ( freeAllowed ) {
-				status.addItem( ItemStatus.FREE );
-			}
-			
+			status.addItem( ItemStatus.FREE );
 			status.addItem( ItemStatus.INUSE );
 			status.addItem( ItemStatus.BROKEN );
 			status.addItem( ItemStatus.REPAIRING );
@@ -589,9 +583,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 			status.addItem( ItemStatus.RESERVED );
 	
 			status.setItemCaption( ItemStatus.UNKNOWN, ItemStatus.UNKNOWN.toString( model.getApp().getSessionData().getBundle()));
-			if ( freeAllowed ) {
-				status.setItemCaption( ItemStatus.FREE, ItemStatus.FREE.toString( model.getApp().getSessionData().getBundle()));
-			}
+			status.setItemCaption( ItemStatus.FREE, ItemStatus.FREE.toString( model.getApp().getSessionData().getBundle()));
 			status.setItemCaption( ItemStatus.INUSE, ItemStatus.INUSE.toString( model.getApp().getSessionData().getBundle()));
 			status.setItemCaption( ItemStatus.BROKEN, ItemStatus.BROKEN.toString( model.getApp().getSessionData().getBundle()));
 			status.setItemCaption( ItemStatus.REPAIRING, ItemStatus.REPAIRING.toString( model.getApp().getSessionData().getBundle()));

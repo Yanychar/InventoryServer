@@ -18,7 +18,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
 
-import com.c2point.tools.datalayer.SettingsFacade;
 import com.c2point.tools.entity.SimplePojo;
 import com.c2point.tools.entity.location.GeoLocation;
 import com.c2point.tools.entity.person.OrgUser;
@@ -155,17 +154,8 @@ public class ToolItem extends SimplePojo {
 		
 		setQuantity( 1 );
 
-// Set to FREE if FREE status available in this organisation. Othervise INUSE
-		if ( tool != null ) {
-			
-			boolean freeAllowed = Boolean.parseBoolean(
-						SettingsFacade.getInstance().getProperty( tool.getOrg(), "FreeStatusAllowed", "false" ));
-			
-			setStatus( freeAllowed ? ItemStatus.FREE : ItemStatus.INUSE );
-	    	
-		}
+		setStatus( ItemStatus.FREE );
 
-		
 		setPersonalFlag( false );
 	}
 
@@ -209,22 +199,10 @@ public class ToolItem extends SimplePojo {
 	protected Date getMaintenanceForDB() { return this.maintenanceForDB; }
 	protected void setMaintenanceForDB( Date maintenanceForDB ) { this.maintenanceForDB = maintenanceForDB; }	
 	
-	public LocalDate getBuyTime() { 
-		try {
-			return LocalDate.fromDateFields( getBuyTimeForDB()); 
-		} catch( Exception e ) {}
-		
-		return null;
-	}
+	public LocalDate getBuyTime() { return LocalDate.fromDateFields( getBuyTimeForDB()); }
 	public void setBuyTime( LocalDate date ) { setBuyTimeForDB( date != null ? date.toDate() : null ); }
 	
-	public LocalDate getMaintenance() {
-		try {
-			return LocalDate.fromDateFields( getMaintenanceForDB());
-		} catch( Exception e ) {}
-		
-		return null;
-	}
+	public LocalDate getMaintenance() { return LocalDate.fromDateFields( getMaintenanceForDB()); }
 	public void setMaintenance( LocalDate date ) { setMaintenanceForDB( date != null ? date.toDate() : null ); }
 
 	public Double getPrice() { return price; }
