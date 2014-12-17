@@ -1,25 +1,23 @@
 package com.c2point.tools.ui.repositoryview;
 
+import java.text.MessageFormat;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.entity.msg.Message;
+import com.c2point.tools.access.FunctionalityType;
+import com.c2point.tools.access.PermissionType;
+import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
-import com.c2point.tools.ui.repositoryview.handlers.AddNewToolHandler;
+import com.c2point.tools.ui.repositoryview.handlers.ChangeStatusHandler;
 import com.c2point.tools.ui.repositoryview.handlers.CommandListener;
 import com.c2point.tools.ui.repositoryview.handlers.RequestToolHandler;
 import com.c2point.tools.ui.repositoryview.handlers.SendMessageHandler;
 import com.c2point.tools.ui.repositoryview.handlers.SetToolUserHandler;
-import com.vaadin.event.MouseEvents;
 import com.vaadin.server.Page;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
@@ -30,9 +28,12 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 
 	private static Logger logger = LogManager.getLogger( ActionsListComponent.class.getName());
 	
-	private ToolsListModel	model; 
+	private ToolsListModel	model;
 	
-	private ToolItem 	selectedItem;
+	private Button			requestButton;
+	private Button			takeOverButton;
+	private Button			changeStatusButton;
+	private Button			sendMsgButton;
 	
 	public ActionsListComponent( ToolsListModel model ) {
 		
@@ -44,7 +45,6 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 		super();
 		
 		this.model = model;
-		this.selectedItem = null;
 		
 		initUI();
 		
@@ -63,35 +63,23 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 		Label separator = new Label( "<hr/>", ContentMode.HTML );
 		separator.setWidth( "100%" );
 		
-		addComponent( createCommandButtonComponent( "Request Tool ...", 	new RequestToolHandler( model )));
-		addComponent( createCommandButtonComponent( "Set Tool User ...", 	new SetToolUserHandler( model )));
-		addComponent( createCommandButtonComponent( "Add New Tool ...", 	new AddNewToolHandler( model )));
+		requestButton = addCommandButton( "request", new RequestToolHandler( model ));
+		takeOverButton = addCommandButton( "takeower", new SetToolUserHandler( model ));
+		changeStatusButton = addCommandButton( "changestatus", new ChangeStatusHandler( model ));
 		addComponent( separator );
-		addComponent( createCommandButtonComponent( "Send message to ...", 	new SendMessageHandler( model )));
+		sendMsgButton = addCommandButton( "sendmessage", new SendMessageHandler( model ));
 		addComponent( glue );
 		
 		setExpandRatio( glue, 1.0f );
 		
 	}	
 
-	private Component createCommandButtonComponent( String header, final CommandListener listener ) {
+	private Button addCommandButton( String resourceSuffix, final CommandListener listener ) {
 
-		HorizontalLayout hl = new HorizontalLayout();
-		hl.setWidth( "100%" );
+		String resourceCore = "repositorymgmt.actions.label.";
 		
-		Button commandButton = new Button( header + " ..." );
-		Label glue = new Label( "" );
-		Embedded icon = new Embedded( "", new ThemeResource( "icons/16/arrowright.png" ));
-
+		Button commandButton = new Button( this.model.getApp().getResourceStr( resourceCore + resourceSuffix ));
 		commandButton.addStyleName( "link" );
-
-		hl.addComponent( commandButton );
-		hl.addComponent( glue );
-		hl.addComponent( icon );
-
-		hl.setComponentAlignment( commandButton, Alignment.BOTTOM_LEFT);
-		hl.setComponentAlignment( icon, Alignment.TOP_RIGHT);
-		hl.setExpandRatio( glue, 1.0f );
 
 		commandButton.addClickListener( new Button.ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -99,45 +87,32 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 			@Override
 			public void buttonClick(ClickEvent event) {
 				
-				CommandListener.ExitStatus exitStatus = listener.handleCommand( ActionsListComponent.this.selectedItem );
+				CommandListener.ExitStatus exitStatus = listener.handleCommand( model.getSelectedItem());
 				if ( logger.isDebugEnabled()) logger.debug( "Command button has been clicked" );
 				
-				showNotification( exitStatus, null );
-				
+				if ( exitStatus != CommandListener.ExitStatus.NONE 
+					&& exitStatus != CommandListener.ExitStatus.STATUS_CHANGED )
+					showNotification( exitStatus, model.getSelectedItem(), null );
 				
 			}
 		});
 		
-		icon.addClickListener( new MouseEvents.ClickListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
-
-				CommandListener.ExitStatus exitStatus = listener.handleCommand( ActionsListComponent.this.selectedItem );
-				if ( logger.isDebugEnabled()) logger.debug( "Command icon has been clicked" );
-
-				showNotification( exitStatus, null );
-				
-			}
-
-			
-		});
+		addComponent( commandButton );
 		
-		
-		
-		return hl;
+		return commandButton;
 	}
 
 	@Override
 	public void wasChanged(ToolItem repItem) {
-		// TODO Auto-generated method stub
+
+		updateUI();
 		
 	}
 
 	@Override
 	public void listWasChanged() {
-		// TODO Auto-generated method stub
+
+		updateUI();
 		
 	}
 
@@ -145,46 +120,74 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 	public void selected( ToolItem repItem ) {
 
 		logger.debug( "ActionListComponent received Tools Selection Changed event from ToolsModel" );
-		
-		this.selectedItem = repItem;
 
+		updateUI();
+		
 	}
 
-	private void showNotification( CommandListener.ExitStatus exitStatus, Message msg ) {
+	private void showNotification( CommandListener.ExitStatus exitStatus, ToolItem item, OrgUser user ) {
+		
+		Notification.Type type = Notification.Type.ERROR_MESSAGE;
+		String message = "";
+		String template ;
 		
 		switch ( exitStatus ) {
-			case FAILED_UNKNOWN:
-				showNotification( 
-						Notification.Type.WARNING_MESSAGE, 
-						"<br/>Cannot Request the Tool because unknown reason!" );
-			case OK:
-				showNotification( 
-						Notification.Type.HUMANIZED_MESSAGE, 
-						"<br/>Request was sent" );
+			case ITEM_TOOKOVER:
+
+				type = Notification.Type.HUMANIZED_MESSAGE;
+				
+				template = model.getApp().getResourceStr( "repositorymgmt.notify.takeover" );
+				Object[] params1 = { item.getTool().getFullName() };
+				message = MessageFormat.format( template, params1 );
+
 				break;
-			case SENT_TO_OWNER:
-				showNotification( 
-						Notification.Type.HUMANIZED_MESSAGE, 
-						"<br/>Request was sent to Tool Owner" );
-				break;
-			case SENT_TO_USER:
-				showNotification( 
-						Notification.Type.HUMANIZED_MESSAGE, 
-						"<br/>Request was sent to Tool User" );
-				break;
-			case WRONG_ITEM:
-				showNotification( 
-						Notification.Type.WARNING_MESSAGE, 
-						"<br/>Tool shall be selected or it is not defined!" );
-				break;
-			case WRONG_USER:
-				showNotification( 
-						Notification.Type.ERROR_MESSAGE, 
-						"<br/>There is no Tool User and/or Tool Owner to request the Tool!" );
-			default:
+			case FAILED_TOOKOVER:
+
+				type = Notification.Type.ERROR_MESSAGE;
+				
+				template = model.getApp().getResourceStr( "repositorymgmt.error.takeover" );
+				Object[] params2 = { item.getTool().getFullName() };
+				message = MessageFormat.format( template, params2 );
+				
 				break;
 			
-		}
+			case MSG_SENT:
+				break;
+			case REQUEST_ACCEPTED:
+				break;
+			case REQUEST_REJECTED:
+				break;
+			case REQUEST_SENT:
+				break;
+			case WRONG_ITEM:
+
+				type = Notification.Type.ERROR_MESSAGE;
+				
+				template = model.getApp().getResourceStr( "repositorymgmt.error.item" );
+				Object[] params3 = { item.getTool().getFullName() };
+				message = MessageFormat.format( template, params3 );
+				
+				break;
+			
+			case WRONG_USER:
+
+				type = Notification.Type.ERROR_MESSAGE;
+				
+				template = model.getApp().getResourceStr( "repositorymgmt.error.user" );
+				Object[] params4 = { ( user != null ? user.getFirstAndLastNames() : "" ) };
+				message = MessageFormat.format( template, params4 );
+				
+				break;
+			
+			case UNKNOWN:
+			default:
+				type = Notification.Type.ERROR_MESSAGE;
+				message = model.getApp().getResourceStr( "general.errors.unknown" );
+				break;
+			}
+		
+		showNotification( type, message ); 
+		
 	}
 	
 	private void showNotification( Notification.Type type, String content ) {
@@ -192,24 +195,40 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 		String header = "";
 		
 		switch ( type ) {
-			case ASSISTIVE_NOTIFICATION:
-				break;
 			case ERROR_MESSAGE:
-				header = "Error!";
+				header = this.model.getApp().getResourceStr( "general.error.header" );
 				break;
+			case ASSISTIVE_NOTIFICATION:
 			case HUMANIZED_MESSAGE:
-				header = "Information!";
-				break;
 			case TRAY_NOTIFICATION:
+				type = Notification.Type.HUMANIZED_MESSAGE;
+				header = this.model.getApp().getResourceStr( "general.notify.header" );
 				break;
 			case WARNING_MESSAGE:
-				header = "Warning!";
+				header = this.model.getApp().getResourceStr( "general.warning.header" );
 				break;
 			default:
 				break;
 		}
 		
 		new Notification( header, content, type, true ).show( Page.getCurrent());
+		
+	}
+
+	private void updateUI() {
+
+		boolean itemSelected = model.getSelectedItem() != null;
+		boolean itemOwned = itemSelected 
+						 && model.getSelectedItem().getCurrentUser().getId() == model.getSessionOwner().getId();
+		
+		PermissionType takeOverPerm = model.getSecurityContext().getPermission( FunctionalityType.BORROW, itemOwned );   
+		PermissionType changeStatusPerm = model.getSecurityContext().getPermission( FunctionalityType.CHANGESTATUS, itemOwned );   
+		PermissionType msgPerm = model.getSecurityContext().getPermission( FunctionalityType.MESSAGING, itemOwned );   
+		
+		requestButton.setEnabled( itemSelected && false );
+		takeOverButton.setEnabled( itemSelected && takeOverPerm == PermissionType.RW );
+		changeStatusButton.setEnabled( itemSelected && changeStatusPerm == PermissionType.RW );
+		sendMsgButton.setEnabled( itemSelected && msgPerm == PermissionType.RW && false ); 
 		
 	}
 	

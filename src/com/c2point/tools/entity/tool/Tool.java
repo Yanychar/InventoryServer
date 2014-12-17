@@ -5,6 +5,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -78,6 +79,17 @@ public class Tool extends SimplePojo {
 	public String getModel() { return model; }
 	public void setModel(String model) { this.model = model; }
 
+	public String getFullName() { 
+
+		String str = 
+				  StringUtils.defaultString( getName()) + " "
+				+ ( getManufacturer() != null ? StringUtils.defaultString( getManufacturer().getName()) + " " : "" ) 
+				+ StringUtils.defaultString( getModel())
+		;
+		
+		return str;
+	}
+	
 	@Override
 	public String toString() {
 		return "Tool [code=" + code + ", name=" + name + ", description="

@@ -17,7 +17,7 @@ public class SendMessageHandler extends AbstractHandler {
 	@Override
 	public ExitStatus handleCommand( ToolItem item ) {
 		
-		CommandListener.ExitStatus exitStatus = CommandListener.ExitStatus.FAILED_UNKNOWN;
+		CommandListener.ExitStatus exitStatus = CommandListener.ExitStatus.UNKNOWN;
 		
 		logger.debug( "Handler 'Send Message' has been started." );
 		// TODO Auto-generated method stub

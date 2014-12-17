@@ -26,6 +26,8 @@ public class ToolsListModel extends AbstractModel {
 	private Organisation 		org;
 
 	private Filter itemsFilter = new Filter();
+
+	private ToolItem 			selectedItem;
 	
 	public ToolsListModel() {
 		
@@ -46,6 +48,9 @@ public class ToolsListModel extends AbstractModel {
 		
 		
 		fireCategoryListChanged();
+
+		fireToolListChanged();		
+		
 	}
 
 	public Organisation getOrg() { return org; }
@@ -132,6 +137,16 @@ public class ToolsListModel extends AbstractModel {
 	/*
 	 * * Tool selection notification
 	 */
+
+	public ToolItem getSelectedItem() { return selectedItem; }
+	public void setSelectedItem( ToolItem selectedItem ) {
+		
+		this.selectedItem = selectedItem; 
+		fireToolSelected( selectedItem );
+		
+	}
+
+/*	
 	public void toolSelected( ToolItem repItem ) {
 		
 		fireToolSelected( repItem );
@@ -146,7 +161,7 @@ public class ToolsListModel extends AbstractModel {
 		}
 		
 	}
-	
+*/	
 	
 	public void addChangedListener( ToolsModelListener listener ) {
 		listenerList.add( ToolsModelListener.class, listener);
@@ -163,7 +178,7 @@ public class ToolsListModel extends AbstractModel {
 	     }
 	 }
 
-	protected void fireToolChanged( ToolItem repItem ) {
+	public void fireToolChanged( ToolItem repItem ) {
 		Object[] listeners = listenerList.getListenerList();
 
 	    for ( int i = listeners.length-2; i >= 0; i -= 2) {

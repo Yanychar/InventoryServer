@@ -4,8 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.MsgFacade;
-import com.c2point.tools.entity.msg.Message;
-import com.c2point.tools.entity.msg.MessageType;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.ui.repositoryview.ToolsListModel;
 
@@ -20,7 +18,7 @@ public class RequestToolHandler extends AbstractHandler {
 	@Override
 	public ExitStatus handleCommand( ToolItem item ) {
 
-		CommandListener.ExitStatus exitStatus = CommandListener.ExitStatus.FAILED_UNKNOWN;
+		CommandListener.ExitStatus exitStatus = CommandListener.ExitStatus.UNKNOWN;
 		
 		if ( logger.isDebugEnabled()) {
 			if ( item != null && item.getTool() != null && item.getTool().getName() != null )
@@ -41,12 +39,7 @@ public class RequestToolHandler extends AbstractHandler {
 
 			if( MsgFacade.getInstance().addToolRequest( item, getModel().getApp().getSessionData().getOrgUser())) {
 				
-				// 
-				if ( item.getCurrentUser() != null ) {
-					exitStatus = CommandListener.ExitStatus.SENT_TO_USER;
-				} else if ( item.getResponsible() != null ) {
-					exitStatus = CommandListener.ExitStatus.SENT_TO_OWNER;			
-				}
+				exitStatus = CommandListener.ExitStatus.REQUEST_SENT;
 			
 			}
 		

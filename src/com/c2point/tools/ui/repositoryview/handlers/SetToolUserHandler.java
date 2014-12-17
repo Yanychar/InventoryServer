@@ -3,6 +3,10 @@ package com.c2point.tools.ui.repositoryview.handlers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.datalayer.ItemsFacade;
+import com.c2point.tools.datalayer.MsgFacade;
+import com.c2point.tools.entity.person.OrgUser;
+import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.ui.repositoryview.ToolsListModel;
 
@@ -17,10 +21,45 @@ public class SetToolUserHandler extends AbstractHandler {
 	@Override
 	public ExitStatus handleCommand( ToolItem item ) {
 
-		CommandListener.ExitStatus exitStatus = CommandListener.ExitStatus.FAILED_UNKNOWN;
+		CommandListener.ExitStatus exitStatus = CommandListener.ExitStatus.UNKNOWN;
 		
 		logger.debug( "Handler 'Set Tool User' has been started. Tool: '" + item.getTool().getName() + "'" );
-		// TODO Auto-generated method stub
+		
+		// Set new user and change status
+		OrgUser oldUser = item.getCurrentUser();
+		
+		item.setReservedBy( null );
+		item.setStatus( ItemStatus.INUSE );
+		item.setCurrentUser( this.getModel().getSessionOwner()); 
+		
+		ToolItem updatedItem = ItemsFacade.getInstance().update( item );
+		
+		if ( updatedItem != null ) {
+			
+			if ( logger.isDebugEnabled()) logger.debug( "Specified Tool Item was updated: " + updatedItem );
+			
+			exitStatus = CommandListener.ExitStatus.ITEM_TOOKOVER;
+
+			getModel().fireToolChanged( updatedItem );
+			
+		} else {
+			
+			logger.error( "Failed to update ToolItem: " + item );
+			exitStatus = CommandListener.ExitStatus.FAILED_TOOKOVER;
+			
+		}
+		
+		// Save Info message
+		
+		if ( oldUser != null && exitStatus == CommandListener.ExitStatus.ITEM_TOOKOVER ) {
+			
+			if ( MsgFacade.getInstance().addToolBorrowedInfo( this.getModel().getSessionOwner(), oldUser, updatedItem )) {
+
+				if ( logger.isDebugEnabled()) logger.debug( "Message 'Tool Borrowed' was sent" );
+			
+			}
+		
+		}
 		
 		return exitStatus;
 	}

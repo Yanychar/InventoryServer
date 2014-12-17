@@ -5,13 +5,18 @@ import com.c2point.tools.entity.repository.ToolItem;
 public interface CommandListener {
 
 	public enum ExitStatus {
-		OK,
-		SENT_TO_USER,
-		SENT_TO_OWNER,
+		NONE,
+		REQUEST_SENT,
+		REQUEST_ACCEPTED,
+		REQUEST_REJECTED,
+		ITEM_TOOKOVER,
+		STATUS_CHANGED,
+		FAILED_TOOKOVER,
+		FAILED_CHANGE,
 		WRONG_ITEM,
 		WRONG_USER,
-		FAILED_UNKNOWN
-		
+		MSG_SENT,
+		UNKNOWN
 		
 	};
 	

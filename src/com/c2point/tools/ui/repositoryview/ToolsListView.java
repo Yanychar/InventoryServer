@@ -106,14 +106,14 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 			private static final long serialVersionUID = 1L;
 
 			public void valueChange( ValueChangeEvent event) {
-				if ( logger.isDebugEnabled()) logger.debug( "List of Tools selection were changed" );
+				if ( logger.isDebugEnabled()) logger.debug( "Selection were changed" );
 
 				try {
 					Item item = itemsTable.getItem( itemsTable.getValue());
-					model.toolSelected(( ToolItem ) item.getItemProperty( "data" ).getValue());
+					model.setSelectedItem(( ToolItem ) item.getItemProperty( "data" ).getValue());
 				} catch ( Exception e ) {
 					logger.debug( "No selection. Tool Item cannot be fetched from itemsList " );
-					model.toolSelected( null );
+					model.setSelectedItem( null );
 				}
 				
 			}
@@ -204,8 +204,16 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 	}
 
 	@Override
-	public void wasChanged( ToolItem repItem ) {
-		// TODO Auto-generated method stub
+	public void wasChanged( ToolItem item ) {
+
+		logger.debug( "Tool Items List receives notification: Tool Item was Changed!" );
+		
+		// Find correct Item. Start from selected one
+		// update row with data 
+		addOrUpdateItem( item );
+		
+		// set correct selection
+		itemsTable.setValue( item.getId());
 		
 	}
 
@@ -244,11 +252,7 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 			Label toolLabel = ( Label )item.getItemProperty( "tool" ).getValue();
 			String nameStr;
 				nameStr = "<b>" 
-						+ StringUtils.defaultString( toolItem.getTool().getName()) + " "
-						+ ( toolItem.getTool().getManufacturer() != null ?
-								StringUtils.defaultString( toolItem.getTool().getManufacturer().getName()) :
-								"" ) + " " 
-						+ StringUtils.defaultString( toolItem.getTool().getModel())
+						+ toolItem.getTool().getFullName()
 						+ "</b><br>"
 						+ StringUtils.defaultString( toolItem.getTool().getDescription())
 						;
@@ -290,13 +294,14 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 			case FREE:
 				return "style='color:green'"; 
 				
-			case BROKEN:
-			case INUSE:
-			case REPAIRING:
 			case RESERVED:
+			case BROKEN:
+			case REPAIRING:
 			case STOLEN:
 			case UNKNOWN:
 				return "style='color:red'"; 
+			case INUSE:
+				return "style='color:#FDD835'"; 
 
 		}
 		
