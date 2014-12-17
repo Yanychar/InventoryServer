@@ -55,7 +55,7 @@ public enum ItemStatus {
     	try {
     		return bundle.getString( "tool.item.status." + this.toString().toLowerCase());
     	} catch ( Exception e ) {
-    		
+    		logger.error( "Resource string '" + "tool.item.status." + this.toString().toLowerCase() + "' was not found");
     	}
     	
     	return this.toString();

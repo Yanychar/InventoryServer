@@ -2,7 +2,6 @@ package com.c2point.tools.resources;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -15,9 +14,7 @@ import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.MsgFacade;
 import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.entity.authentication.Account;
-import com.c2point.tools.entity.msg.MessageType;
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 
 @Path("/takeover")
@@ -90,11 +87,12 @@ public class TakeOverResource extends BaseResource {
 		
 		// Save Info message
 		
-		if ( MsgFacade.getInstance().addToolBorrowedInfo( account.getUser(), oldUser, updatedItem )) {
-			if ( logger.isDebugEnabled()) logger.debug( "ToolItem " + item + " was borrowed" );
-		} else {
-			throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
-		}
+		if ( oldUser != null )
+			if ( MsgFacade.getInstance().addToolBorrowedInfo( account.getUser(), oldUser, updatedItem )) {
+				if ( logger.isDebugEnabled()) logger.debug( "ToolItem " + item + " was borrowed" );
+			} else {
+				throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
+			}
 
 		return Response.ok().build();
 	

@@ -30,7 +30,9 @@ public class SessionData {
 	public OrgUser getOrgUser() { return orgUser; }
 	public void setOrgUser( OrgUser orgUser ) { 
 
-		this.orgUser = orgUser; 
+		this.orgUser = orgUser;
+		
+		this.context = new SecurityContext( orgUser );
 		
 	}
 	

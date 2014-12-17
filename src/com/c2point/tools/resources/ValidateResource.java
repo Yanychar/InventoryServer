@@ -2,7 +2,6 @@ package com.c2point.tools.resources;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -14,15 +13,11 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import com.c2point.tools.datalayer.DataFacade;
-import com.c2point.tools.datalayer.MsgFacade;
 import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.location.GeoLocation;
 import com.c2point.tools.entity.location.LocationRecord;
 import com.c2point.tools.entity.location.LocationStatus;
-import com.c2point.tools.entity.msg.MessageType;
-import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 
 @Path("/validated")

@@ -1,8 +1,6 @@
 package com.c2point.tools.ui.repositoryview.handlers;
 
 import com.c2point.tools.ui.repositoryview.ToolsListModel;
-import com.vaadin.server.Page;
-import com.vaadin.ui.Notification;
 
 public abstract class AbstractHandler implements CommandListener {
 
