@@ -224,20 +224,37 @@ public class ItemsFacade extends DataFacade {
 	public ToolItem updateTakeOwer( ToolItem item, OrgUser newUser ) {
 		
 		item.setReservedBy( null );
+		item.setCurrentUser( newUser ); 
+		return update( item );
+/*
+		item.setReservedBy( null );
 		return update( item, -1, newUser, null, ItemStatus.INUSE, null, null  );
+ */
 	}
 	
 	public ToolItem updateStatus( ToolItem item, ItemStatus status ) {
+	
+		item.setStatus( status );
+		return update( item );
 		
-		return update( item, -1, null, null, status, null, null  );
+/*
+ * 		return update( item, -1, null, null, status, null, null  );
+ */
 	}
+	
 	
 	public ToolItem updateLocation( ToolItem item, GeoLocation location ) {
+
+		item.setLastKnownLocation( location );
+		return update( item );
 		
-		return update( item, -1, null, null, null, location, null  );
+/*
+ * 		return update( item, -1, null, null, null, location, null  );
+*/
 	}
-	
-	private  ToolItem update( ToolItem item, 
+
+/*	
+	private  ToolItem update( ToolItem oldItem, 
 								int quantity,
 								OrgUser currentUser,
 								OrgUser reservedBy,
@@ -250,30 +267,43 @@ public class ItemsFacade extends DataFacade {
 		ToolItem newItem = null;
 		boolean wasChanged = false;
 		
-		if ( quantity >= 0 && quantity != item.getQuantity() ) { 
-			item.setQuantity( quantity ); 
+		if ( oldItem == null )
+			throw new IllegalArgumentException( "Valid ToolItem cannot be null!" );
+		
+		try {
+			
+			newItem = DataFacade.getInstance().find( ToolItem.class, oldItem.getId());
+			
+		} catch ( Exception e ) {
+			logger.error( "Failed to update ToolItem: " + oldItem );
+			logger.error( e );
+			return null;
+		}
+		
+		if ( quantity >= 0 && quantity != newItem.getQuantity() ) { 
+			newItem.setQuantity( quantity ); 
 			wasChanged = true; 
 		}
 		
-		if ( currentUser != null && currentUser != item.getCurrentUser()) { 
-			item.setCurrentUser( currentUser ); 
+		if ( currentUser != null && currentUser != newItem.getCurrentUser()) { 
+			newItem.setCurrentUser( currentUser ); 
 			wasChanged = true; 
 		}
 		
-		if ( reservedBy != null && reservedBy != item.getReservedBy()) { 
-			item.setReservedBy( reservedBy ); 
+		if ( reservedBy != null && reservedBy != newItem.getReservedBy()) { 
+			newItem.setReservedBy( reservedBy ); 
 			wasChanged = true; 
 		}
-		if ( status != null && status != item.getStatus()) { 
-			item.setStatus( status ); 
+		if ( status != null && status != newItem.getStatus()) { 
+			newItem.setStatus( status ); 
 			wasChanged = true; 
 		}
-		if ( lastKnownLocation != null && lastKnownLocation != item.getLastKnownLocation()) { 
-			item.setLastKnownLocation( lastKnownLocation ); 
+		if ( lastKnownLocation != null && lastKnownLocation != newItem.getLastKnownLocation()) { 
+			newItem.setLastKnownLocation( lastKnownLocation ); 
 			wasChanged = true; 
 		}
-		if ( barcode != null && barcode != item.getBarcode()) { 
-			item.setBarcode( barcode ); 
+		if ( barcode != null && barcode != newItem.getBarcode()) { 
+			newItem.setBarcode( barcode ); 
 			wasChanged = true; 
 		}
 		
@@ -291,7 +321,7 @@ public class ItemsFacade extends DataFacade {
 		
 		return newItem;
 	}
-
+*/
 	public ToolItem update( ToolItem item ) { 
 
 		ToolItem newItem = null;
@@ -311,13 +341,24 @@ public class ItemsFacade extends DataFacade {
 		
 		newItem.setTool( item.getTool());
 		newItem.setQuantity( item.getQuantity());
+		
 		newItem.setResponsible( item.getResponsible());
 		newItem.setCurrentUser( item.getCurrentUser());
 		newItem.setReservedBy( item.getReservedBy());
+		
 		newItem.setStatus( item.getStatus());
+
 		newItem.setLastKnownLocation( item.getLastKnownLocation());
+		
 		newItem.setSerialNumber( item.getSerialNumber());
 		newItem.setBarcode( item.getBarcode());
+		
+		newItem.setPersonalFlag( item.isPersonalFlag());
+
+		newItem.setBuyTime( item.getBuyTime());
+		newItem.setMaintenance( item.getMaintenance());
+		newItem.setPrice( item.getPrice());
+		newItem.setTakuu( item.getTakuu());
 		
 		try {
 			newItem = DataFacade.getInstance().merge( newItem );
