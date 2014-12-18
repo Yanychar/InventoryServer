@@ -99,6 +99,7 @@ import com.c2point.tools.entity.tool.Tool;
 			+ "( LOCATE( :searchStr, UPPER( item.tool.name )) > 0 OR "
 			+ "  LOCATE( :searchStr, UPPER( item.tool.description )) > 0 OR "
 			+ "  LOCATE( :searchStr, UPPER( item.tool.manufacturer.name )) > 0 OR "
+			+ "  LOCATE( :searchStr, UPPER( item.tool.model )) > 0 OR "
 			+ "  LOCATE( :searchStr, UPPER( item.serialNumber )) > 0 OR"
 			+ "  LOCATE( :searchStr, UPPER( item.barcode )) > 0 ) "
 			+ "ORDER BY item.tool.name ASC"

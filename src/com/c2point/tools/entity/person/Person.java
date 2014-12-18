@@ -6,13 +6,10 @@ import java.util.Map;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import com.c2point.tools.entity.SimplePojo;

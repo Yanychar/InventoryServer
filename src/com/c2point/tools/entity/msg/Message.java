@@ -129,12 +129,11 @@ public class Message extends SimplePojo {
 	public MessageStatus getStatus() { return status; }
 	public void setStatus(MessageStatus status) { this.status = status; }
 
-	public LocalDate getDate() { return LocalDate.fromDateFields( getDateForDB()); }
-	public void setDate( LocalDate date ) { setDateForDB( date.toDate()); }
+	public LocalDate getDate() { return ( getDateForDB() != null ? LocalDate.fromDateFields( getDateForDB()) : null ); }
+	public void setDate( LocalDate date ) { setDateForDB( date != null ? date.toDate() : null ); }
 
-	//@Column(name="date")
-	//@Temporal(TemporalType.DATE)
-	//@Access(AccessType.PROPERTY)
+	
+	
 	protected Date getDateForDB() { return this.dateForDB; }
 	protected void setDateForDB( Date dateForDB ) { this.dateForDB = dateForDB; }	
     

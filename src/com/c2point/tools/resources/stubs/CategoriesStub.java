@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.c2point.tools.entity.tool.Category;
 
 @XmlRootElement
