@@ -9,8 +9,11 @@ import javax.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.tool.Category;
+import com.c2point.tools.entity.transactions.TransactionOperation;
+import com.vaadin.ui.UI;
 
 public class CategoriesFacade {
 	
@@ -91,6 +94,11 @@ public class CategoriesFacade {
 		
 		try {
 			newCategory = DataFacade.getInstance().insert( category );
+			
+			TransactionsFacade.getInstance().writeCategory( 
+					(( InventoryUI )UI.getCurrent()).getSessionOwner(), 
+					TransactionOperation.ADD );
+			
 		} catch ( Exception e ) {
 			logger.error( "Failed to add Category: " + category );
 			logger.error( e );

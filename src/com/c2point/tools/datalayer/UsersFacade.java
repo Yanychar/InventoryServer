@@ -11,8 +11,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
+import com.c2point.tools.entity.transactions.TransactionOperation;
+import com.vaadin.ui.UI;
 
 public class UsersFacade extends DataFacade {
 
@@ -143,8 +146,15 @@ public class UsersFacade extends DataFacade {
 			logger.error( e );
 			return null;
 		}
-		
 
+		try {
+			OrgUser whoDid = (( InventoryUI )UI.getCurrent()).getSessionOwner();
+			TransactionsFacade.getInstance().writeUser( whoDid, newUser, TransactionOperation.EDIT );
+			
+		} catch ( Exception e ) {
+			logger.error( "Cannot identify who edited User");
+		}
+		
 		if ( logger.isDebugEnabled() && newUser != null ) 
 			logger.debug( "OrgUser has been updated: " + newUser );
 		
@@ -167,8 +177,15 @@ public class UsersFacade extends DataFacade {
 			logger.error( e );
 			return null;
 		}
-		
 
+		try {
+			OrgUser whoDid = (( InventoryUI )UI.getCurrent()).getSessionOwner();
+			TransactionsFacade.getInstance().writeUser( whoDid, newUser, TransactionOperation.ADD );
+			
+		} catch ( Exception e ) {
+			logger.error( "Cannot identify who added User");
+		}
+		
 		if ( logger.isDebugEnabled() && newUser != null ) 
 			logger.debug( "OrgUser has been added: " + newUser );
 		

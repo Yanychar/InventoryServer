@@ -11,8 +11,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.person.OrgUser;
+import com.c2point.tools.entity.transactions.TransactionOperation;
+import com.vaadin.ui.UI;
 
 public class AuthenticationFacade {
 	private static Logger logger = LogManager.getLogger( AuthenticationFacade.class.getName()); 
@@ -77,15 +80,9 @@ public class AuthenticationFacade {
 		}
 		
 		if ( account != null ) {
-/*
-			try {
-				OrgUser user = account.getUser();
-				DateTime date = account.getDateSessionStarted();
-				writeTransaction( new AuthenticateTransaction( user, date, version, imei ));
-			} catch ( JAXBException e ) {
-				logger.error( "Cannot convert to XML for transaction log (logIn): " + account );
-			}
-*/			
+
+			TransactionsFacade.getInstance().writeLogin( account.getUser());
+			
 		} else {
 			if ( logger.isDebugEnabled()) logger.debug( "'" + usrName + "' not authenticated!" );
 		}
@@ -102,12 +99,8 @@ public class AuthenticationFacade {
 		account = DataFacade.getInstance().merge( account );
 		if ( logger.isDebugEnabled()) logger.debug( "Session for " + account.getUser() + " closed!" );
 		
-		// Create and store LogOutTransaction
-//		try {
-//			writeTransaction( new LogoutTransaction( account.getUser(), DateUtil.getDate(), bAutomatic ));
-//		} catch ( JAXBException e ) {
-//			logger.error( "Cannot convert to XML for transaction log (logOut): " + account );
-//		}
+		if ( account != null )
+			TransactionsFacade.getInstance().writeLogout( account.getUser());
 		
 		bRes = true;
 		
@@ -171,6 +164,12 @@ public class AuthenticationFacade {
 		
 		try {
 			account = DataFacade.getInstance().insert( account );
+			
+			TransactionsFacade.getInstance().writeAccount( 
+					(( InventoryUI )UI.getCurrent()).getSessionOwner(), 
+					user, 
+					TransactionOperation.ADD );
+			
 		} catch ( Exception e) {
 			logger.error( "Cannot add account\n" + e );
 		}
@@ -193,6 +192,12 @@ public class AuthenticationFacade {
 		
 		try {
 			DataFacade.getInstance().remove( existingAccount );
+			
+			TransactionsFacade.getInstance().writeAccount( 
+					(( InventoryUI )UI.getCurrent()).getSessionOwner(), 
+					user, 
+					TransactionOperation.DELETE );
+			
 		} catch ( Exception e) {
 			logger.error( "Cannot remove account\n" + e );
 			

@@ -11,6 +11,7 @@ import javax.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.location.GeoLocation;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
@@ -21,6 +22,8 @@ import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.tool.identity.ToolIdentity;
 import com.c2point.tools.entity.tool.identity.ToolIdentityType;
+import com.c2point.tools.entity.transactions.TransactionOperation;
+import com.vaadin.ui.UI;
 
 public class ItemsFacade extends DataFacade {
 
@@ -220,110 +223,68 @@ public class ItemsFacade extends DataFacade {
 		return results;
 	}
 
-	
 	public ToolItem updateTakeOwer( ToolItem item, OrgUser newUser ) {
+		return updateTakeOwer( null, item, newUser );
+	}
+	
+	public ToolItem updateTakeOwer( OrgUser whoDid, ToolItem item, OrgUser newUser ) {
 		
 		item.setReservedBy( null );
 		item.setCurrentUser( newUser ); 
-		return update( item );
-/*
-		item.setReservedBy( null );
-		return update( item, -1, newUser, null, ItemStatus.INUSE, null, null  );
- */
+		return update( whoDid, item );
 	}
 	
 	public ToolItem updateStatus( ToolItem item, ItemStatus status ) {
+		return updateStatus( null, item, status );
+	}
+	
+	public ToolItem updateStatus( OrgUser whoDid, ToolItem item, ItemStatus status ) {
 	
 		item.setStatus( status );
-		return update( item );
-		
-/*
- * 		return update( item, -1, null, null, status, null, null  );
- */
+		return update( whoDid, item );
+
 	}
-	
 	
 	public ToolItem updateLocation( ToolItem item, GeoLocation location ) {
+		return updateLocation( null, item, location );
+	}	
+	public ToolItem updateLocation( OrgUser whoDid, ToolItem item, GeoLocation location ) {
 
 		item.setLastKnownLocation( location );
-		return update( item );
+		return update( whoDid, item );
 		
-/*
- * 		return update( item, -1, null, null, null, location, null  );
-*/
 	}
 
-/*	
-	private  ToolItem update( ToolItem oldItem, 
-								int quantity,
-								OrgUser currentUser,
-								OrgUser reservedBy,
-								ItemStatus status,
-								GeoLocation lastKnownLocation,
-								String barcode
-								
-								) {
-
-		ToolItem newItem = null;
-		boolean wasChanged = false;
-		
-		if ( oldItem == null )
-			throw new IllegalArgumentException( "Valid ToolItem cannot be null!" );
-		
-		try {
-			
-			newItem = DataFacade.getInstance().find( ToolItem.class, oldItem.getId());
-			
-		} catch ( Exception e ) {
-			logger.error( "Failed to update ToolItem: " + oldItem );
-			logger.error( e );
-			return null;
-		}
-		
-		if ( quantity >= 0 && quantity != newItem.getQuantity() ) { 
-			newItem.setQuantity( quantity ); 
-			wasChanged = true; 
-		}
-		
-		if ( currentUser != null && currentUser != newItem.getCurrentUser()) { 
-			newItem.setCurrentUser( currentUser ); 
-			wasChanged = true; 
-		}
-		
-		if ( reservedBy != null && reservedBy != newItem.getReservedBy()) { 
-			newItem.setReservedBy( reservedBy ); 
-			wasChanged = true; 
-		}
-		if ( status != null && status != newItem.getStatus()) { 
-			newItem.setStatus( status ); 
-			wasChanged = true; 
-		}
-		if ( lastKnownLocation != null && lastKnownLocation != newItem.getLastKnownLocation()) { 
-			newItem.setLastKnownLocation( lastKnownLocation ); 
-			wasChanged = true; 
-		}
-		if ( barcode != null && barcode != newItem.getBarcode()) { 
-			newItem.setBarcode( barcode ); 
-			wasChanged = true; 
-		}
-		
-		
-		if( wasChanged ) {
-			
-			newItem = DataFacade.getInstance().merge( item );
-
-		} else {
-			// Noting to update 
-			newItem = item;
-		}
-		
-
-		
-		return newItem;
+	public ToolItem updateUser( ToolItem item, OrgUser newUser ) {
+		return updateUser( null, item, newUser );
 	}
-*/
+		
+	public ToolItem updateUser( OrgUser whoDid, ToolItem item, OrgUser newUser ) {
+		
+		item.setReservedBy( null );
+		item.setStatus( ItemStatus.INUSE );
+		item.setCurrentUser( newUser ); 
+		
+		return update( whoDid, item );
+		
+	}
+
 	public ToolItem update( ToolItem item ) { 
+		return update( null, item ); 
+	}
+		
+	public ToolItem update( OrgUser whoDid, ToolItem item ) { 
 
+		if ( whoDid == null ) {
+			
+			try {
+				whoDid = (( InventoryUI )UI.getCurrent()).getSessionOwner();
+			} catch ( Exception e ) {
+				logger.error( "Cannot identify who are doing update");
+			}
+		}
+		
+		
 		ToolItem newItem = null;
 
 		if ( item == null )
@@ -339,15 +300,34 @@ public class ItemsFacade extends DataFacade {
 			return null;
 		}
 		
+		boolean userUpdatedFlag = false;
+		OrgUser oldUser = newItem.getCurrentUser();
+		boolean statusUpdatedFlag = false;
+		ItemStatus oldStatus = newItem.getStatus();
+		
 		newItem.setTool( item.getTool());
 		newItem.setQuantity( item.getQuantity());
 		
 		newItem.setResponsible( item.getResponsible());
-		newItem.setCurrentUser( item.getCurrentUser());
+		
+		if ( oldUser != null && item.getCurrentUser() == null
+			||
+			oldUser == null && item.getCurrentUser() != null
+			|| 
+			oldUser != null && item.getCurrentUser() != null 
+			  && oldUser.getId() != item.getCurrentUser().getId()	
+		) {
+			newItem.setCurrentUser( item.getCurrentUser());
+			userUpdatedFlag = true;
+		}
+		
 		newItem.setReservedBy( item.getReservedBy());
 		
-		newItem.setStatus( item.getStatus());
-
+		if ( oldStatus != item.getStatus()) {
+			newItem.setStatus( item.getStatus());
+			statusUpdatedFlag = true;
+		}
+		
 		newItem.setLastKnownLocation( item.getLastKnownLocation());
 		
 		newItem.setSerialNumber( item.getSerialNumber());
@@ -362,6 +342,22 @@ public class ItemsFacade extends DataFacade {
 		
 		try {
 			newItem = DataFacade.getInstance().merge( newItem );
+			
+			if ( whoDid != null ) {
+				TransactionsFacade.getInstance().writeToolItem( whoDid, newItem, TransactionOperation.EDIT );
+	
+				if ( userUpdatedFlag == true ) {
+					TransactionsFacade.getInstance().writeToolItemUserChanged( 	whoDid, newItem, 
+																				oldUser, newItem.getCurrentUser()); 
+							
+				}
+	
+				if ( statusUpdatedFlag == true ) {
+					TransactionsFacade.getInstance().writeToolItemStatus( whoDid, newItem ); 
+							
+				}
+			}
+			
 		} catch ( Exception e ) {
 			logger.error( "Failed to update ToolItem: " + item );
 			logger.error( e );
@@ -395,6 +391,15 @@ public class ItemsFacade extends DataFacade {
 		
 		try {
 			newItem = DataFacade.getInstance().merge( newItem );
+
+			try {
+				OrgUser whoDid = (( InventoryUI )UI.getCurrent()).getSessionOwner();
+				TransactionsFacade.getInstance().writeToolItem( whoDid, newItem, TransactionOperation.DELETE );
+				
+			} catch ( Exception e ) {
+				logger.error( "Cannot identify who delete ToolItem");
+			}
+			
 		} catch ( Exception e ) {
 			logger.error( "Failed to delete ToolItem: " + item );
 			logger.error( e );
@@ -498,6 +503,15 @@ public class ItemsFacade extends DataFacade {
 		
 		try {
 			newItem = DataFacade.getInstance().insert( item );
+			
+			try {
+				OrgUser whoDid = (( InventoryUI )UI.getCurrent()).getSessionOwner();
+				TransactionsFacade.getInstance().writeToolItem( whoDid, newItem, TransactionOperation.ADD );
+				
+			} catch ( Exception e ) {
+				logger.error( "Cannot identify who add ToolItem");
+			}
+			
 		} catch ( Exception e ) {
 			logger.error( "Failed to add ToolItem: " + item );
 			logger.error( e );

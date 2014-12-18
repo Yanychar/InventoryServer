@@ -105,7 +105,7 @@ public class ValidateResource extends BaseResource {
 		}
 		
 		// Update last location within toolitem
-		ToolItem updatedItem = ItemsFacade.getInstance().updateLocation( item, location );
+		ToolItem updatedItem = ItemsFacade.getInstance().updateLocation( account.getUser(), item, location );
 		
 		if ( updatedItem != null ) {
 			if ( logger.isDebugEnabled()) logger.debug( "Specified Tool Item with Id=" + item.getId() + " has been updated" );

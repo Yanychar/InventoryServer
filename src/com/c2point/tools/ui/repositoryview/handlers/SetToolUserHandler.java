@@ -28,11 +28,7 @@ public class SetToolUserHandler extends AbstractHandler {
 		// Set new user and change status
 		OrgUser oldUser = item.getCurrentUser();
 		
-		item.setReservedBy( null );
-		item.setStatus( ItemStatus.INUSE );
-		item.setCurrentUser( this.getModel().getSessionOwner()); 
-		
-		ToolItem updatedItem = ItemsFacade.getInstance().update( item );
+		ToolItem updatedItem = ItemsFacade.getInstance().updateUser( item, this.getModel().getSessionOwner());
 		
 		if ( updatedItem != null ) {
 			

@@ -12,9 +12,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.organisation.Organisation;
+import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Tool;
+import com.c2point.tools.entity.transactions.TransactionOperation;
+import com.vaadin.ui.UI;
 
 public class ToolsFacade extends DataFacade {
 
@@ -141,12 +145,20 @@ public class ToolsFacade extends DataFacade {
 		
 		try {
 			newTool = DataFacade.getInstance().insert( tool );
+			
 		} catch ( Exception e ) {
 			logger.error( "Failed to add Tool: " + tool );
 			logger.error( e );
 			return null;
 		}
 		
+		try {
+			OrgUser whoDid = (( InventoryUI )UI.getCurrent()).getSessionOwner();
+			TransactionsFacade.getInstance().writeTool( whoDid, newTool, TransactionOperation.ADD );
+			
+		} catch ( Exception e ) {
+			logger.error( "Cannot identify who add Tool");
+		}
 
 		if ( logger.isDebugEnabled() && newTool != null ) 
 			logger.debug( "Tool has been added: " + newTool );

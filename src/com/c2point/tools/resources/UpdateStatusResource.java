@@ -74,7 +74,7 @@ public class UpdateStatusResource extends BaseResource {
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
 		
-		ToolItem updatedItem = ItemsFacade.getInstance().updateStatus( item, newStatus );
+		ToolItem updatedItem = ItemsFacade.getInstance().updateStatus( account.getUser(), item, newStatus );
 		
 		if ( updatedItem != null ) {
 			if ( logger.isDebugEnabled()) logger.debug( "Specified Tool Item with Id=" + item.getId() + " has been updated."

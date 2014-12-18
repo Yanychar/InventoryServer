@@ -80,6 +80,16 @@ public class InventoryUI extends UI implements LoginListener {
 		return sessionData;
 	}
 
+	public OrgUser getSessionOwner() {
+		
+		if ( sessionData != null ) 
+			
+			return sessionData.getOrgUser();
+		
+		return null;
+		
+	}
+	
 	public void deleteCookies() {
 		storeInCookies( null, null, false, "" );
 	}
