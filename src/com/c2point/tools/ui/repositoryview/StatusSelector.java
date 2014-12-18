@@ -63,8 +63,6 @@ public class StatusSelector extends Window {
 		boolean freeAllowed = Boolean.parseBoolean(
 				SettingsFacade.getInstance().getProperty( org, "FreeStatusAllowed", "false" ));
 		
-		freeAllowed = true;
-		
 		single = new OptionGroup();
 		for ( ItemStatus status : ItemStatus.values()) {
 			if ( status != ItemStatus.UNKNOWN 
