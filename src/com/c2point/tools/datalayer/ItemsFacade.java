@@ -222,7 +222,7 @@ public class ItemsFacade extends DataFacade {
 		
 		return results;
 	}
-
+/*
 	public ToolItem updateTakeOwer( ToolItem item, OrgUser newUser ) {
 		return updateTakeOwer( null, item, newUser );
 	}
@@ -233,7 +233,7 @@ public class ItemsFacade extends DataFacade {
 		item.setCurrentUser( newUser ); 
 		return update( whoDid, item );
 	}
-	
+*/	
 	public ToolItem updateStatus( ToolItem item, ItemStatus status ) {
 		return updateStatus( null, item, status );
 	}

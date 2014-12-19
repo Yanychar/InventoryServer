@@ -77,7 +77,7 @@ public class TakeOverResource extends BaseResource {
 		// Set new user and change status
 		OrgUser oldUser = item.getCurrentUser();
 		
-		ToolItem updatedItem = ItemsFacade.getInstance().updateTakeOwer( account.getUser(), item, account.getUser());
+		ToolItem updatedItem = ItemsFacade.getInstance().updateUser( account.getUser(), item, account.getUser());
 		
 		if ( updatedItem != null ) {
 			if ( logger.isDebugEnabled()) logger.debug( "Specified Tool Item with Id=" + item.getId() + " has been updated" );

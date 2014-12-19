@@ -113,7 +113,6 @@ public class TransactionsFacade extends DataFacade {
 		BaseTransaction trn = new BaseTransaction( whoDid, TransactionType.TOOLITEM, TransactionOperation.NEWSTATUS );
 		
 		trn.setToolItem(  item );
-		trn.setTool( item.getTool());
 		trn.setNewStatus( item.getStatus());
 		
 		return write( trn ); 
@@ -127,7 +126,6 @@ public class TransactionsFacade extends DataFacade {
 		BaseTransaction trn = new BaseTransaction( whoDid, TransactionType.TOOLITEM, TransactionOperation.NEWUSER );
 		
 		trn.setToolItem(  item );
-		trn.setTool( item.getTool());
 		trn.setSourceUser( oldUser );
 		trn.setDestUser( newUser );
 		
@@ -142,7 +140,6 @@ public class TransactionsFacade extends DataFacade {
 		BaseTransaction trn = new BaseTransaction( whoDid, TransactionType.TOOLITEM, op );
 		
 		trn.setToolItem(  item );
-		trn.setTool( item.getTool());
 		
 		return write( trn ); 
 	}

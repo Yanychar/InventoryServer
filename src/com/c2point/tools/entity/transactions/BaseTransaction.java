@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import com.c2point.tools.entity.SimplePojo;
+import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
@@ -29,6 +30,12 @@ public class BaseTransaction extends SimplePojo {
 	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( BaseTransaction.class.getName()); 
 
+	/*
+	 * Organisation this transzction referred to 
+	 */
+	private Organisation	org;
+	
+	
 	/**
 	 * Date and time of transaction
 	 */
@@ -83,13 +90,17 @@ public class BaseTransaction extends SimplePojo {
 	
 	public BaseTransaction( DateTime date, OrgUser user, TransactionType type, TransactionOperation op ) {
 		super();
-		
+
+		setOrg( user != null ? user.getOrganisation() : null );
 		setDate( date );
 		setUser( user );
 		setTrnType( type );
 		setTrnOperation( op );		
 	}
 	
+	public Organisation getOrg() { return org; }
+	public void setOrg(Organisation org) { this.org = org; }
+
 	/**
 	 * Used to store/retrieve Java date. Internal use
 	 */
@@ -114,7 +125,10 @@ public class BaseTransaction extends SimplePojo {
 	 * potential source of items/messages/etc. moving
 	 */
 	public OrgUser getSourceUser() { return sourceUser; }
-	public void setSourceUser( OrgUser sourceUser ) { this.sourceUser = sourceUser; }
+	public void setSourceUser( OrgUser sourceUser ) { 
+		this.sourceUser = sourceUser;
+		this.org = sourceUser.getOrganisation();
+	}
 	
 	/**
 	 * Used to read/save the OrgUser who is the
@@ -127,13 +141,19 @@ public class BaseTransaction extends SimplePojo {
 	 * Used to read/save the Tool if it is participating in transaction
 	 */
 	public Tool getTool() { return tool; }
-	public void setTool( Tool tool ) { this.tool = tool; }
+	public void setTool( Tool tool ) { 
+		this.tool = tool;
+		setOrg( tool.getOrg());
+	}
 
 	/**
 	 * Used to read/save the ToolItem if it is participating in transaction
 	 */
 	public ToolItem getToolItem() { return toolItem; }
-	public void setToolItem( ToolItem toolItem ) { this.toolItem = toolItem; }
+	public void setToolItem( ToolItem toolItem ) { 
+		this.toolItem = toolItem;
+		setTool( toolItem.getTool());
+	}
 	
 	/**
 	 * Used to get/set text data (length < 255)
