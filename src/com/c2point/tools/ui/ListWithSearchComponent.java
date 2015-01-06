@@ -74,7 +74,6 @@ public class ListWithSearchComponent extends VerticalLayout {
 		
 	}
 	
-	
 	protected void setContainerForSearch( Container dataSource ) {
 
 		if ( dataSource instanceof Container.Filterable ) {

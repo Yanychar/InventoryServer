@@ -1,5 +1,13 @@
 package com.c2point.tools.datalayer;
 
+import java.util.Collection;
+import java.util.Date;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -123,7 +131,7 @@ public class TransactionsFacade extends DataFacade {
 	 */
 	public boolean writeToolItemUserChanged( OrgUser whoDid, ToolItem item, OrgUser oldUser, OrgUser newUser ) {
 		
-		BaseTransaction trn = new BaseTransaction( whoDid, TransactionType.TOOLITEM, TransactionOperation.NEWUSER );
+		BaseTransaction trn = new BaseTransaction( whoDid, TransactionType.TOOLITEM, TransactionOperation.USERCHANGED );
 		
 		trn.setToolItem(  item );
 		trn.setSourceUser( oldUser );
@@ -162,5 +170,51 @@ public class TransactionsFacade extends DataFacade {
 		return write( trn ); 
 	}
 
-	
+/*
+ * Below methods to fetch transactions according to the particular criterias
+ */
+	public Collection<BaseTransaction> getTransactions( OrgUser user, Date dateStart, Date dateEnd ) {
+		
+		if ( user == null || user.getOrganisation() == null ) {
+			throw new IllegalArgumentException( "Valid User and User.organisation cannot be null!" );
+		}
+		if ( dateStart == null ) {
+			dateStart = new Date( new Date().getTime() - 1000 * 60*60*24 * 30 * 6 );
+		}
+		if ( dateEnd == null ) {
+			dateEnd = new Date( new Date().getTime() + 1000 * 60*60*24 );
+		}
+
+
+		
+		Collection<BaseTransaction> results = null;
+		
+		EntityManager em = DataFacade.getInstance().createEntityManager();
+		TypedQuery<BaseTransaction> query = null;
+		String queryName = "listTransactionsForUser";
+		
+		
+		try {
+			query = em.createNamedQuery( queryName, BaseTransaction.class )
+						.setParameter( "user", user )
+						.setParameter( "org", user.getOrganisation())
+						.setParameter( "startDate", dateStart, TemporalType.DATE )
+						.setParameter( "endDate", dateEnd, TemporalType.DATE );
+			
+			results = query.getResultList();
+			if ( logger.isDebugEnabled()) logger.debug( "**** Fetched list of Transactions. Size = " + results.size());
+		} catch ( NoResultException e ) {
+			if ( logger.isDebugEnabled()) logger.debug( "No Transactions found!" );
+		} catch ( Exception e ) {
+			results = null;
+			logger.error( e );
+		} finally {
+			em.close();
+			releaseInstance();
+		}
+
+		
+		return results;
+		
+	}
 }

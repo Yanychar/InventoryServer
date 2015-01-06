@@ -10,6 +10,7 @@ import com.c2point.tools.ui.msg.MessagesView;
 import com.c2point.tools.ui.repositoryview.RepositoryManagementView;
 import com.c2point.tools.ui.repositoryview.ToolsListModel;
 import com.c2point.tools.ui.settings.SettingsView;
+import com.c2point.tools.ui.transactions.TransactionsManagementView;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractComponentContainer;
@@ -147,7 +148,7 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
             public void buttonClick( ClickEvent event ) {
 				
 				logger.debug( "Transaction button pressed!" );
-				otherButtonPressed();
+				transButtonPressed();
                 
             }
         });
@@ -312,7 +313,18 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 		mainSplit.setSecondComponent( new MessagesView());
 		
     }
-    
+
+    private void transButtonPressed() {
+
+		try {
+			mainSplit.removeComponent( mainSplit.getSecondComponent());
+		} catch( Exception e ) {
+			
+		}
+    	
+		mainSplit.setSecondComponent( new TransactionsManagementView());
+    	
+    }
     private void settingsButtonPressed(){
 
 		try {

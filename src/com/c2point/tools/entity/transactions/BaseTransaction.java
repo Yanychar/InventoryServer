@@ -3,6 +3,8 @@ package com.c2point.tools.entity.transactions;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -21,10 +23,18 @@ import com.c2point.tools.entity.tool.Tool;
 
 @Entity
 @Table( name = "transactions")
-//@Inheritance( strategy=InheritanceType.SINGLE_TABLE )
-//@DiscriminatorColumn(name="TYPE", discriminatorType=DiscriminatorType.STRING,length=20)
-//@DiscriminatorValue("unknown")
-//@Customizer( TransactionCustomizer.class )
+@NamedQueries({
+	@NamedQuery( name = "listTransactionsForUser", 
+			query = "SELECT trn FROM BaseTransaction trn " +
+				"WHERE " 
+				+ "trn.org = :org AND "
+				+ "( trn.trnType = com.c2point.tools.entity.transactions.TransactionType.TOOL OR "
+				+ "  trn.trnType = com.c2point.tools.entity.transactions.TransactionType.TOOLITEM ) AND " 
+				+ "( trn.sourceUser = :user OR trn.destUser = :user or trn.user = :user ) AND "
+				+ "trn.dateForDb >= :startDate AND trn.dateForDb <= :endDate " 
+				+ "ORDER BY trn.tool.name ASC"
+	),
+})
 
 public class BaseTransaction extends SimplePojo {
 	@SuppressWarnings("unused")
