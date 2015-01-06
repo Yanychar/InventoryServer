@@ -16,7 +16,21 @@
 	@include  chameleon;
 //	@include  runo;
 
+	/* Insert your theme rules here */
+	
+	/* Lay the options horizontally */
+	.v-select-optiongroup-horizontalgroup .v-select-option {
+		display: inline-block;
+	}
 
+	/* Avoid wrapping if the layout is too tight */
+	.v-select-optiongroup-horizontalgroup {
+		white-space: nowrap;
+	}
 
-  /* Insert your theme rules here */
+	/* Some extra spacing is needed */
+	.v-select-optiongroup-horizontalgroup .v-select-option.v-radiobutton {
+		padding-right: 10px;
+	}
+
 }
