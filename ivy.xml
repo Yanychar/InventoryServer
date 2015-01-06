@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE ivy-module [
-	<!ENTITY vaadin.version "7.3.5">
+	<!ENTITY vaadin.version "7.3.6">
 ]>
 <ivy-module version="2.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -56,7 +56,7 @@
 		<dependency org="org.glassfish.jersey.containers" name="jersey-container-servlet" rev="2.4"/>
 		<dependency org="javax.ws.rs" name="javax.ws.rs-api" rev="2.0"/>
 		<dependency org="org.glassfish.jersey.media" name="jersey-media-json-jackson" rev="2.4"/>
-
+		
 		<!-- ConfirmDialog Vaadin add-on -->
 		<dependency org="org.vaadin.addon" name="confirmdialog" rev="2.1.1" />
 		
