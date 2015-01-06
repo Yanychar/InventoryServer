@@ -29,7 +29,7 @@
 	}
 
 .v-vaadin-version:after {
-	content: "7.3.6";
+	content: "7.3.5";
 }
 
 .v-generated-body {
@@ -5719,4 +5719,16 @@ body .inventory.v-app .v-app-loading {
 
 .inventory .v-csslayout-toolbar .segment .v-button {
 	margin-right: 0;
+}
+
+.inventory .v-select-optiongroup-horizontalgroup .v-select-option {
+	display: inline-block;
+}
+
+.inventory .v-select-optiongroup-horizontalgroup {
+	white-space: nowrap;
+}
+
+.inventory .v-select-optiongroup-horizontalgroup .v-select-option.v-radiobutton {
+	padding-right: 10px;
 }
