@@ -217,4 +217,49 @@ public class TransactionsFacade extends DataFacade {
 		return results;
 		
 	}
+
+	public Collection<BaseTransaction> getTransactions( Tool tool, Date dateStart, Date dateEnd ) {
+		
+		if ( tool == null  ) {
+			throw new IllegalArgumentException( "Valid Tool cannot be null!" );
+		}
+		if ( dateStart == null ) {
+			dateStart = new Date( new Date().getTime() - 1000 * 60*60*24 * 30 * 6 );
+		}
+		if ( dateEnd == null ) {
+			dateEnd = new Date( new Date().getTime() + 1000 * 60*60*24 );
+		}
+
+
+		
+		Collection<BaseTransaction> results = null;
+		
+		EntityManager em = DataFacade.getInstance().createEntityManager();
+		TypedQuery<BaseTransaction> query = null;
+		String queryName = "listTransactionsForTool";
+		
+		
+		try {
+			query = em.createNamedQuery( queryName, BaseTransaction.class )
+						.setParameter( "tool", tool )
+						.setParameter( "org", tool.getOrg())
+						.setParameter( "startDate", dateStart, TemporalType.DATE )
+						.setParameter( "endDate", dateEnd, TemporalType.DATE );
+			
+			results = query.getResultList();
+			if ( logger.isDebugEnabled()) logger.debug( "**** Fetched list of Transactions. Size = " + results.size());
+		} catch ( NoResultException e ) {
+			if ( logger.isDebugEnabled()) logger.debug( "No Transactions found!" );
+		} catch ( Exception e ) {
+			results = null;
+			logger.error( e );
+		} finally {
+			em.close();
+			releaseInstance();
+		}
+
+		
+		return results;
+		
+	}
 }

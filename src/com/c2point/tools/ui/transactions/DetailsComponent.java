@@ -6,6 +6,7 @@ import org.joda.time.format.DateTimeFormat;
 
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
+import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.transactions.BaseTransaction;
 import com.c2point.tools.entity.transactions.TransactionOperation;
 import com.c2point.tools.ui.transactions.TransactionsListModel.ViewMode;
@@ -49,9 +50,9 @@ public class DetailsComponent extends Panel implements TransactionModelListener 
 		content = new GridLayout( 5, 4 );
 		setContent( content );
 		content.setWidth( "100%" );
-		content.setColumnExpandRatio( 0, 1 );
+		content.setColumnExpandRatio( 0, 0.5f );
 		content.setColumnExpandRatio( 1, 1 );
-		content.setColumnExpandRatio( 2, 1 );
+		content.setColumnExpandRatio( 2, 0.5f );
 		content.setColumnExpandRatio( 3, 1 );
 		content.setColumnExpandRatio( 4, 5 );
 		
@@ -122,23 +123,12 @@ public class DetailsComponent extends Panel implements TransactionModelListener 
 	}
 
 	@Override
-	public void viewTypeChanged(ViewMode mode) {
-		
-	}
-
-	@Override
 	public void modelWasRead() {
-		clearContent();			
-	}
-
-	@Override
-	public void toolSelected(ToolItem toolItem) {
 //		clearContent();			
 	}
 
 	@Override
-	public void userSelected(OrgUser user) {
-//		this.getContent().setVisible( false );
+	public void userSelected( OrgUser user ) {
 		clearContent();			
 	}
 
@@ -185,6 +175,13 @@ public class DetailsComponent extends Panel implements TransactionModelListener 
 		}
 		
 	}
+
+	@Override
+	public void viewTypeChanged(ViewMode mode) { }
+	@Override
+	public void toolSelected( Tool tool ) { }
+	@Override
+	public void toolItemSelected( ToolItem toolItem ) { }
 	
 	private void clearContent() {
 
@@ -192,6 +189,11 @@ public class DetailsComponent extends Panel implements TransactionModelListener 
 		who.setValue( "" );
 		type.setValue( "" );
 		operation.setValue( "" );
+
+		fieldName_1.setValue( "" );
+		fieldValue_1.setValue( "" );
+		fieldName_2.setValue( "" );
+		fieldValue_2.setValue( "" );
 		
 	}
 

@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.entity.person.OrgUser;
+import com.c2point.tools.entity.tool.Tool;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.shared.ui.combobox.FilteringMode;
@@ -66,6 +67,7 @@ public class ViewSelectorComponent extends Panel {
 										model.getApp().getResourceStr( "trnsmgmt.label.tools" ));
 		
 		itemSelection = new ComboBox( "Select item: " );
+		itemSelection.setWidth( "40ex" );
 		itemSelection.setFilteringMode( FilteringMode.CONTAINS );
 		itemSelection.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
 		itemSelection.setNullSelectionAllowed( false );
@@ -81,14 +83,12 @@ public class ViewSelectorComponent extends Panel {
 		startDF.setDateFormat( dFormat.toPattern());
 		startDF.setResolution( Resolution.DAY );
 		startDF.setImmediate(true);
-		startDF.setEnabled( false );
 		
 		endDF = new DateField();
 		endDF.setLocale( model.getApp().getSessionData().getLocale());
 		endDF.setDateFormat( dFormat.toPattern());
 		endDF.setResolution( Resolution.DAY );
 		endDF.setImmediate(true);
-		endDF.setEnabled( false );
 
 		HorizontalLayout dateLine = new HorizontalLayout();
 		dateLine.setMargin( true ); // we want a margin
@@ -110,17 +110,17 @@ public class ViewSelectorComponent extends Panel {
 		content.addComponent( itemSelection );
 		content.addComponent( dateLine );
 		
-		dateToView();
+		initValues();
 		
 		viewSelector.addValueChangeListener( new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange( ValueChangeEvent event) {
+			public void valueChange( ValueChangeEvent event ) {
 				
-				model.setViewMode( event.getProperty().getValue());
+				// View Type was changed. The whole TransactionManagementView will be updated
+				viewTypeWasChanged(( TransactionsListModel.ViewMode )event.getProperty().getValue());
 				
-//				updateUI();
 			}
 			
 		});
@@ -131,7 +131,11 @@ public class ViewSelectorComponent extends Panel {
 			@Override
 			public void valueChange( ValueChangeEvent event ) {
 
-				model.setSelectedUser( event.getProperty().getValue());
+				if ( model.getViewMode() == TransactionsListModel.ViewMode.PERSONNEL ) {
+					model.setSelectedUser( event.getProperty().getValue());
+				} else if ( model.getViewMode() == TransactionsListModel.ViewMode.TOOLS ) {
+					model.setSelectedTool( event.getProperty().getValue());
+				}
 				
 			}
 			
@@ -157,24 +161,10 @@ public class ViewSelectorComponent extends Panel {
 		});
 
 	}
+	
+	private void initValues() {
 
-	private void dateToView() {
-		
-		// Update View selector if necessary
-//		if ( viewSelector.getValue() != model.getViewMode()) {
-			viewSelector.setValue( model.getViewMode());
-//		}
-		
-		// Update itemSelection caption
-		setSelectionItemCaption();
-		
-		// Update itemSelection content
-		setSelectionItemContent();
-		
 		// Set dates
-		startDF.setEnabled( true );
-		endDF.setEnabled( true );
-		
 		startDF.setValue( model.getDateStart());
 		endDF.setValue( model.getDateEnd());
 		
@@ -215,62 +205,101 @@ public class ViewSelectorComponent extends Panel {
 	 */
 	private void setPersonnelContent() {
 		
-		// Fill Personnel ComboBox if it was not read yet 
-		if ( itemSelection.size() == 0 ) {
-			logger.debug( "List of personnel is empty. Will be read initially" );
-
-			// Remove old content
+		// Remove old content
+		try {
 			itemSelection.removeAllItems();
-			// Read user list
-			Collection<OrgUser> usersList = model.getUsers();
-		
-			if ( usersList != null ) {
-				// Fill new ComboBox content
-				for ( OrgUser user : usersList ) {
-					if ( user != null ) {
-	
-						itemSelection.addItem( user );
-						itemSelection.setItemCaption( user, user.getLastAndFirstNames());
-					}
-				}
-				
-				model.setSelectedUser( model.getApp().getSessionOwner());
-				
-			}
-		} else {
-			logger.debug( "List of personnel is NOT empty. Not necessary to read again" );
+		} catch ( Exception e ) {
+			
 		}
+
+		// Fill Personnel ComboBox 
+		logger.debug( "List of personnel is empty. Will be read" );
+
+		// Read user list
+		Collection<OrgUser> usersList = model.getUsers();
+		OrgUser tmpSelectedUser = null;
+		
+		if ( usersList != null ) {
+			// Fill new ComboBox content
+			for ( OrgUser user : usersList ) {
+				if ( user != null ) {
+
+					itemSelection.addItem( user );
+					itemSelection.setItemCaption( user, user.getLastAndFirstNames());
+				}
+			}
+			
+			// Initial selection will be set to session owner
+			tmpSelectedUser = model.getApp().getSessionOwner();
+			
+		}
+
 		
 		// If model has user selected than try to select it
-		if ( itemSelection.getValue() != model.getSelectedUser()) {
-			logger.debug( "User selection in model different. Will be set in view" );
 
-			
-//			if ( model.getSelectedUser() != null ) {
-				try {
-					itemSelection.setValue( model.getSelectedUser());
-//					itemSelection.setValue( itemSelection.getItemIds().iterator().next());
-				} catch ( Exception e ) {
-					logger.debug( "Cannot select proper user" );
-				}
-//			}
-			
-		} else if ( model.getSelectedUser() == null ) {
-			logger.debug( "User selection in model == null. Initial selection will be set to session owner" );
-//			model.setSelectedUser( model.getApp().getSessionOwner());
-//			itemSelection.setValue( model.getApp().getSessionOwner());
+		try {
+			itemSelection.setValue( tmpSelectedUser );
+		} catch ( Exception e ) {
+			logger.debug( "Cannot select proper user" );
 		}
-		
+			
 		
 	}
 
 	private void setProjectContent() {
 		
-		itemSelection.removeAllItems();
+		// Remove old content
+		try {
+			itemSelection.removeAllItems();
+		} catch ( Exception e ) {
+			
+		}
+
+		// Fill Tools ComboBox 
+		logger.debug( "List of Tools is empty. Will be read" );
+
+		// Read tools list
+		Collection<Tool> toolsList = model.getTools();
+		Tool tmpSelectedTool = null;
 		
-//		Collection<Tool> usersList = model.getUsers();
+		if ( toolsList != null ) {
+			// Fill new ComboBox content
+			for ( Tool tool : toolsList ) {
+				if ( tool != null ) {
+
+					itemSelection.addItem( tool );
+					itemSelection.setItemCaption( tool, tool.getFullName());
+				}
+			}
+			
+			// Initial selection will be set to first item
+			tmpSelectedTool = ( Tool ) itemSelection.getItemIds().iterator().next();
+			
+		}
 		
-	
+		// If model has user selected than try to select it
+		try {
+			itemSelection.setValue( tmpSelectedTool );
+		} catch ( Exception e ) {
+			logger.debug( "Cannot select proper Tool" );
+		}
+			
 	}
+
+	private void viewTypeWasChanged( TransactionsListModel.ViewMode mode ) {
 	
+		model.setViewMode( mode, false );
+
+		// Update itemSelection caption
+		setSelectionItemCaption();
+		
+		// Update itemSelection content
+		setSelectionItemContent();
+		
+	}
+
+	public void selectViewMode( TransactionsListModel.ViewMode mode ) {
+		
+		viewSelector.setValue( mode );
+	}
 }

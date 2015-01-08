@@ -34,6 +34,17 @@ import com.c2point.tools.entity.tool.Tool;
 				+ "trn.dateForDb >= :startDate AND trn.dateForDb <= :endDate " 
 				+ "ORDER BY trn.tool.name ASC"
 	),
+	@NamedQuery( name = "listTransactionsForTool", 
+			query = "SELECT trn FROM BaseTransaction trn " +
+				"WHERE " 
+				+ "trn.org = :org AND "
+				+ "( trn.trnType = com.c2point.tools.entity.transactions.TransactionType.TOOL OR "
+				+ "  trn.trnType = com.c2point.tools.entity.transactions.TransactionType.TOOLITEM ) AND " 
+				+ "( trn.tool = :tool OR trn.toolItem.tool = :tool ) AND "
+				+ "trn.dateForDb >= :startDate AND trn.dateForDb <= :endDate " 
+				+ "ORDER BY trn.tool.name ASC"
+	),
+
 })
 
 public class BaseTransaction extends SimplePojo {

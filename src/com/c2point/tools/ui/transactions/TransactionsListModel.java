@@ -3,16 +3,19 @@ package com.c2point.tools.ui.transactions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
 
 import com.c2point.tools.datalayer.SettingsFacade;
+import com.c2point.tools.datalayer.ToolsFacade;
 import com.c2point.tools.datalayer.TransactionsFacade;
 import com.c2point.tools.datalayer.UsersFacade;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
+import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.transactions.BaseTransaction;
 import com.c2point.tools.ui.AbstractModel;
 
@@ -29,9 +32,9 @@ public class TransactionsListModel extends AbstractModel {
 	
 	private OrgUser		selectedUser;
 
-	private ToolItem	selectedTool;
+	private Tool		selectedTool;
 
-	private ToolHoldersMap	toolsHolder; 
+	private ToolHoldersMap	toolsHolder;
 	
 	
 	public TransactionsListModel() {
@@ -67,7 +70,7 @@ public class TransactionsListModel extends AbstractModel {
 //		reReadData();
 
 		// Initial model initialization here if necesary
-		setViewMode( ViewMode.PERSONNEL );
+		setViewMode( ViewMode.PERSONNEL, false );
 		
 	}
 	
@@ -95,12 +98,12 @@ public class TransactionsListModel extends AbstractModel {
 		}
 	}
 	
-	protected void fireToolSelected( ToolItem selectedTool ) {
+	protected void fireToolItemSelected( ToolItem selectedTool ) {
 		Object[] listeners = listenerList.getListenerList();
 
 	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
 	    	if ( listeners[ i ] == TransactionModelListener.class) {
-	    		(( TransactionModelListener )listeners[ i + 1 ] ).toolSelected( selectedTool );
+	    		(( TransactionModelListener )listeners[ i + 1 ] ).toolItemSelected( selectedTool );
 	        }
 	    }
 	}
@@ -120,20 +123,19 @@ public class TransactionsListModel extends AbstractModel {
 	public void setOrg( Organisation org ) { this.org = org; }
 	
 	public ViewMode getViewMode() { return this.mode; }
-	public void setViewMode( ViewMode mode ) {
+	public void setViewMode( ViewMode mode, boolean reRead ) {
 		
-		if ( this.mode != mode ) {
-			logger.debug( "ViewMode has been changed to: " + mode );
-			this.mode = mode;
-			fireViewModeChanged();
-			
+		logger.debug( "ViewMode has been changed to: " + mode );
+		this.mode = mode;
+		fireViewModeChanged();
+		
+		if ( reRead )
 			readData();
-		}
 	}
-	public void setViewMode( Object mode ) {
+	public void setViewMode( Object mode, boolean reRead ) {
 		
 		if ( mode instanceof ViewMode ) {
-			setViewMode(( ViewMode )mode );
+			setViewMode(( ViewMode )mode, reRead );
 		} else {
 			logger.error( "Object of wrong class passed" );
 		}
@@ -173,15 +175,21 @@ public class TransactionsListModel extends AbstractModel {
 	/*
 	 * Set new selected user and re-read data if necessary
 	 */
-	public void setSelectedUser( OrgUser selectedUser ) { 
-	
-		if ( this.selectedUser != selectedUser ) {
+	public void setSelectedUser( OrgUser selectedUser ) {
 		
-			this.selectedUser = selectedUser; 
+		if ( mode == ViewMode.PERSONNEL ) {
+	
+//			if ( this.selectedUser != selectedUser ) {
 			
-			readData();
+				this.selectedUser = selectedUser; 
+				
+				readData();
+//			}
+		} else if ( mode == ViewMode.TOOLS ) {
+	
 		}
 	}
+	
 	public void setSelectedUser( Object user ) { 
 		if ( user instanceof OrgUser ) {
 			setSelectedUser(( OrgUser )user );
@@ -189,6 +197,39 @@ public class TransactionsListModel extends AbstractModel {
 			logger.error( "Object of wrong class passed" );
 		}
 	}
+	
+	public Tool	getSelectedTool() { return this.selectedTool; }
+	
+	public void	setSelectedTool( Tool selectedTool ) {
+		
+		if ( mode == ViewMode.TOOLS ) {
+			
+			this.selectedTool = selectedTool;
+
+			readData();
+
+		}
+	}
+	public void	setSelectedTool( Object selectedTool ) {
+		
+		if ( selectedTool instanceof Tool ) {
+			
+			setSelectedTool(( Tool )selectedTool );
+			
+		} else {
+			
+			logger.error( "Wrong data passed to model: " + selectedTool.getClass().getSimpleName());
+		}
+		
+	}
+
+	public void	setSelectedToolItem( ToolItem selectedToolItem ) {
+		
+		fireToolItemSelected( selectedToolItem );
+
+	}
+	
+	
 	/*
 	 * Read data from DB to (re-)initialize the model
 	 */
@@ -198,51 +239,15 @@ public class TransactionsListModel extends AbstractModel {
 
 		// If Personnel based view has been selected
 		if ( mode == ViewMode.PERSONNEL ) {
-
-			// Read transaction if the user selected already
-			if ( selectedUser != null ) {
-				logger.debug( "  Selected user != null. Data will be read" );
-
-				selectedTool = null;
-				toolsHolder = new ToolHoldersMap();
-				
-				// Read all transactions for particular user in specified time period
-				TransactionsFacade tf = TransactionsFacade.getInstance();
-//				Collection<BaseTransaction> trnsList = TransactionsFacade.getInstance()
-				Collection<BaseTransaction> trnsList = tf
-						.getTransactions( selectedUser, dateStart, new Date( dateEnd.getTime() + 1000 * 60*60*24 ));
 			
-				if ( trnsList != null && trnsList.size() > 0 ) {
-					// Create the set of ToolItems and related Transactions from read above
-					
-					for( BaseTransaction trn : trnsList ) {
-						
-						toolsHolder.addTransaction( trn );
-						
-					}
-					
-					logger.debug( "  Number of transactions read: " + trnsList.size());
-					
-				} else {
-					logger.debug( "  Number of transactions read: 0. No transactions were read" );
-				}
-			
-				// Send event to clear the list of transactions
-				fireToolSelected( null );
-				// Fire model changed event
-				fireDataRead();
-				
-				
-			} else {
-				logger.debug( "  Selected user == null. Data will NOT be read" );
-			}
+			readPersonnelBasedData();
 			
 		} else if ( mode == ViewMode.TOOLS ) {
-			selectedTool = null;
-			toolsHolder = null;
+			
+			readToolsBasedData();
 			
 		} else {
-			
+			logger.error( "Wrong ViewMode stored!!!" );
 		}
 		
 	}
@@ -261,24 +266,6 @@ public class TransactionsListModel extends AbstractModel {
 	
 	
 	
-	public ToolItem	getSelectedTool() { return selectedTool; }
-	public void	setSelectedTool( ToolItem selectedTool ) {
-		
-		this.selectedTool = selectedTool;
-		fireToolSelected( this.selectedTool );
-	}
-	public void	setSelectedTool( Object selectedTool ) {
-		if ( selectedTool instanceof ToolItem ) {
-			
-			setSelectedTool(( ToolItem )selectedTool );
-			
-		} else {
-			
-			logger.error( "Wrong data passed to model: " + selectedTool.getClass().getSimpleName());
-		}
-		
-	}
-
 	public void	selectTransaction( BaseTransaction trn ) {
 		if ( logger.isDebugEnabled()) logger.debug( "Fire transactionSelected with trn = " + trn );
 		fireTransactionSelected( trn );
@@ -288,6 +275,11 @@ public class TransactionsListModel extends AbstractModel {
 		
 		return UsersFacade.getInstance().list( getOrg());
 		
+	}
+
+	public Collection<Tool> getTools() {
+		
+		return ToolsFacade.getInstance().getTools( getOrg());
 	}
 
 	private Collection<ToolTransactionsHolder> getToolTransactionsHolders() {
@@ -319,7 +311,7 @@ public class TransactionsListModel extends AbstractModel {
 	/*
 	 *  Returns the list of ToolItems were related to the transactions found earlier 
 	 */
-	public Collection<ToolItem> getTools() {
+	public Collection<ToolItem> getPreparedToolItems() {
 		
 		Collection<ToolItem> list = new ArrayList<ToolItem>();
 		
@@ -362,7 +354,7 @@ public class TransactionsListModel extends AbstractModel {
 
 		Collection<BaseTransaction> list = new ArrayList<BaseTransaction>();
 		
-		if ( this.toolsHolder != null ) {
+		if ( this.toolsHolder != null && item != null ) {
 			list.addAll( this.toolsHolder.getTransactions( item ));
 		}
 		
@@ -374,10 +366,93 @@ public class TransactionsListModel extends AbstractModel {
 	 * Returns all Transactions for the selected ToolItem (this.selectedTool) 
 	 *  
 	 */
+/*	
 	public Collection<BaseTransaction> getTransactions() {
 
 		
 		return getTransactions( this.selectedTool );
+		
+	}
+*/
+	private void readPersonnelBasedData() {
+		
+		// Read transaction if the user selected already
+		if ( selectedUser != null ) {
+			logger.debug( "  Selected user != null. Data will be read" );
+
+			selectedTool = null;
+			toolsHolder = new ToolHoldersMap();
+			
+			// Read all transactions for particular user in specified time period
+			TransactionsFacade tf = TransactionsFacade.getInstance();
+//			Collection<BaseTransaction> trnsList = TransactionsFacade.getInstance()
+			Collection<BaseTransaction> trnsList = tf
+					.getTransactions( selectedUser, dateStart, new Date( dateEnd.getTime() + 1000 * 60*60*24 ));
+		
+			if ( trnsList != null && trnsList.size() > 0 ) {
+				// Create the set of ToolItems and related Transactions from read above
+				
+				for( BaseTransaction trn : trnsList ) {
+					
+					toolsHolder.addTransaction( trn );
+					
+				}
+				
+				logger.debug( "  Number of transactions read: " + trnsList.size());
+				
+			} else {
+				logger.debug( "  Number of transactions read: 0. No transactions were read" );
+			}
+		
+			// Send event to clear the list of transactions
+			fireToolItemSelected( null );
+			// Fire model changed event
+			fireDataRead();
+			
+			
+		} else {
+			logger.debug( "  Selected user == null. Data will NOT be read" );
+		}
+	
+	}
+	
+	private void readToolsBasedData() {
+
+		// Read transaction if Tool selected already
+		if ( this.selectedTool != null ) {
+			logger.debug( "  Selected Tool != null. Data will be read" );
+
+			selectedUser = null;
+			toolsHolder = new ToolHoldersMap();
+			
+			// Read all transactions for particular user in specified time period
+			Collection<BaseTransaction> trnsList = TransactionsFacade.getInstance()
+					.getTransactions( selectedTool, dateStart, new Date( dateEnd.getTime() + 1000 * 60*60*24 ));
+		
+			if ( trnsList != null && trnsList.size() > 0 ) {
+				// Create the set of ToolItems and related Transactions from read above
+				
+				for( BaseTransaction trn : trnsList ) {
+					
+					toolsHolder.addTransaction( trn );
+					
+				}
+				
+				logger.debug( "  Number of transactions read: " + trnsList.size());
+				
+			} else {
+				logger.debug( "  Number of transactions read: 0. No transactions were read" );
+			}
+		
+			// Send event to clear the list of transactions
+			fireToolItemSelected( null );
+			// Fire model changed event
+			fireDataRead();
+			
+			
+		} else {
+			logger.debug( "  Selected user == null. Data will NOT be read" );
+		}
 		
 	}
 	

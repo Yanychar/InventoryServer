@@ -8,6 +8,7 @@ import org.joda.time.format.DateTimeFormat;
 
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
+import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.transactions.BaseTransaction;
 import com.c2point.tools.ui.transactions.TransactionsListModel.ViewMode;
 import com.vaadin.data.Item;
@@ -107,11 +108,11 @@ public class TrnsListComponent extends VerticalLayout implements TransactionMode
 		
 		this.setExpandRatio( trnsTable, 1.0f );
 
-		dataFromModel();
+//		dataFromModel();
 		
 	}
 
-	private void dataFromModel() {
+	private void dataFromModel( ToolItem item ) {
 
 		if ( logger.isDebugEnabled()) logger.debug( "Data from model will be read!" );
 		
@@ -123,7 +124,7 @@ public class TrnsListComponent extends VerticalLayout implements TransactionMode
 		// remove old content
 		trnsTable.removeAllItems();
 
-		Collection<BaseTransaction> trnsList = model.getTransactions();
+		Collection<BaseTransaction> trnsList = model.getTransactions( item );
 		
 		if ( trnsList != null ) {
 			for ( BaseTransaction trn : trnsList ) {
@@ -173,45 +174,6 @@ public class TrnsListComponent extends VerticalLayout implements TransactionMode
 		
 	}
 	
-	
-	
-	@Override
-	public void viewTypeChanged(ViewMode mode) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void modelWasRead() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void toolSelected( ToolItem toolItem ) {
-
-		if ( logger.isDebugEnabled()) logger.debug( "toolsSelected events received. ToolsList will be updated!" );
-		
-		if ( toolItem != null ) {
-			dataFromModel();
-		} else {
-			trnsTable.removeAllItems();
-		}
-		
-	}
-
-	@Override
-	public void userSelected(OrgUser user) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void transactionSelected(BaseTransaction user) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	private String createTextContent( BaseTransaction trn ) {
 		
 		String str;
@@ -237,7 +199,7 @@ public class TrnsListComponent extends VerticalLayout implements TransactionMode
 //					+ trn.getNewStatus().toString( model.getApp().getSessionData().getBundle())
 //					+ " was given by "
 //					+ trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.newstatus" + ": " )
+				str = model.getApp().getResourceStr( "transaction.operation.newstatus" ) + ": "
 						+ trn.getNewStatus().toString( model.getApp().getSessionData().getBundle());
 				break;
 			case USERCHANGED:
@@ -263,4 +225,29 @@ public class TrnsListComponent extends VerticalLayout implements TransactionMode
 		
 		return str;
 	}
+	
+	@Override
+	public void toolItemSelected( ToolItem toolItem ) {
+
+		if ( logger.isDebugEnabled()) logger.debug( "toolsSelected events received. ToolsList will be updated!" );
+		
+		if ( toolItem != null ) {
+			dataFromModel( toolItem );
+		} else {
+			trnsTable.removeAllItems();
+		}
+		
+	}
+
+	@Override
+	public void viewTypeChanged(ViewMode mode) { }
+	@Override
+	public void modelWasRead() { }
+	@Override
+	public void userSelected(OrgUser user) { }
+	@Override
+	public void transactionSelected(BaseTransaction user) { }
+	@Override
+	public void toolSelected(Tool tool) { }
+
 }

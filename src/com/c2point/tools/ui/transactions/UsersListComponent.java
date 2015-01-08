@@ -16,15 +16,15 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.Table;
 
-public class ToolsListComponent extends ListWithSearchComponent implements TransactionModelListener {
+public class UsersListComponent extends ListWithSearchComponent implements TransactionModelListener {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LogManager.getLogger( ToolsListComponent.class.getName());
+	private static Logger logger = LogManager.getLogger( UsersListComponent.class.getName());
 	
 	private TransactionsListModel		model;
 
-	private Table						toolsTable;
+	private Table						usersTable;
 	
-	public ToolsListComponent( TransactionsListModel model ) {
+	public UsersListComponent( TransactionsListModel model ) {
 		super();
 		
 		this.model = model;
@@ -35,8 +35,7 @@ public class ToolsListComponent extends ListWithSearchComponent implements Trans
 	}
 
 	private static String [] searchFields = {
-		"name",
-		"status",
+		"name"
 	};
 	
 	protected String [] getFieldsForSearch() {
@@ -52,33 +51,31 @@ public class ToolsListComponent extends ListWithSearchComponent implements Trans
 
 		setMargin( true );
 		
-		toolsTable = new Table();
+		usersTable = new Table();
 		
-		setContainerForSearch( toolsTable );
+		setContainerForSearch( usersTable );
 		
 		// Configure table
-		toolsTable.setSelectable( true );
-		toolsTable.setNullSelectionAllowed( false );
-		toolsTable.setMultiSelect( false );
-		toolsTable.setColumnCollapsingAllowed( false );
-		toolsTable.setColumnReorderingAllowed( false );
-		toolsTable.setImmediate( true );
-		toolsTable.setSizeFull();
+		usersTable.setSelectable( true );
+		usersTable.setNullSelectionAllowed( false );
+		usersTable.setMultiSelect( false );
+		usersTable.setColumnCollapsingAllowed( false );
+		usersTable.setColumnReorderingAllowed( false );
+		usersTable.setImmediate( true );
+		usersTable.setSizeFull();
 		
-		toolsTable.addContainerProperty( "name", 	String.class, null );
-		toolsTable.addContainerProperty( "status", 	String.class, null );
-		toolsTable.addContainerProperty( "data", 	ToolItem.class, null );
+		usersTable.addContainerProperty( "name", 	String.class, null );
+		usersTable.addContainerProperty( "data", 	ToolItem.class, null );
 
-		toolsTable.setVisibleColumns( new Object [] { "name", "status" } );
+		usersTable.setVisibleColumns( new Object [] { "name" } );
 		
-		toolsTable.setColumnHeaders( new String[] { 
-				model.getApp().getResourceStr( "toolsmgmt.list.header.tool" ),
-				model.getApp().getResourceStr( "toolsmgmt.list.header.status" ),
+		usersTable.setColumnHeaders( new String[] { 
+				model.getApp().getResourceStr( "repositorymgmt.list.header.user" ),
 		
 		});
 
 		// New User has been selected. Send event to model
-		toolsTable.addValueChangeListener( new  ValueChangeListener() {
+		usersTable.addValueChangeListener( new  ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
 
@@ -89,20 +86,20 @@ public class ToolsListComponent extends ListWithSearchComponent implements Trans
 				try {
 
 					model.setSelectedToolItem( 
-							(ToolItem) toolsTable.getItem( toolsTable.getValue()).getItemProperty( "data" ).getValue()
+							( ToolItem )usersTable.getItem( usersTable.getValue()).getItemProperty( "data" ).getValue()
 					);
 					
 					
 				} catch ( Exception e ) {
-					logger.debug( "No selection. ToolItem cannot be fetched from toolsTable" );
+					logger.debug( "No selection. OrgUser cannot be fetched from usersTable" );
 				}
 			}
 		});
 
 		this.addComponent( getSearchBar());
-		this.addComponent( toolsTable );
+		this.addComponent( usersTable );
 		
-		this.setExpandRatio( toolsTable, 1.0f );
+		this.setExpandRatio( usersTable, 1.0f );
 
 //		dataFromModel();
 		
@@ -111,11 +108,12 @@ public class ToolsListComponent extends ListWithSearchComponent implements Trans
 	@Override
 	public void modelWasRead() {
 
-		if ( model.getViewMode() == ViewMode.PERSONNEL ) {
-			if ( logger.isDebugEnabled()) logger.debug( "modelWasRead events received. ToolsList will be updated!" );
+		if ( model.getViewMode() == ViewMode.TOOLS ) {
+			if ( logger.isDebugEnabled()) logger.debug( "modelWasRead events received. UsersList will be updated!" );
 			
 			dataFromModel();
 		}
+		
 	}
 
 	@Override
@@ -134,12 +132,12 @@ public class ToolsListComponent extends ListWithSearchComponent implements Trans
 		if ( logger.isDebugEnabled()) logger.debug( "Data from model will be read!" );
 		
 		// Store selection for recovery at the end of this method
-		Long selectedId = ( Long )toolsTable.getValue();
+		Long selectedId = ( Long )usersTable.getValue();
 		Long newSelectedId = null;
 		boolean selected = ( selectedId != null );
 		
 		// remove old content
-		toolsTable.removeAllItems();
+		usersTable.removeAllItems();
 
 		Collection<ToolItem> itemsList = model.getPreparedToolItems();
 		
@@ -157,14 +155,14 @@ public class ToolsListComponent extends ListWithSearchComponent implements Trans
 			}
 		}
 		
-		toolsTable.setSortContainerPropertyId( "name" );
+		usersTable.setSortContainerPropertyId( "name" );
 
-		toolsTable.sort();
+		usersTable.sort();
 		
 		if ( newSelectedId != null ) {
-			toolsTable.setValue( newSelectedId );
+			usersTable.setValue( newSelectedId );
 		} else {
-			toolsTable.setValue( toolsTable.firstItemId());
+			usersTable.setValue( usersTable.firstItemId());
 		}
 		
 	}
@@ -172,19 +170,17 @@ public class ToolsListComponent extends ListWithSearchComponent implements Trans
 	@SuppressWarnings("unchecked")
 	private void addOrUpdateItem( ToolItem toolItem ) {
 		
-		Item item = toolsTable.getItem( toolItem.getId());
+		Item item = usersTable.getItem( toolItem.getId());
 		
 		if ( item == null ) {
 
 //			if ( logger.isDebugEnabled()) logger.debug( "Tool Item will be added: " + toolItem );
-			item = toolsTable.addItem( toolItem.getId());
+			item = usersTable.addItem( toolItem.getId());
 
 		}
-		
-		item.getItemProperty( "name" ).setValue( toolItem.getTool().getFullName());
-		item.getItemProperty( "status" ).setValue( toolItem.getStatus().toString( model.getApp().getSessionData().getBundle()));
+
+		item.getItemProperty( "name" ).setValue( toolItem.getCurrentUser().getLastAndFirstNames());
 		item.getItemProperty( "data" ).setValue( toolItem );
-		
 		
 	}
 	
