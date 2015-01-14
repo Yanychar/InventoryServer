@@ -200,17 +200,23 @@ public class MsgFacade {
 		if ( logger.isDebugEnabled()) logger.debug( "  Search existing Message using uniqueId: " + msg.getId() );
 		Message oldMsg = DataFacade.getInstance().find( Message.class, msg.getId());
 		
-		if ( oldMsg != null && oldMsg.getStatus() != newStatus ) {
+		if ( oldMsg != null ) {
 			if ( logger.isDebugEnabled()) logger.debug( "  Found Message" );
 
-			oldMsg.setStatus( newStatus );
+			if ( oldMsg.getStatus() != newStatus ) {
+
+				oldMsg.setStatus( newStatus );
+				
+				newMsg = DataFacade.getInstance().merge( oldMsg );
+				
+				if ( newMsg != null )
+					logger.debug( "Message with id:" + newMsg.getId() + " was updated" );
+				else
+					logger.error( "Failed to update Message with id: " + oldMsg.getId() );
 			
-			newMsg = DataFacade.getInstance().merge( oldMsg );
-			if ( newMsg != null )
-				logger.debug( "Message with id:" + newMsg.getId() + " was updated" );
-			else
-				logger.error( "Failed to update Message with id: " + oldMsg.getId() );
-			
+			} else {
+				if ( logger.isDebugEnabled()) logger.debug( "  message update NOT necessary" );
+			}
 		} else {
 			logger.error( "  Existing Msg with id: " + msg.getId() + " not found!" );
 		}
@@ -275,11 +281,7 @@ public class MsgFacade {
 						sender, 
 						item.getResponsible(), 
 						item,
-						sender.getFirstAndLastNames()
-						+ " want to get "
-						+ item.getTool().getName()
-						+ " from "
-						+ item.getResponsible().getFirstAndLastNames()
+						""
 				);
 				
 			
@@ -295,13 +297,11 @@ public class MsgFacade {
 		boolean bResult = false;
 
 		bResult = 	( addMessage( 
-				MessageType.INFO, 
+				MessageType.CONFIRMATION, 
 				newUser,
 				oldUser,
 				item,
-				newUser.getFirstAndLastNames() 
-				+ " took over "
-				+ item.getTool().getName()
+				""
 			) != null );
 		
 		return bResult;
