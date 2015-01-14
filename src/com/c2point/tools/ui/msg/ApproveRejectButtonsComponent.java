@@ -44,30 +44,17 @@ public class ApproveRejectButtonsComponent extends CustomComponent {
 		approveButton = new Button();
 		approveButton.addStyleName( "smallroundicon" );
 		approveButton.setIcon( new ThemeResource( "icons/16/approve.png" ));
-//		approveButton.setDescription( app.getResourceStr( "general.approve.tooltip" ));
 		approveButton.setImmediate( true );
 		
 		rejectButton = new Button();
 		rejectButton.addStyleName( "smallroundicon" );
 		rejectButton.setIcon( new ThemeResource( "icons/16/reject.png" ));
-//		rejectButton.setDescription( app.getResourceStr( "general.reject.tooltip" ));
 		rejectButton.setImmediate( true );
 		
 		configureButtons( layout );
 		
-//		disable();
-		
-		
 	}
-/*
-	public void updateButtonView( AbstractReport report ) {
-		
-		this.report = report;
 
-		enable();
-	
-	}
-*/	
 	public Message getMsg() { return this.msg; }
 	public void setMsg( Message msg ) {
 		this.msg = msg;
@@ -82,27 +69,7 @@ public class ApproveRejectButtonsComponent extends CustomComponent {
 	public void addRejectListener( Button.ClickListener listener ) {
 		rejectButton.addClickListener( listener );
 	}
-/*
-	public void enable() {
-		
-		if ( report != null ) {
-			
-			ApprovalFlagType type = report.getApprovalFlagType();
 
-			approveButton.setEnabled( type != ApprovalFlagType.APPROVED && type != ApprovalFlagType.PROCESSED );
-			rejectButton.setEnabled( type != ApprovalFlagType.REJECTED && type != ApprovalFlagType.PROCESSED );
-		} else {
-			disable();
-		}
-		
-		
-	}
-
-	public void disable() {
-		approveButton.setEnabled( false );
-		rejectButton.setEnabled( false );
-	}
-*/
 	private void configureButtons( HorizontalLayout layout ) {
 
 		try {

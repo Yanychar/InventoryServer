@@ -196,7 +196,7 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 		
 		switch ( type ) {
 			case ERROR_MESSAGE:
-				header = this.model.getApp().getResourceStr( "general.error.header" );
+				header = this.model.getApp().getResourceStr( "general.errors.header" );
 				break;
 			case ASSISTIVE_NOTIFICATION:
 			case HUMANIZED_MESSAGE:

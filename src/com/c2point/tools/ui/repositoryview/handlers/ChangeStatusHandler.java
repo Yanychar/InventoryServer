@@ -70,7 +70,7 @@ public class ChangeStatusHandler extends AbstractHandler {
 		} else {
 
 			new Notification( 
-					getModel().getApp().getResourceStr( "general.error.header" ),
+					getModel().getApp().getResourceStr( "general.errors.header" ),
 					getModel().getApp().getResourceStr( "repositorymgmt.error.statuschanged" ),
 					Notification.Type.ERROR_MESSAGE, 
 					true 

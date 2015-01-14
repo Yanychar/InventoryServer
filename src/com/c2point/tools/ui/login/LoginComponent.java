@@ -85,7 +85,7 @@ public class LoginComponent extends CustomComponent {
 				if ( bundle != null ) {
 				
 					refreshCaptions();
-//					getUI().setCaption( app.getSessionData().getBundle().getString( "mainWindow.title" ));
+					getUI().getPage().setTitle( app.getSessionData().getBundle().getString( "mainWindow.title" ));
 					
 				}
 				
