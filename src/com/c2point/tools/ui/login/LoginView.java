@@ -65,9 +65,10 @@ public class LoginView  extends AbstractMainView {
 				} else {
 					getInventoryUI().deleteCookies();
 				}
-				
+
 			}
-		}); 
+		});
+		
 	}
 
 	private boolean login() {

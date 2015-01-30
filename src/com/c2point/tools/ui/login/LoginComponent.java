@@ -85,7 +85,6 @@ public class LoginComponent extends CustomComponent {
 				if ( bundle != null ) {
 				
 					refreshCaptions();
-					getUI().getPage().setTitle( app.getSessionData().getBundle().getString( "mainWindow.title" ));
 					
 				}
 				
@@ -185,7 +184,11 @@ public class LoginComponent extends CustomComponent {
 		
 		languageSelect.setValue( app.getSessionData().getLocale());
 //		languageSelect.requestRepaint();
-	
+
+		if ( app != null && app.getPage() != null ) {
+			app.getPage().setTitle( app.getSessionData().getBundle().getString( "mainWindow.title" ));
+		}
+		
 	}
 	
 }
