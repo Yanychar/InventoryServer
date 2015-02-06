@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE ivy-module [
-	<!ENTITY vaadin.version "7.3.8">
+	<!ENTITY vaadin.version "7.3.9">
 ]>
 <ivy-module version="2.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -43,14 +43,14 @@
 			rev="&vaadin.version;" conf="widgetset-compile->default" />
 		
 		<!-- JodaTime -->
-		<dependency org="joda-time" name="joda-time" rev="2.3" />
+		<dependency org="joda-time" name="joda-time" rev="2.7" />
 
 		<!-- Apache Commons-Lang -->
 		<dependency org="org.apache.commons" name="commons-lang3" rev="3.3.2" />
 
 		<!-- Log4j -->
-		<dependency org="org.apache.logging.log4j" name="log4j-api"  rev="2.0-rc2" />
-		<dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.0-rc2" />
+		<dependency org="org.apache.logging.log4j" name="log4j-api"  rev="2.1" />
+		<dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.1" />
 
 		<!-- Jersey REST Server --> 
 		<dependency org="org.glassfish.jersey.containers" name="jersey-container-servlet" rev="2.4"/>
@@ -61,7 +61,7 @@
 		<dependency org="org.glassfish.jersey.media" name="jersey-media-json-jackson" rev="2.0"/>
 		
 		<!-- ConfirmDialog Vaadin add-on -->
-		<dependency org="org.vaadin.addon" name="confirmdialog" rev="2.1.1" />
+		<dependency org="org.vaadin.addon" name="confirmdialog" rev="2.1.2" />
 		
 		<!-- OpenCSV support -->
 		<dependency org="net.sf.opencsv" name="opencsv" rev="2.3"/>
