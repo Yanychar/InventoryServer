@@ -8,11 +8,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import com.c2point.tools.datalayer.AuthenticationFacade;
+import com.c2point.tools.datalayer.TransactionsFacade;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.resources.stubs.AuthenticationStub;
 
@@ -37,7 +39,15 @@ public class AuthenticateResource extends BaseResource {
 
 		Account account = AuthenticationFacade.getInstance().authenticateUser( usrname, pwd, appVer, imei );
 
-		if ( account == null ) {
+		
+		
+		if ( account != null && account.valid()) {
+
+			// TODO. Account can be connected to several User records in diferent organisations
+			// Should be redesigned
+			TransactionsFacade.getInstance().writeLogin( account.getUsers().iterator().next());
+			
+		} else {
 			if ( logger.isDebugEnabled()) {
 				logger.debug( "  FAILED because account not found");
 				logger.debug( "... end AuthenticateResource.authenticate()");

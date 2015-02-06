@@ -5,6 +5,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
+import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.organisation.Organisation;
 
 @Entity
@@ -42,11 +43,17 @@ import com.c2point.tools.entity.organisation.Organisation;
 public class OrgUser extends Person {
 
 	@ManyToOne
-	private Organisation organisation;
+	private Organisation 	organisation;
 
+	@ManyToOne
+//	@JoinColumn(name="CUST_ID", nullable=false)
+	private Account			account;
+	
 	public Organisation getOrganisation() { return organisation; }
 	public void setOrganisation( Organisation organisation ) { this.organisation = organisation; }
 	
+	public Account getAccount() { return account; }
+	public void setAccount( Account account ) { this.account = account; }
 	
 	
 }

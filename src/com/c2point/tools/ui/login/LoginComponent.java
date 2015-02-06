@@ -40,6 +40,8 @@ public class LoginComponent extends CustomComponent {
 		
 		this.app = app;
 		initView();
+
+		fillContent();
 	}
 
 	public void addLoginButtonListener( Button.ClickListener listener ) {
@@ -47,6 +49,7 @@ public class LoginComponent extends CustomComponent {
 	}
 	
 	private void initView() {
+
 		Panel panel = new Panel();
 //		panel.setWidth(  "400px" );
 //		panel.setHeight(  "240px" );
@@ -188,6 +191,16 @@ public class LoginComponent extends CustomComponent {
 		if ( app != null && app.getPage() != null ) {
 			app.getPage().setTitle( app.getSessionData().getBundle().getString( "mainWindow.title" ));
 		}
+		
+	}
+
+	private void fillContent() {
+		
+		setName( app.getNameFromCookies());
+		setPwd( app.getPwdFromCookies());
+		setRemember( app.getRememberFlagFromCookies());
+		setLanguage( app.getLanguageFromCookies());
+		
 		
 	}
 	

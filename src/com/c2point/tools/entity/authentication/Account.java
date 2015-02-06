@@ -1,13 +1,17 @@
 package com.c2point.tools.entity.authentication;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -28,9 +32,6 @@ import com.c2point.tools.entity.person.OrgUser;
 	@NamedQuery(name = "findAccountBySessionId", query = 
 			"SELECT account FROM Account account " +
 				"WHERE account.uniqueSessionID = :sessionId AND account.deleted = false"),
-	@NamedQuery(name = "findAccountByUsrId", query = 
-			"SELECT account FROM Account account " +
-				"WHERE account.user.id = :userId"),
 })
 public class Account extends SimplePojo {
 	
@@ -45,7 +46,8 @@ public class Account extends SimplePojo {
 	private String 					usrName;
 	private String 					pwd;
 	
-	private OrgUser					user;
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="account")
+	private Collection<OrgUser>		users;
 	
 	@Enumerated( EnumType.ORDINAL )
 	private AccountStateType 		state;
@@ -70,7 +72,7 @@ public class Account extends SimplePojo {
 		
 		setUsrName( usrName );
 		setPwd( pwd );
-		setUser( user );
+		addUser( user );
 		setState( AccountStateType.Active );
 
 		this.uniqueSessionID = null;
@@ -93,8 +95,43 @@ public class Account extends SimplePojo {
 		this.pwd = ( pwd != null ? pwd : null );
 	}
 
-	public OrgUser getUser() { return user; }
-	public void setUser( OrgUser user ) { this.user = user; }
+	public Collection<OrgUser> getUsers() { return users; }
+	public void setUsers( Collection<OrgUser> users ) { this.users = users; }
+
+	
+	public OrgUser getFirstUser() { 
+
+		logger.error( "Usage of getFirstUser is a stub!!! Shall be eliminated totally!" );
+		
+		if ( users != null && users.size() == 1 ) {
+			return users.iterator().next(); 
+		}
+		
+		return null;
+	}
+	
+	/*
+	 * Return User if and only if one user found 
+	 */
+	public OrgUser getUser() { 
+
+		if ( users != null && users.size() == 1 ) {
+			return users.iterator().next(); 
+		}
+		
+		return null;
+	}
+	
+	public void addUser( OrgUser user ) {
+		
+		if ( users == null ) {
+			
+			users = new ArrayList<OrgUser>();
+			users.add( user );
+			
+		}
+
+	}
 	
 	public AccountStateType getState() { return state; }
 	public void setState( AccountStateType state ) { this.state = state; }
@@ -183,7 +220,10 @@ public class Account extends SimplePojo {
 		return oldId;
 	}
 
-	
+	public boolean valid() {
+		
+		return users != null && users.size() > 0 && users.iterator().next() != null;
+	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

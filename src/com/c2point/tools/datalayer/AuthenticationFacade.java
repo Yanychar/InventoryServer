@@ -57,7 +57,7 @@ public class AuthenticationFacade {
 			// Finds account by username
 			account = findByUserName( usrName.trim().toLowerCase()); 
 			
-			if ( account != null && account.getUser() != null ) {
+			if ( account != null && account.valid()) {
 				logger.debug( "Account and User found" );
 
 				if ( account.getPwd().compareTo( pwd ) == 0 ) {
@@ -79,17 +79,13 @@ public class AuthenticationFacade {
 			logger.error( "Account cannot have NULL usrname or pwd. UsrName=" + usrName + ", pwd=" + pwd );
 		}
 		
-		if ( account != null ) {
-
-			TransactionsFacade.getInstance().writeLogin( account.getUser());
-			
-		} else {
+		if ( account == null ) {
 			if ( logger.isDebugEnabled()) logger.debug( "'" + usrName + "' not authenticated!" );
 		}
 		
 		return account;
 	}
-
+	
 	public boolean logout( Account account, boolean bAutomatic ) {
 		boolean bRes = false;
 		
@@ -188,7 +184,8 @@ public class AuthenticationFacade {
 		if ( user == null )
 			throw new IllegalArgumentException( "Valid User cannot be null!" );
 
-		existingAccount = findByUserId( user ); 
+//		existingAccount = findByUserId( user ); 
+		existingAccount = user.getAccount(); 
 		
 		try {
 			DataFacade.getInstance().remove( existingAccount );
@@ -217,8 +214,10 @@ public class AuthenticationFacade {
 		if ( logger.isDebugEnabled()) logger.debug( tr );
 	}
 */	
+	/*		
 	public Account findByUserId( OrgUser user ) {
-		Account account;
+		
+		Account account = null;
 		
 		EntityManager em = DataFacade.getInstance().createEntityManager();
 		try {
@@ -239,9 +238,11 @@ public class AuthenticationFacade {
 		} finally {
 			em.close();
 		}
-		
 		return account;
+		
+		
 	}
+*/		
 
 	public Account findByUserName( String usrName ) {
 		Account account;
@@ -277,7 +278,9 @@ public class AuthenticationFacade {
 
 		// Find account record for the OrgUser
 		if ( logger.isDebugEnabled()) logger.debug( "Try to find Account for OrgUser: '" + user.getFirstAndLastNames() + "'" );
-		account = findByUserId( user );
+
+//		account = findByUserId( user );
+		account = user.getAccount(); 
 		if ( account != null ) {
 			if ( logger.isDebugEnabled()) logger.debug( "Account exists already. Not necessary to create" );
 		} else {
