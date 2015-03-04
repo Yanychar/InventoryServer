@@ -19,13 +19,11 @@
 			<property name="javax.persistence.jdbc.user" value="inventory" />
 			<property name="javax.persistence.jdbc.password" value="inventory" />
 
-			<!-- 
 						
-			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
-			<property name="eclipselink.ddl-generation.output-mode" value="both" />
-			<property name="eclipselink.application-location" value="C:\\Users\\sevastia\\workspace_inventory\\Inventory_1"/>
+			<!-- 
+			<property name="eclipselink.ddl-generation" value="create-tables" />
+			<property name="eclipselink.ddl-generation.output-mode" value="database" />
 			-->
-			<!-- <property name="eclipselink.application-location" value="/opt/inventorydb"/> -->
 			
 			<property name="eclipselink.ddl-generation" value="none" />
 			<property name="eclipselink.ddl-generation.output-mode"  value="none" />

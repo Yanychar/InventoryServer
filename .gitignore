@@ -221,3 +221,4 @@ pip-log.txt
 
 build/
 WebContent/VAADIN/widgetsets/
+src/log4j2.xml
