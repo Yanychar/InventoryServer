@@ -10,6 +10,7 @@ public enum TransactionType {
 	LOGIN,
 	ACCOUNT,
 	USER,
+	ORGANISATION,
 	CATEGORY,
 	TOOL,
 	TOOLITEM;

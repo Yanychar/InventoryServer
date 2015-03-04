@@ -6,7 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.access.FunctionalityType;
-import com.c2point.tools.access.PermissionType;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.ui.repositoryview.handlers.ChangeStatusHandler;
@@ -217,18 +216,26 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 
 	private void updateUI() {
 
-		boolean itemSelected = model.getSelectedItem() != null;
-		boolean itemOwned = itemSelected 
-						 && model.getSelectedItem().getCurrentUser().getId() == model.getSessionOwner().getId();
+		ToolItem item = model.getSelectedItem();
 		
-		PermissionType takeOverPerm = model.getSecurityContext().getPermission( FunctionalityType.BORROW, itemOwned );   
-		PermissionType changeStatusPerm = model.getSecurityContext().getPermission( FunctionalityType.CHANGESTATUS, itemOwned );   
-		PermissionType msgPerm = model.getSecurityContext().getPermission( FunctionalityType.MESSAGING, itemOwned );   
+		if ( item != null ) {
 		
-		requestButton.setEnabled( itemSelected && false );
-		takeOverButton.setEnabled( itemSelected && takeOverPerm == PermissionType.RW );
-		changeStatusButton.setEnabled( itemSelected && changeStatusPerm == PermissionType.RW );
-		sendMsgButton.setEnabled( itemSelected && msgPerm == PermissionType.RW && false ); 
+			boolean takeOverPerm = model.getSecurityContext().canChangeToolItem( FunctionalityType.BORROW, item );   
+			boolean changeStatusPerm = model.getSecurityContext().canChangeToolItem( FunctionalityType.CHANGESTATUS, item );   
+			boolean msgPerm = model.getSecurityContext().canChangeToolItem( FunctionalityType.MESSAGING, item );   
+			
+			requestButton.setEnabled( false );
+			takeOverButton.setEnabled( takeOverPerm );
+			changeStatusButton.setEnabled( changeStatusPerm );
+			sendMsgButton.setEnabled( msgPerm && false );
+		} else {
+
+			requestButton.setEnabled( false );
+			takeOverButton.setEnabled( false );
+			changeStatusButton.setEnabled( false );
+			sendMsgButton.setEnabled( false );
+			
+		}
 		
 	}
 	

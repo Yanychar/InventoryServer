@@ -132,7 +132,19 @@ public class UsersFacade extends DataFacade {
 		
 	}
 
+	public OrgUser delete( OrgUser user ) {
+		
+		user.setDeleted();
+		return updateOrDelete( user, true );
+	}
+
 	public OrgUser update( OrgUser user ) {
+		
+		return updateOrDelete( user, false );
+	}
+
+	// Internal implementation update and delete
+	public OrgUser updateOrDelete( OrgUser user, boolean delete ) {
 
 		OrgUser newUser = null;
 		

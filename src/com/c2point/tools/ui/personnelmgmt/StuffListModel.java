@@ -170,12 +170,10 @@ public class StuffListModel extends AbstractModel {
 		
 		OrgUser newUser = null;
 
-		deletedUser.setDeleted();
-		
-		// Update DB
+		// Delete DB
 		if ( deletedUser != null ) {
 
-			newUser = UsersFacade.getInstance().update( deletedUser );
+			newUser = UsersFacade.getInstance().delete( deletedUser );
 			
 			if ( newUser != null ) {
 				

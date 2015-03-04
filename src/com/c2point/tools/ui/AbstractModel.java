@@ -19,17 +19,19 @@ public class AbstractModel  {
 	
 	protected EventListenerList	listenerList; 
 	
+	
+	public enum EditModeType { NONE, EDIT, ADD };
+	
+	private EditModeType	editMode;
+
 	public AbstractModel() {
-		listenerList = new EventListenerList();
-		this.app = ( InventoryUI )UI.getCurrent();		
-	}
-/*
-	public AbstractModel(InventoryUI app ) {
-		this();
-		this.app = app;
 		
+		listenerList = new EventListenerList();
+		this.app = ( InventoryUI )UI.getCurrent();
+		
+		setEditMode( EditModeType.NONE );
 	}
-*/
+
 	public InventoryUI getApp() {
 		
 		return app;
@@ -54,5 +56,18 @@ public class AbstractModel  {
 		
 	}
 	public SecurityContext getSecurityContext() { return app.getSessionData().getContext(); }
-			
+
+	public EditModeType getEditMode() { return this.editMode; }
+	public boolean isEditMode() { return ( this.editMode != EditModeType.NONE ); }
+	public void setEditMode( EditModeType editMode ) { this.editMode = editMode; }
+	public void clearEditMode() { setEditMode( EditModeType.NONE ); }
+	public void swipeEditMode() {
+		
+		if ( this.editMode == EditModeType.NONE ) {
+			setEditMode( EditModeType.EDIT ); 
+		} else {
+			setEditMode( EditModeType.NONE ); 
+		}
+	}
+	
 }

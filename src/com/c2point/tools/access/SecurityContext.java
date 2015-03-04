@@ -8,38 +8,98 @@ import com.c2point.tools.entity.repository.ToolItem;
 
 public class SecurityContext {
 
-	private Map<Long, PermissionType>	accessMap;
 	
+	
+	private OrgUser user;
+
+	// TODO. Temporal implementation. Must be changed
+	private Map<Long, PermissionType>	accessMap;
+
 	public SecurityContext( OrgUser user ) {
+
+		this.user = user;
 		
 		if ( user != null ) {
+			
 			accessMap = new HashMap<Long, PermissionType>();
 			fillHashMap();
 		} else {
 			accessMap = null;
 		}
 	}
+
+	/*
+	 * Adapters to base method
+	 */
 	
-	public PermissionType getPermission( FunctionalityType func, OwnershipType oType ) {
+	// True if has R or RW for OWN data
+	public boolean hasViewPermissionOwn( FunctionalityType func ) { return getPermission( func ).getFor( OwnershipType.OWN ) != PermissionType.NO; }
+	
+	public boolean hasViewPermissionMgmt( FunctionalityType func ) {
+
+		PermissionsResp resp = getPermission( func );
 		
-		return accessMap.get( getKey( func, oType )); 
+		return resp.getFor( OwnershipType.COMPANY ) != PermissionType.NO || resp.getFor( OwnershipType.ANY ) != PermissionType.NO; 
+		
+	}
+
+	public boolean hasViewPermissionAll( FunctionalityType func ) { return getPermission( func ).getFor( OwnershipType.ANY ) != PermissionType.NO; 	}
+
+	public boolean hasEditPermissionMgmt( FunctionalityType func ) {
+
+		PermissionsResp resp = getPermission( func );
+		
+		return resp.getFor( OwnershipType.COMPANY ) == PermissionType.RW || resp.getFor( OwnershipType.ANY ) == PermissionType.RW; 
+		
+	}
+
+	public boolean hasEditPermissionAll( FunctionalityType func ) { return getPermission( func ).getFor( OwnershipType.ANY ) == PermissionType.RW; 	}
+	
+	// Can current user change item? It depends does he own item or not
+	public boolean canChangeToolItem( FunctionalityType func, ToolItem item ) {
+		
+		boolean itemOwned = item.getCurrentUser().getId() == this.user.getId();
+		
+		return ( getPermission( func ).getFor( itemOwned ? OwnershipType.OWN : OwnershipType.COMPANY ) == PermissionType.RW ); 
+
+		
+	}
+	/*
+	 * Base method (detailed) to get all permissions for particular finction
+	 */
+	public PermissionsResp getPermission( FunctionalityType func ) {
+		
+		PermissionsResp resp = new PermissionsResp(
+				accessMap.get( getKey( func, OwnershipType.OWN )),
+				accessMap.get( getKey( func, OwnershipType.COMPANY )),
+				// OwnershipType.ANY  permissions can be for Service Company members only!!!
+				( this.user.getOrganisation().isServiceOwner() ? accessMap.get( getKey( func, OwnershipType.ANY )) : PermissionType.NO ) 
+		);
+		
+		return resp; 
 	}
 	
-	public PermissionType getPermission( FunctionalityType func, boolean owner ) {
-		
-		return accessMap.get( getKey( func, ( owner ? OwnershipType.OWN : OwnershipType.COMPANY ))); 
-	}
+
 	
-	public PermissionType getPermission( FunctionalityType func, ToolItem item, OwnershipType oType ) {
+	private Long getKey( FunctionalityType func, OwnershipType oType ) {
 		
-		return accessMap.get( getKey( func, oType )); 
+		return new Long( func.value() * 10 + oType.value());
+		
 	}
+
+	
+	/*
+	 * Temporal implementation of security credentials storage
+	 */
 
 	private void fillHashMap() {
 		
 		addEntry( FunctionalityType.BORROW, 		PermissionType.R,  PermissionType.RW, PermissionType.NO );
 		addEntry( FunctionalityType.CHANGESTATUS, 	PermissionType.RW, PermissionType.R,  PermissionType.NO );
 		addEntry( FunctionalityType.MESSAGING,		PermissionType.NO, PermissionType.RW, PermissionType.NO );
+		addEntry( FunctionalityType.USERS_MGMT,		PermissionType.RW, PermissionType.RW, PermissionType.RW );
+		addEntry( FunctionalityType.TOOLS_MGMT,		PermissionType.RW, PermissionType.RW, PermissionType.RW );
+		addEntry( FunctionalityType.ORGS_MGMT,		PermissionType.RW, PermissionType.RW, PermissionType.RW );
 	}
 
 	private void addEntry( FunctionalityType func, 
@@ -50,9 +110,22 @@ public class SecurityContext {
 		accessMap.put( getKey( func, OwnershipType.ANY ), 		forAdmin ); 
 	}
 
-	private Long getKey( FunctionalityType func, OwnershipType oType ) {
+
+
+	public class PermissionsResp {
 		
-		return new Long( func.value() * 10 + oType.value());
+		private Map<OwnershipType,PermissionType> perms = new HashMap<OwnershipType,PermissionType>();
 		
+		public PermissionsResp( PermissionType forOwn, PermissionType forCompany, PermissionType forAll ) {
+			super();
+			
+			perms.put( OwnershipType.OWN, forOwn );
+			perms.put( OwnershipType.COMPANY, forCompany );
+			perms.put( OwnershipType.ANY, forAll );
+		}
+		
+		public PermissionType getFor( OwnershipType ownershipType ) { return perms.get( ownershipType ); } 
 	}
+	
 }
+

@@ -11,6 +11,7 @@ import javax.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Tool;
@@ -170,6 +171,16 @@ public class TransactionsFacade extends DataFacade {
 		return write( trn ); 
 	}
 
+	public boolean writeOrg( OrgUser whoDid, Organisation org, TransactionOperation op ) {
+		
+		BaseTransaction trn = new BaseTransaction( whoDid, TransactionType.ORGANISATION, op );
+		
+		trn.setOrg( org );
+		
+		return write( trn ); 
+	}
+
+	
 /*
  * Below methods to fetch transactions according to the particular criterias
  */

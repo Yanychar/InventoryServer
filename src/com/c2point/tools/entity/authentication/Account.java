@@ -3,6 +3,7 @@ package com.c2point.tools.entity.authentication;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -72,7 +73,7 @@ public class Account extends SimplePojo {
 		
 		setUsrName( usrName );
 		setPwd( pwd );
-		addUser( user );
+		setUser( user );
 		setState( AccountStateType.Active );
 
 		this.uniqueSessionID = null;
@@ -95,41 +96,39 @@ public class Account extends SimplePojo {
 		this.pwd = ( pwd != null ? pwd : null );
 	}
 
-	public Collection<OrgUser> getUsers() { return users; }
+	public Collection<OrgUser> getUsers() { 
+	
+		return normalize();
+		
+	}
 	public void setUsers( Collection<OrgUser> users ) { this.users = users; }
 
-	
-	public OrgUser getFirstUser() { 
-
-		logger.error( "Usage of getFirstUser is a stub!!! Shall be eliminated totally!" );
-		
-		if ( users != null && users.size() == 1 ) {
-			return users.iterator().next(); 
-		}
-		
-		return null;
-	}
 	
 	/*
 	 * Return User if and only if one user found 
 	 */
 	public OrgUser getUser() { 
 
-		if ( users != null && users.size() == 1 ) {
-			return users.iterator().next(); 
+		Collection<OrgUser> retList = normalize();
+		
+		if ( retList != null && retList.size() == 1 ) {
+			
+			OrgUser user = retList.iterator().next();
+			
+			if ( user != null && !user.isDeleted()) {
+				
+				return user;
+			}
 		}
 		
 		return null;
 	}
 	
-	public void addUser( OrgUser user ) {
+	private void setUser( OrgUser user ) {
 		
-		if ( users == null ) {
+		users = new ArrayList<OrgUser>();
 			
-			users = new ArrayList<OrgUser>();
-			users.add( user );
-			
-		}
+		users.add( user );
 
 	}
 	
@@ -222,8 +221,31 @@ public class Account extends SimplePojo {
 
 	public boolean valid() {
 		
-		return users != null && users.size() > 0 && users.iterator().next() != null;
+		Collection<OrgUser> retList = normalize();
+		
+		return retList != null && retList.size() > 0 && retList.iterator().next() != null;
 	}
+	
+	private Collection<OrgUser> normalize() {
+		
+		Collection<OrgUser> retList = null;
+		
+		if ( users != null ) {
+			
+			retList = new ArrayList<OrgUser>();
+					
+			for ( OrgUser user : users ) {
+				
+				if ( user != null && !user.isDeleted()) {
+					
+					retList.add( user );
+				}
+			}
+		}
+		
+		return retList;
+	}
+
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

@@ -13,6 +13,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 
 import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
+import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.utils.lang.Locales;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -57,8 +58,6 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 	private Button		editcloseButton;
 	private Button		deleteButton;
 
-	private boolean		editMode;
-
 	private boolean		editedFlag;
 	private OrgUser		shownUser;
 
@@ -71,7 +70,7 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 
 		model.addChangedListener( this );
 
-		setEditMode( false );
+		model.clearEditMode();
 	}
 
 	private void initView() {
@@ -160,10 +159,6 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 	public StuffListModel getModel() { return model; }
 	public void setModel( StuffListModel model ) { this.model = model; }
 
-	public boolean isEditMode() { return this.editMode; }
-	public void setEditMode( boolean editMode ) { this.editMode = editMode; }
-	public void swipeEditMode() { setEditMode( !isEditMode()); }
-
 	public boolean isEditedFlag() { return editedFlag;}
 	public void setEditedFlag(boolean editedFlag) {this.editedFlag = editedFlag; }
 
@@ -235,8 +230,10 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 		setVisible( user != null );
 		dataToView();
 
-		if ( isEditMode()) {
-			setEditMode( false );
+		if ( model.isEditMode()) {
+			
+			model.clearEditMode();
+			
 			updateButtons();
 			enableFields();
 		}
@@ -290,7 +287,7 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 
 			@Override
 			public void buttonClick( ClickEvent event) {
-				if ( !editMode && StuffView.this.shownUser != null ) {
+				if ( !model.isEditMode() && StuffView.this.shownUser != null ) {
 
 					deletePerson();
 				}
@@ -344,9 +341,9 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 
 	private void updateButtons() {
 
-		if ( editMode ) {
+		if ( model.isEditMode() ) {
 
-			editcloseButton.setCaption( "Close" );
+			editcloseButton.setCaption( model.getApp().getResourceStr( "general.button.close" ) );
 			editcloseButton.setIcon( new ThemeResource("icons/16/approve.png"));
 
 			deleteButton.setVisible( false );
@@ -363,21 +360,19 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 
 	private void enableFields() {
 
-		code.setEnabled( isEditMode());
-		firstName.setEnabled( isEditMode());
-		lastName.setEnabled( isEditMode());
-		birthday.setEnabled( isEditMode());
+		code.setEnabled( model.isEditMode() );
+		firstName.setEnabled( model.isEditMode() );
+		lastName.setEnabled( model.isEditMode() );
+		birthday.setEnabled( model.isEditMode() );
 
-		street.setEnabled( isEditMode());
-		pobox.setEnabled( isEditMode());
-		index.setEnabled( isEditMode());
-		city.setEnabled( isEditMode());
-		country.setEnabled( isEditMode());
+		street.setEnabled( model.isEditMode() );
+		pobox.setEnabled( model.isEditMode() );
+		index.setEnabled( model.isEditMode() );
+		city.setEnabled( model.isEditMode() );
+		country.setEnabled( model.isEditMode() );
 
-		email.setEnabled( isEditMode());
-		mobile.setEnabled( isEditMode());
-
-
+		email.setEnabled( model.isEditMode() );
+		mobile.setEnabled( model.isEditMode() );
 
 	}
 
@@ -385,9 +380,9 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 
 		logger.debug( "EditClose button has been pressed!" );
 
-		swipeEditMode();
+		model.swipeEditMode();
 
-		if ( isEditMode()) {
+		if ( model.isEditMode()) {
 
 			setEditedFlag( false );
 

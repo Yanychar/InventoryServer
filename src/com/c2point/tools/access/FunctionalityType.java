@@ -4,7 +4,10 @@ public enum FunctionalityType {
 
 	BORROW( 1 ),
 	CHANGESTATUS( 2 ),
-	MESSAGING( 3 );
+	MESSAGING( 3 ),
+	USERS_MGMT( 4 ),
+	TOOLS_MGMT( 5 ),
+	ORGS_MGMT( 6 );
 	
 	private int value = 0;
 	

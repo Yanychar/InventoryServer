@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.MapKey;
@@ -33,12 +34,15 @@ public class Organisation extends SimplePojo {
 							employees = new HashMap<Long, OrgUser>();
 
 	private Address			address;
+	private String			tunnus;
 
 	private String			phoneNumber;
 	private String			email;
 
-	private String			tunnus;
 	private String			info;
+	
+	@Column(name="service_owner")
+	private boolean			serviceOwner;
 
 	public Organisation() {
 		super();
@@ -51,9 +55,6 @@ public class Organisation extends SimplePojo {
 		setName( name );
 		
 	}
-	
-
-	
 	
 	public String getCode() { return code; }
 	public void setCode( String code ) { this.code = code; }
@@ -78,6 +79,9 @@ public class Organisation extends SimplePojo {
 	
 	public String getInfo() { return info; }
 	public void setInfo( String info ) { this.info = info; }
+
+	public boolean isServiceOwner() { return serviceOwner; }
+	public void setServiceOwner(boolean serviceOwner) { this.serviceOwner = serviceOwner; }
 	
 
 }
