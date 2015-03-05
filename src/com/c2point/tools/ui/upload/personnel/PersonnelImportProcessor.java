@@ -35,14 +35,13 @@ public class PersonnelImportProcessor extends FileProcessor {
 	
 	
 	private PatternLen [] columnPatterns = {
-			new PatternLen( "", 10 ), 				//( "\\d{0,10}", 10 ),
-			new PatternLen( "", 40 ),
-			new PatternLen( "", 40 ),
-			new PatternLen( "", 20 ),				//"(\\d|\\+)[\\d\\s\\-]{8,40}", 20 ),
-			new PatternLen( "", 60 ),				//"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", 60 ),
-			new PatternLen( "", 10 ),
+			new PatternLen( "", 10 ), 				//	Code				( "\\d{0,10}", 10 ),
+			new PatternLen( "", 40 ),				// 	First Name
+			new PatternLen( "", 40 ),				//	Last Name
+			new PatternLen( "", 20 ),				//	Phone Number		"(\\d|\\+)[\\d\\s\\-]{8,40}", 20 ),
+			new PatternLen( "", 60 ),				//"	Email				^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", 60 ),
+			new PatternLen( "", 10 ),				// Superuser flag
 	};
-	
 	
 	public PersonnelImportProcessor( StuffListModel model, File processFile ) {
 		
@@ -65,10 +64,16 @@ public class PersonnelImportProcessor extends FileProcessor {
 	protected ProcessedStatus validateLine( String[] nextLine, int lineNumber ) {
 
 		// 1. Firstly check that Line is not comment (start from #) and not empty)
+		if ( logger.isDebugEnabled()) {
+			logger.debug( "nextLine.length == " + nextLine.length );  
+			logger.debug( "nextLine[0].trim().length == " + nextLine[0].trim().length() );  
+			logger.debug( "nextLine[ 0 ].trim().startsWith( \"#\" ) == " + nextLine[ 0 ].trim().startsWith( "#" ) );
+		}
+		
 		if ( nextLine == null 
 				|| nextLine.length == 0 
 				|| nextLine.length == 1 && nextLine[0].trim().length() == 0
-				|| nextLine[0].trim().length() > 0 && nextLine[ 0 ].trim().charAt( 0 ) == '#' ) {
+				|| nextLine[0].trim().length() > 0 && nextLine[ 0 ].trim().startsWith( "#" )) {
 			
 			// Comment or empty line
 			if ( logger.isDebugEnabled()) logger.debug( "   Validation passed: Line #"+lineNumber+" is empty or commented out" );
