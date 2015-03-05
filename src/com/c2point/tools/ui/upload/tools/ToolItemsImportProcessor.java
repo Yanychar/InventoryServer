@@ -290,13 +290,13 @@ public class ToolItemsImportProcessor extends FileProcessor {
 
 	private void setCurrentUserIfNecessary( String [] nextLine,  ToolItem item ) {
 	
-		if ( nextLine[ 8 ] != null && nextLine[ 8 ].length() > 0 
+		if ( nextLine[ 13 ] != null && nextLine[ 13 ].length() > 0 
 			&&
-			 nextLine[ 9 ] != null && nextLine[ 9 ].length() > 0
+			 nextLine[ 14 ] != null && nextLine[ 14 ].length() > 0
 		) {
 			
 			// Find User (org, firstName, lastName)
-			List< OrgUser > userList = UsersFacade.getInstance().listByFIO( model.getOrg(), nextLine[ 8 ], nextLine[ 9 ] );
+			List< OrgUser > userList = UsersFacade.getInstance().listByFIO( model.getOrg(), nextLine[ 13 ], nextLine[ 14 ] );
 			// If user found set it as current user
 			if ( userList != null ) {
 				item.setCurrentUser( userList.get( 0 ));

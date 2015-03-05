@@ -29,8 +29,9 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.VerticalLayout;
 
-public class OrgView extends GridLayout implements OrgChangedListener {
+public class OrgView extends VerticalLayout implements OrgChangedListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( OrgView.class.getName());
 
@@ -60,7 +61,7 @@ public class OrgView extends GridLayout implements OrgChangedListener {
 	private Organisation shownOrg;
 
 	public OrgView( OrgListModel model ) {
-		super( 4, 7 );
+		super();
 		
 		setModel( model );
 
@@ -74,42 +75,56 @@ public class OrgView extends GridLayout implements OrgChangedListener {
 
 	private void initView() {
 
-		setSpacing( true );
-		this.setMargin( true );
-		setSizeUndefined();
+		GridLayout nameLayout = new GridLayout( 4, 2 );
+ 		
+		nameLayout.setSpacing( true );
+		nameLayout.setMargin( true );
+//		nameLayout.setSizeUndefined();
 		
 		code = new TextField();
+		code.setWidth( "6em" );
 		code.setRequired( true );
 		code.setImmediate( true );
 		
         name = new TextField();
-        name.setTabIndex( 2 );
-        name.setWidth("100%");
+        name.setTabIndex( 1 );
+        name.setWidth( "100%" );
+//        name.setWidth( "15em" );
         name.setNullRepresentation( "Enter Company Name ..." ); 
         name.setRequired( true );
         name.setValidationVisible( true );
 		name.setImmediate( true );
 
         tunnus = new TextField();
-        tunnus.setTabIndex( 3 );
-        tunnus.setWidth( "10em" );
+        tunnus.setTabIndex( 2 );
+        tunnus.setWidth( "6em" );
         tunnus.setNullRepresentation( "Enter ID ..." ); 
         tunnus.setImmediate(true);
 		
-        addComponent( new Label( model.getApp().getResourceStr( "general.caption.code" ) + ":" ),	0,  0 ); 
-        addComponent( new Label( model.getApp().getResourceStr( "general.caption.name" ) + ":" ),	0,  1 );
-        addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.tunnus" ) + ":" ),	2,  1 );
+        nameLayout.addComponent( new Label( model.getApp().getResourceStr( "general.caption.code" ) + ":" ),	0,  0 ); 
+        nameLayout.addComponent( new Label( model.getApp().getResourceStr( "general.caption.name" ) + ":" ),	0,  1 );
+        nameLayout.addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.tunnus" ) + ":" ),	2,  1 );
 		
-		addComponent( code,		1,  0 );
-		addComponent( name,		1,  1 );
-		addComponent( tunnus,	3,  1 );
+        nameLayout.addComponent( code,		1,  0 );
+        nameLayout.addComponent( name,		1,  1 );
+        nameLayout.addComponent( tunnus,	3,  1 );
 
+		addComponent( nameLayout );
+        
 		Label separator = new Label( "<hr/>", ContentMode.HTML );
 		separator.setWidth( "100%" );
-		addComponent( separator, 0, 2 );
+		
+		addComponent( separator );
 
+		
+		GridLayout addrLayout = new GridLayout( 4, 3 );
+ 		
+//		addrLayout.setSpacing( true );
+		addrLayout.setMargin( true );
+//		addrLayout.setSizeUndefined();
+		
         street = new TextField();
-        street.setTabIndex( 4 );
+        street.setTabIndex( 3 );
         street.setWidth("100%");
         street.setNullRepresentation( "Street address ..." ); 
         street.setRequired( false );
@@ -117,32 +132,53 @@ public class OrgView extends GridLayout implements OrgChangedListener {
         street.setImmediate(true);
 
         index = new TextField();
-        index.setTabIndex( 5 );
-        index.setWidth( "10em" );
-        index.setNullRepresentation( "Postbox ..." ); 
+        index.setTabIndex( 4 );
+        index.setWidth( "6em" );
+        index.setNullRepresentation( "Zip Code ..." ); 
         index.setRequired( false );
         index.setValidationVisible( true );
         index.setImmediate(true);
 		
         city = new TextField();
-        city.setTabIndex( 6 );
-        city.setWidth( "20em" );
+        city.setTabIndex( 5 );
+//        city.setWidth( "15em" );
+        city.setWidth( "100%" );
         city.setNullRepresentation( "City ..." ); 
         city.setRequired( false );
         city.setValidationVisible( true );
         city.setImmediate(true);
+
+    	countryCode = new ComboBox();
+    	countryCode.setTabIndex( 6 );
+    	countryCode.setWidth( "10em" );
+    	countryCode.setNullSelectionAllowed( false ); 
+    	countryCode.setRequired( true );
+    	countryCode.setValidationVisible( true );
+    	countryCode.setImmediate(true);
+        
+        addrLayout.addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.street" ) + ":" ),		0,  0 );
+        addrLayout.addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.index_city" ) + ":" ),	0,  1 );
+        addrLayout.addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.country" ) + ":" ),	0,  2 );
 		
+        addrLayout.addComponent( street,		1,  0,  3,  0 );
+        addrLayout.addComponent( index,			1,  1 );
+        addrLayout.addComponent( city,			2,  1,  3,  1 );
+        addrLayout.addComponent( countryCode,	1,  2,  2,  2 );
+
+	    // Align and size the labels in 1st column
+	    for ( int row=0; row < addrLayout.getRows(); row++ ) {
+	    	addrLayout.getComponent( 0, row ).setWidth( "6em" );
+	    }
+        addrLayout.setColumnExpandRatio( 3, 5 );
+                
+		addComponent( addrLayout );
+        
+		Label separator2 = new Label( "<hr/>", ContentMode.HTML );
+		separator.setWidth( "100%" );
 		
-        addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.street" ) + ":" ),	0,  3 );
-        addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.index" ) + ":" ),	0,  4 );
-        addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.city" ) + ":" ),	2,  4 );
-		
-		addComponent( street,		1,  3,  3,  3 );
-		addComponent( index,		1,  4);
-		addComponent( city,			3,  4);
-		
-		
-		addComponent( getButtonsBar(), 0, 6, 1, 6 );
+		addComponent( separator2 );
+        
+		addComponent( getButtonsBar());
 
 		updateButtons();
 		enableFields();
