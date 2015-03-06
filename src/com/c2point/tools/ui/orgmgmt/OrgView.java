@@ -11,10 +11,13 @@ import org.vaadin.dialogs.ConfirmDialog;
 
 import com.c2point.tools.access.FunctionalityType;
 import com.c2point.tools.entity.organisation.Organisation;
+import com.c2point.tools.entity.person.Address;
+import com.c2point.tools.ui.util.UIhelper;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
@@ -47,7 +50,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 //	private TextField	poBox;
 	private TextField	index;
 	private TextField	city;
-	private ComboBox	countryCode;
+	private ComboBox	country;
 
     private TextField 	phone;
     private TextField 	email;
@@ -117,11 +120,12 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 		addComponent( separator );
 
 		
-		GridLayout addrLayout = new GridLayout( 4, 3 );
+		GridLayout addrLayout = new GridLayout( 4, 6 );
  		
-//		addrLayout.setSpacing( true );
+		addrLayout.setSpacing( true );
 		addrLayout.setMargin( true );
 //		addrLayout.setSizeUndefined();
+		addrLayout.setWidth( "100%" );
 		
         street = new TextField();
         street.setTabIndex( 3 );
@@ -148,22 +152,45 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
         city.setValidationVisible( true );
         city.setImmediate(true);
 
-    	countryCode = new ComboBox();
-    	countryCode.setTabIndex( 6 );
-    	countryCode.setWidth( "10em" );
-    	countryCode.setNullSelectionAllowed( false ); 
-    	countryCode.setRequired( true );
-    	countryCode.setValidationVisible( true );
-    	countryCode.setImmediate(true);
-        
+    	country = new ComboBox();
+    	country.setTabIndex( 6 );
+		country.setInputPrompt( "Select Country ..." );
+		country.setFilteringMode( FilteringMode.CONTAINS );
+		country.setNullSelectionAllowed( true );
+		country.setWidth( "10em" );
+		country.setImmediate( true );
+		UIhelper.fillCountryCombo( country );
+		
+	    phone = new TextField();
+	    phone.setTabIndex( 7 );
+	    phone.setWidth( "15em" );
+	    phone.setNullRepresentation( "Phone ..." ); 
+	    phone.setRequired( false );
+	    phone.setValidationVisible( true );
+	    phone.setImmediate(true);
+	    
+	    email = new TextField();
+	    email.setTabIndex( 8 );
+	    email.setWidth("100%");
+	    email.setNullRepresentation( "Email ..." ); 
+	    email.setRequired( false );
+	    email.setValidationVisible( true );
+	    email.setImmediate(true);
+    	
+    	
         addrLayout.addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.street" ) + ":" ),		0,  0 );
         addrLayout.addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.index_city" ) + ":" ),	0,  1 );
         addrLayout.addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.country" ) + ":" ),	0,  2 );
+        addrLayout.addComponent( new Label( "" ),																		0,  3 );
+        addrLayout.addComponent( new Label( model.getApp().getResourceStr( "general.caption.phone" ) + ":" ),			0,  4 );
+        addrLayout.addComponent( new Label( model.getApp().getResourceStr( "general.caption.email" ) + ":" ),			0,  5 );
 		
-        addrLayout.addComponent( street,		1,  0,  3,  0 );
-        addrLayout.addComponent( index,			1,  1 );
-        addrLayout.addComponent( city,			2,  1,  3,  1 );
-        addrLayout.addComponent( countryCode,	1,  2,  2,  2 );
+        addrLayout.addComponent( street,	1,  0,  3,  0 );
+        addrLayout.addComponent( index,		1,  1 );
+        addrLayout.addComponent( city,		2,  1,  3,  1 );
+        addrLayout.addComponent( country,	1,  2,  2,  2 );
+        addrLayout.addComponent( phone,		1,  4,  2,  4 );
+        addrLayout.addComponent( email,		1,  5,  3,  5 );
 
 	    // Align and size the labels in 1st column
 	    for ( int row=0; row < addrLayout.getRows(); row++ ) {
@@ -204,7 +231,20 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 			name.setValue( this.shownOrg.getName());
 			tunnus.setValue( this.shownOrg.getTunnus());
+
+			Address adr = this.shownOrg.getAddress();
+			if ( adr == null ) {
+				adr = new Address();
+				this.shownOrg.setAddress( adr );
+			}
 			
+			street.setValue( adr.getStreet());
+			index.setValue( adr.getIndex());
+			city.setValue( adr.getCity());
+			country.setValue( adr.getCountryCode());
+
+			phone.setValue( this.shownOrg.getPhoneNumber());
+			email.setValue( this.shownOrg.getEmail());
 			
 		}
 
@@ -217,6 +257,19 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 			this.shownOrg.setName( name.getValue());
 			this.shownOrg.setTunnus( tunnus.getValue());
 
+			Address adr = this.shownOrg.getAddress();
+			if ( adr == null ) {
+				adr = new Address();
+				this.shownOrg.setAddress( adr );
+			}
+			
+			adr.setStreet( street.getValue( ));
+			adr.setIndex( index.getValue( ));
+			adr.setCity( city.getValue( ));
+			adr.setCountryCode(( String )country.getValue( ));
+
+			this.shownOrg.setPhoneNumber( phone.getValue());
+			this.shownOrg.setEmail( email.getValue());
 		}
 
 	}
@@ -384,7 +437,13 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 		name.setEnabled( model.isEditMode());
 		tunnus.setEnabled( model.isEditMode());
 
+		street.setEnabled( model.isEditMode());
+		index.setEnabled( model.isEditMode());
+		city.setEnabled( model.isEditMode());
+		country.setEnabled( model.isEditMode());
 
+		phone.setEnabled( model.isEditMode());
+		email.setEnabled( model.isEditMode());
 
 	}
 
@@ -406,13 +465,15 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 //			listenForChanges( poBox );
 			listenForChanges( index );
 			listenForChanges( city );
-//			listenForChanges( countryCode );
+			listenForChanges( country );
 
+			listenForChanges( phone );
+			listenForChanges( email );
 		    
 //			listenForChanges( phone );
 //			listenForChanges( email );
 
-			listenForChanges( info );
+//			listenForChanges( info );
 			
 
 		} else {
