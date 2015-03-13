@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.entity.repository.ToolItem;
+import com.c2point.tools.entity.tool.Tool;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload.FailedEvent;
 import com.vaadin.ui.Upload.FailedListener;
@@ -102,31 +104,31 @@ public class ImportComponent implements StartedListener, SucceededListener, Fail
 	}
 
 	@Override
-	public void lineProcessed( String [] processedObject, ProcessedStatus status, int lineNumber) {
+	public void lineProcessed( Object processedObject, ProcessedStatus status, int lineNumber) {
 
 		switch ( status ) {
-		case COMMENT:
-			if ( logger.isDebugEnabled())
-				writeLog( "  Line " + lineNumber + ". This is comment" );
-			break;
-		case FAILED:
-		case VALIDATION_FAILED:
-			writeLog( "  Line " + lineNumber + ". FAILED to be processed " );
-			break;
-		case PROCESSED:
-			if ( logger.isDebugEnabled())
-				writeLog( "  Line " + lineNumber + ".   Processed" );
-			break;
-		case VALIDATED:
-			if ( logger.isDebugEnabled())
-				writeLog( "  Line " + lineNumber + ". Validated" );
-			break;
-		case EXIST:
-			writeLog( "  Line " + lineNumber + ". FAILED. Exists already. Was not added!" );
-			break;
-		default:
-			break;
-		
+			case COMMENT:
+				if ( logger.isDebugEnabled())
+					writeLog( "  Line " + lineNumber + ". This is comment" );
+				break;
+			case FAILED:
+			case VALIDATION_FAILED:
+				writeLog( "  Line " + lineNumber + ". FAILED to process:  " + showObject( processedObject ));
+				break;
+			case PROCESSED:
+				if ( logger.isDebugEnabled())
+					writeLog( "  Line " + lineNumber + ". Processed: " + showObject( processedObject ));
+				break;
+			case VALIDATED:
+				if ( logger.isDebugEnabled())
+					writeLog( "  Line " + lineNumber + ". Validated: " + showObject( processedObject ));
+				break;
+			case EXIST:
+				writeLog( "  Line " + lineNumber + ". FAILED. Exists already. Was not added!" );
+				break;
+			default:
+				break;
+			
 		}
 		
 	}
@@ -160,7 +162,7 @@ public class ImportComponent implements StartedListener, SucceededListener, Fail
 		try {
 			importProcessor.getFile().delete();
 		} catch( Exception e ) {
-			logger.error( "Cannot delete temoral file: " + importProcessor.getFile().getAbsolutePath());
+			logger.error( "Cannot delete temporal file: " + importProcessor.getFile().getAbsolutePath());
 		}
 
 		importProcessor.removeChangedListener( this );
@@ -175,6 +177,30 @@ public class ImportComponent implements StartedListener, SucceededListener, Fail
 		}
 	}
 
+	private String showObject( Object processedObject ) {
+		
+		String resp = "???";
+		
+		if ( processedObject != null ) {
 
+			if ( processedObject instanceof Tool ) {
+			
+				resp = (( Tool )processedObject ).getFullName();
+				
+			} else if ( processedObject instanceof ToolItem ) {
+
+				ToolItem item = ( ToolItem )processedObject;
+				
+				resp = item.getFullName() + " assigned to " + item.getCurrentUser().getLastAndFirstNames();
+				
+			} else {
+				
+			}
+				
+			
+		}
+		
+		return resp;
+	}
 
 }

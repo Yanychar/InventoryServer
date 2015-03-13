@@ -233,5 +233,10 @@ public class ToolItem extends SimplePojo {
 
 	public Integer getTakuu() { return takuu; }
 	public void setTakuu( Integer takuu ) { this.takuu = takuu; }
-	
+
+	public String getFullName() { 
+		
+		return ( getTool() != null ? getTool().getFullName() : "" );
+	}
+		
 }

@@ -321,9 +321,14 @@ public class ToolItemsImportProcessor extends FileProcessor {
 
 	private ToolItem addToolItem( ToolItem item ) {
 	
+/*		
 		ToolItem addedItem = ItemsFacade.getInstance().add( item );
+*/
+		ToolItem addedItem = model.add( item );
 		
-		logger.debug( "Was added: " + addedItem );
+		if ( logger.isDebugEnabled() && addedItem != null )
+		
+			logger.debug( "ToolItem was added: " + addedItem.getTool().getFullName());
 		
 		return addedItem;
 	}
@@ -442,6 +447,8 @@ public class ToolItemsImportProcessor extends FileProcessor {
 			
 			if ( tool != null ) {
 
+				setProcessedObject( tool );
+
 				this.tmpRes = ProcessedStatus.PROCESSED;
 				
 			}
@@ -501,6 +508,8 @@ public class ToolItemsImportProcessor extends FileProcessor {
 				// Now if Tool Item was not found or added ==>> Processing of this record failed
 				// Record without Tool and ToolItem info shall be rejected in validation stage
 				if ( toolItem != null ) {
+					
+					setProcessedObject( toolItem );
 					
 					this.tmpRes = ProcessedStatus.PROCESSED;
 					

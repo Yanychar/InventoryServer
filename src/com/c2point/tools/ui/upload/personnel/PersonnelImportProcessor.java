@@ -144,6 +144,8 @@ public class PersonnelImportProcessor extends FileProcessor {
 		
 		if ( model.add( user ) != null ) {
 			
+			setProcessedObject( user );
+
 			res = ProcessedStatus.PROCESSED;
 			
 		}

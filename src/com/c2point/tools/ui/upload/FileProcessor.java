@@ -71,6 +71,8 @@ public abstract class FileProcessor {
 					logger.debug( "    Line # " + processed + " length=" + currentLine.length + ": " + outstr ); 
 				}
 
+				clearProcessedObject();
+				
 				result = validateLine( currentLine, processed );
 				
 				if ( result == ProcessedStatus.VALIDATED ) {
@@ -78,7 +80,7 @@ public abstract class FileProcessor {
 					result = processLine( currentLine, processed );
 				}
 
-				fireProcessed( currentLine, result, processed );
+				fireProcessed( getProcessedObject(), result, processed );
 				
 				if (   result == ProcessedStatus.FAILED 
 					|| result == ProcessedStatus.VALIDATION_FAILED
@@ -93,7 +95,7 @@ public abstract class FileProcessor {
 			if ( logger.isDebugEnabled()) logger.debug( "Faileds to read line="+processed+" in import file: " + processFile.getName() );
 
 //			error( "ERROR: I/O error. Line #" + processed );
-			fireProcessed( currentLine, ProcessedStatus.FAILED, processed );
+			fireProcessed( processedObject, ProcessedStatus.FAILED, processed );
 			
 			errRecNumbers.add( processed );
 		}
@@ -145,7 +147,7 @@ public abstract class FileProcessor {
 	     }
 	}
 	
-	private void fireProcessed( String [] processedObject, ProcessedStatus status, int lineNumber ) {
+	private void fireProcessed( Object processedObject, ProcessedStatus status, int lineNumber ) {
 		Object[] listeners = listenerList.getListenerList();
 
 	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
@@ -193,6 +195,17 @@ public abstract class FileProcessor {
 	 */
 	protected abstract ProcessedStatus processLine( String [] nextLine, int lineNumber );
 
+	
+	protected Object processedObject = null;
+	
+	protected void clearProcessedObject() {
+		this.processedObject = null;
+	}
+	
+	protected Object getProcessedObject() { return this.processedObject; }
+	protected void setProcessedObject( Object processedObject ) { this.processedObject = processedObject; }
+	
+	
 	
 	public class PatternLen {
 		

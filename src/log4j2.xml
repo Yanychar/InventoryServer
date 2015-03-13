@@ -14,6 +14,7 @@
   <Loggers>
 
     <Logger name="com.c2point.tools.ui.orgmgmt" 	level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
+    <Logger name="com.c2point.tools.ui.upload" 	level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
       
 <!--
       <Logger name="com.c2point.tools" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
