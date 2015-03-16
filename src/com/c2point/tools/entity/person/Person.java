@@ -41,6 +41,7 @@ public class Person extends SimplePojo {
 	public Person() {
 		
 		setIdentities( null );
+		setCode( "" );
 		
 	}
 	

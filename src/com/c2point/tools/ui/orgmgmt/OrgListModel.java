@@ -9,7 +9,9 @@ import com.c2point.tools.access.FunctionalityType;
 import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.OrganisationFacade;
 import com.c2point.tools.datalayer.PresenceFilterType;
+import com.c2point.tools.datalayer.UsersFacade;
 import com.c2point.tools.entity.organisation.Organisation;
+import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel;
 
 public class OrgListModel extends AbstractModel {
@@ -141,8 +143,10 @@ public class OrgListModel extends AbstractModel {
 
 		// Add to DB
 		if ( isOrgListSupported() && addedOrg != null ) {
-
+			
 			newOrg = OrganisationFacade.getInstance().add( addedOrg );
+			
+			addUpdateResponsibleIfNecessary( newOrg );
 			
 			if ( newOrg != null ) {
 				
@@ -163,6 +167,8 @@ public class OrgListModel extends AbstractModel {
 		// Update DB
 		if ( updatedOrg != null ) {
 
+			addUpdateResponsibleIfNecessary();
+			
 			newOrg = OrganisationFacade.getInstance().update( updatedOrg );
 			
 			if ( newOrg != null ) {
@@ -206,5 +212,43 @@ public class OrgListModel extends AbstractModel {
 		OrganisationFacade.getInstance().setUniqueCode( org );
 		
 	}
-	
+
+	public Collection<OrgUser> getUsers() {
+		
+		return UsersFacade.getInstance().list( selectedOrganisation );
+	}
+
+	// Check that responsible person exists already and add if necessary
+	private OrgUser addUpdateResponsibleIfNecessary() {
+		return addUpdateResponsibleIfNecessary( null );
+	}
+	private OrgUser addUpdateResponsibleIfNecessary( Organisation updatedOrg ) {
+
+		OrgUser newUser = null;
+		
+		if ( updatedOrg == null ) 
+			updatedOrg = this.selectedOrganisation;
+		
+		OrgUser responsibleUser = updatedOrg.getResponsible();
+		
+		if ( responsibleUser != null && responsibleUser.getId() < 1 ) {
+			
+			responsibleUser.setOrganisation( updatedOrg );
+			
+//			UsersFacade.getInstance().setUniqueCode( responsibleUser );
+			responsibleUser.setCode( "" );			
+
+			newUser = UsersFacade.getInstance().add( responsibleUser );
+			
+			if ( newUser != null ) {
+				
+				updatedOrg.addUser( newUser );
+			}
+		
+		}
+		
+		return newUser;
+		
+	}
+
 }

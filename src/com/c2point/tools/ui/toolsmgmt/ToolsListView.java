@@ -341,7 +341,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			});
 			
 			
-			addButton = new Button( model.getApp().getResourceStr( "personnel.add.caption" ));
+			addButton = new Button( model.getApp().getResourceStr( "personnel.caption.add" ));
 			addButton.addClickListener( new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override

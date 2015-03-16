@@ -267,7 +267,7 @@ public class UsersFacade extends DataFacade {
 					SettingsFacade.getInstance().getProperty( user.getOrganisation(), "lastPersonnelCode" ));	
 		}
 		
-		if ( lastUniqueCode == 0 ) {
+		if ( lastUniqueCode == 0 && user.getOrganisation() != null ) {
 			
 			lastUniqueCode = this.count( user.getOrganisation());
 

@@ -79,17 +79,17 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 		this.setMargin( true );
 		setSizeUndefined();
 
-		code = new TextField( "Code:" );
+		code = new TextField( model.getApp().getResourceStr( "general.caption.code" ) + ":" );
 		code.setRequired(true);
 		code.setRequiredError("The Field may not be empty.");
 		code.setNullRepresentation( "" );
 		code.setImmediate( true );
 
-		firstName = new TextField( "First name:" );
+		firstName = new TextField( model.getApp().getResourceStr( "personnel.caption.firstname" ) + ":" );
 		firstName.setNullRepresentation( "" );
 		firstName.setImmediate( true );
 
-		lastName = new TextField( "Last name:" );
+		lastName = new TextField( model.getApp().getResourceStr( "personnel.caption.lastname" ) + ":" );
 		lastName.setRequired(true);
 		lastName.setRequiredError("The Field may not be empty.");
 		lastName.setNullRepresentation( "" );
@@ -127,12 +127,12 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 
 		country.setImmediate( true );
 
-		email = new TextField( "Email:" );
+		email = new TextField( model.getApp().getResourceStr( "general.caption.email" ) + ":" );
 		email.setRequired(true);
 		email.setNullRepresentation( "" );
 		email.setImmediate(true);
 
-		mobile = new TextField( "Mobile:" );
+		mobile = new TextField( model.getApp().getResourceStr( "general.caption.phone" ) + ":" );
 		mobile.setRequired(true);
 		mobile.setNullRepresentation( "" );
 		mobile.setImmediate(true);

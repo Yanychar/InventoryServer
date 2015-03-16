@@ -10,8 +10,10 @@ import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.c2point.tools.access.FunctionalityType;
+import com.c2point.tools.datalayer.UsersFacade;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.Address;
+import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.util.UIhelper;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -30,6 +32,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.VerticalLayout;
@@ -52,11 +55,22 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 	private TextField	city;
 	private ComboBox	country;
 
-    private TextField 	phone;
     private TextField 	email;
+    private TextField 	phone;
 
     private TextArea	info;
 	
+	private Component	soSelector = null;
+	private Component	soNew = null;
+	private boolean 	isSoSelector = false;
+	
+	private ComboBox	serviceOwner;
+
+	private TextField	soFirstName;
+    private TextField	soLastName;
+    private TextField	soEmail;
+    private TextField	soPhone;
+
 	private Button		editcloseButton;
 	private Button		deleteButton;
 
@@ -182,15 +196,15 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
         addrLayout.addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.index_city" ) + ":" ),	0,  1 );
         addrLayout.addComponent( new Label( model.getApp().getResourceStr( "organisation.caption.country" ) + ":" ),	0,  2 );
         addrLayout.addComponent( new Label( "" ),																		0,  3 );
-        addrLayout.addComponent( new Label( model.getApp().getResourceStr( "general.caption.phone" ) + ":" ),			0,  4 );
-        addrLayout.addComponent( new Label( model.getApp().getResourceStr( "general.caption.email" ) + ":" ),			0,  5 );
+        addrLayout.addComponent( new Label( model.getApp().getResourceStr( "general.caption.email" ) + ":" ),			0,  4 );
+        addrLayout.addComponent( new Label( model.getApp().getResourceStr( "general.caption.phone" ) + ":" ),			0,  5 );
 		
         addrLayout.addComponent( street,	1,  0,  3,  0 );
         addrLayout.addComponent( index,		1,  1 );
         addrLayout.addComponent( city,		2,  1,  3,  1 );
         addrLayout.addComponent( country,	1,  2,  2,  2 );
-        addrLayout.addComponent( phone,		1,  4,  2,  4 );
-        addrLayout.addComponent( email,		1,  5,  3,  5 );
+        addrLayout.addComponent( email,		1,  4,  2,  4 );
+        addrLayout.addComponent( phone,		1,  5,  3,  5 );
 
 	    // Align and size the labels in 1st column
 	    for ( int row=0; row < addrLayout.getRows(); row++ ) {
@@ -205,6 +219,8 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 		
 		addComponent( separator2 );
         
+		addServiceOwnerSelector();
+		
 		addComponent( getButtonsBar());
 
 		updateButtons();
@@ -245,6 +261,26 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 			phone.setValue( this.shownOrg.getPhoneNumber());
 			email.setValue( this.shownOrg.getEmail());
+
+			OrgUser tmpUser = this.shownOrg.getResponsible();
+
+			initUserComboBox( tmpUser );
+			if ( tmpUser != null ) {
+
+				soFirstName.setValue( tmpUser.getFirstName());
+			    soLastName.setValue( tmpUser.getLastName());
+			    soEmail.setValue( tmpUser.getEmail());
+			    soPhone.setValue( tmpUser.getPhoneNumber());
+				
+			} else  {
+				
+				soFirstName.setValue( null );
+			    soLastName.setValue( "" );
+			    soEmail.setValue( "" );
+			    soPhone.setValue( "" );
+
+			}
+			
 			
 		}
 
@@ -270,6 +306,31 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 			this.shownOrg.setPhoneNumber( phone.getValue());
 			this.shownOrg.setEmail( email.getValue());
+			
+			OrgUser responsibleUser = this.shownOrg.getResponsible();
+			if ( responsibleUser == null ) {
+				
+				responsibleUser = new OrgUser();
+				
+				
+				this.shownOrg.setResponsible( responsibleUser );
+				
+				
+			}
+			
+			if ( isSoSelector ) {
+				
+				this.shownOrg.setResponsible(( OrgUser )serviceOwner.getValue());
+				
+			} else {
+				
+				responsibleUser.setFirstName( soFirstName.getValue());
+				responsibleUser.setLastName( soLastName.getValue());
+				responsibleUser.setEmail( soEmail.getValue());
+				responsibleUser.setPhoneNumber( soPhone.getValue());
+				
+			}
+			
 		}
 
 	}
@@ -283,6 +344,10 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 		this.shownOrg = org;
 		setVisible( org != null );
+		
+		// Call method to set proper component visible
+		setSelectOrEnterResponsiblePerson();
+		
 		dataToView();
 
 		if ( model.isEditMode()) {
@@ -445,6 +510,13 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 		phone.setEnabled( model.isEditMode());
 		email.setEnabled( model.isEditMode());
 
+		serviceOwner.setEnabled( model.isEditMode());
+
+		soFirstName.setEnabled( model.isEditMode());
+	    soLastName.setEnabled( model.isEditMode());
+	    soEmail.setEnabled( model.isEditMode());
+	    soPhone.setEnabled( model.isEditMode());
+		
 	}
 
 	private void editClose() {
@@ -455,6 +527,8 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 		if ( model.isEditMode()) {
 
+			initUserComboBox();
+			
 			setEditedFlag( false );
 
 			listenForChanges( code );
@@ -470,11 +544,13 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 			listenForChanges( phone );
 			listenForChanges( email );
 		    
-//			listenForChanges( phone );
-//			listenForChanges( email );
-
 //			listenForChanges( info );
-			
+			listenForChanges( serviceOwner );
+
+			listenForChanges( soFirstName );
+			listenForChanges( soLastName );
+			listenForChanges( soEmail );
+			listenForChanges( soPhone );
 
 		} else {
 			if ( isEditedFlag()) {
@@ -494,7 +570,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 						Notification.show( template, Notification.Type.ERROR_MESSAGE );
 
 					} else {
-						currentWasSet( null );
+						currentWasSet( newOrg );
 					}
 				} else {
 					// This is new record. It must be added
@@ -508,7 +584,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 						Notification.show( template, Notification.Type.ERROR_MESSAGE );
 
 					} else {
-						currentWasSet( null );
+						currentWasSet( newOrg );
 					}
 
 				}
@@ -563,4 +639,184 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 	}
 
+	private void addServiceOwnerSelector() {
+		
+
+		// Create selection component. Existing person can be selected
+		soSelector = getServiceOwnerSelector();
+		addComponent( soSelector );
+		
+		// Create  assignment component. No person exists to set uop. new one shall be created
+		soNew = getNewServiceOwner();
+		addComponent( soNew );
+		
+		// Call method to set proper component visible
+		setSelectOrEnterResponsiblePerson();
+		
+		
+	}
+
+	private void chooseVisibilityFlag() {
+		
+		isSoSelector = false;
+		
+		// Employee selection is possible if there is 1 or more NOT DELETED employees
+		
+		if ( this.shownOrg != null 
+			&&
+			 this.shownOrg.getEmployees() != null
+			&&
+			this.shownOrg.getEmployees().size() > 0 ) {
+			
+			for ( OrgUser user : this.shownOrg.getEmployees().values()) {
+				
+				if ( !user.isDeleted()) {
+					isSoSelector = true;
+					break;
+				}
+			}
+			
+		}
+		
+	}
+	
+	private void setSelectOrEnterResponsiblePerson() {
+
+		// Determine what component from above shall be visible
+		chooseVisibilityFlag();
+		
+		soSelector.setVisible( isSoSelector );
+		soNew.setVisible( !isSoSelector );
+		
+	}
+	
+	private Component getServiceOwnerSelector() {
+
+		GridLayout layout = new GridLayout( 2, 1 );
+		layout.setSpacing( true );
+		layout.setMargin( true );
+		
+		serviceOwner = new ComboBox();
+		serviceOwner.setInputPrompt( model.getApp().getResourceStr( "toolsmgmt.text.select.user" ));
+		serviceOwner.setFilteringMode( FilteringMode.CONTAINS );
+		serviceOwner.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
+		serviceOwner.setNullSelectionAllowed( false );
+		serviceOwner.setInvalidAllowed( false );
+		serviceOwner.setImmediate( true );
+		
+		layout.addComponent( new Label( "Service Owner: " ), 0, 0 );
+		layout.addComponent( serviceOwner, 1, 0 );
+
+    	layout.getComponent( 0, 0 ).setWidth( "6em" );
+		
+		return layout;
+	}
+	
+	private Component getNewServiceOwner() {
+
+		GridLayout layout = new GridLayout( 4, 4 );
+ 		
+		layout.setSpacing( true );
+		layout.setMargin( true );
+//		layout.setSizeUndefined();
+		layout.setWidth( "100%" );
+
+		soFirstName = new TextField();
+	    soFirstName.setTabIndex( 9 );
+		soFirstName.setRequired( true );
+		soFirstName.setNullRepresentation( "" );
+		soFirstName.setImmediate( true );
+
+		soLastName = new TextField();
+	    soLastName.setTabIndex( 10 );
+		soLastName.setRequired( true );
+		soLastName.setRequiredError("The Field may not be empty.");
+		soLastName.setNullRepresentation( "" );
+		soLastName.setImmediate( true );
+
+		
+	    soPhone = new TextField();
+	    soPhone.setTabIndex( 11 );
+	    soPhone.setWidth( "15em" );
+	    soPhone.setNullRepresentation( "Phone ..." ); 
+	    soPhone.setRequired( true );
+	    soPhone.setValidationVisible( true );
+	    soPhone.setImmediate(true);
+	    
+
+	    soEmail = new TextField();
+	    soEmail.setTabIndex( 12 );
+	    soEmail.setWidth("100%");
+	    soEmail.setNullRepresentation( "Email ..." ); 
+	    soEmail.setRequired( true );
+	    soEmail.setValidationVisible( true );
+	    soEmail.setImmediate(true);
+    	
+    	
+        layout.addComponent( new Label( model.getApp().getResourceStr( "personnel.caption.firstname" ) + ":" ),	0,  0 );
+        layout.addComponent( new Label( model.getApp().getResourceStr( "personnel.caption.lastname" ) + ":" ),	0,  1 );
+        layout.addComponent( new Label( model.getApp().getResourceStr( "general.caption.email" ) + ":" ),		0,  2 );
+        layout.addComponent( new Label( model.getApp().getResourceStr( "general.caption.phone" ) + ":" ),		0,  3 );
+		
+        layout.addComponent( soFirstName,	1,  0,  2,  0 );
+        layout.addComponent( soLastName,	1,  1,  3,  1 );
+        layout.addComponent( soEmail,		1,  2,  3,  2 );
+        layout.addComponent( soPhone,		1,  3,  2,  3 );
+
+	    // Align and size the labels in 1st column
+	    for ( int row=0; row < layout.getRows(); row++ ) {
+	    	layout.getComponent( 0, row ).setWidth( "6em" );
+	    }
+        layout.setColumnExpandRatio( 3, 5 );
+		
+		return layout;
+	}
+
+	private  void initUserComboBox() {
+		
+		OrgUser selectedUser = ( OrgUser )serviceOwner.getValue();
+		
+		initUserComboBox( selectedUser, true );
+	}
+	private  void initUserComboBox( OrgUser selectedUser ) {
+		initUserComboBox( selectedUser, false );
+	}
+	private  void initUserComboBox( OrgUser selectedUser, boolean full ) {
+
+		serviceOwner.removeAllItems();
+		
+		if ( full ) { 
+		
+			for ( OrgUser user : model.getUsers()) {
+				
+				serviceOwner.addItem( user );
+				serviceOwner.setItemCaption( user, user.getLastAndFirstNames());
+				
+			}
+			
+		} else {
+		
+			if ( selectedUser != null ) {
+				serviceOwner.addItem( selectedUser );
+				serviceOwner.setItemCaption( selectedUser, selectedUser.getLastAndFirstNames());
+			}
+		
+		}
+/*			
+		serviceOwner.addValueChangeListener( new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+	
+			@Override
+			public void valueChange( ValueChangeEvent event ) {
+				
+				
+			}
+			
+		});
+*/			
+		serviceOwner.setValue( selectedUser );
+	
+	}
+
+	
 }

@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,6 +41,9 @@ public class Organisation extends SimplePojo {
 	private String			email;
 
 	private String			info;
+
+	@OneToOne( cascade=CascadeType.ALL)
+	private OrgUser			responsible;
 	
 	@Column(name="service_owner")
 	private boolean			serviceOwner;
@@ -83,5 +87,32 @@ public class Organisation extends SimplePojo {
 	public boolean isServiceOwner() { return serviceOwner; }
 	public void setServiceOwner(boolean serviceOwner) { this.serviceOwner = serviceOwner; }
 	
+	public OrgUser getResponsible() { return responsible; }
+	public void setResponsible(OrgUser responsible) { this.responsible = responsible; }
 
+
+	/*
+	 * Business methods
+	 */
+	
+	public boolean addUser( OrgUser user ) {
+		
+		boolean res = false;
+		
+		if ( user.getOrganisation().getId() != this.getId()) {
+			user.setOrganisation( this );
+		}
+		
+		if ( this.getEmployees().get( user.getId()) == null ) {
+			
+			this.getEmployees().put( user.getId(), user );
+			
+			res = true;
+		}
+		
+		return res;
+		
+	}
+
+	
 }
