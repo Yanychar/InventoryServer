@@ -8,24 +8,6 @@ public class ResourceTools {
 	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( ResourceTools.class.getName());
 
-/*	
-	public static Locale [] SupportedLocales = {
-		LangPacks.LOCALE_EN,
-		LangPacks.LOCALE_FI,
-		LangPacks.LOCALE_ES,
-		LangPacks.LOCALE_RU,
-//		LangPacks.LOCALE_SV
-	};
-*/	
-	// Ã�ÂºÃ�Â»Ã‘ï¿½Ã�Â¹Ã�Â»Ã‘ï¿½Ã�ÂºÃ�Â¹
-/*	
-	public static String propertyFileBaseName = "WebResources";
-	public static String propertyFileExtName = ".properties";
-
-	public static String csvFileBaseName = "StringResources";
-	public static String csvFileExtName = ".csv";
-	public static String csvDelimiter = ";";
-*/	
 	private LangPacks allPacks;
 	
 	public static void main(String[] args) {
