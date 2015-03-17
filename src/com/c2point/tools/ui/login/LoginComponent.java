@@ -15,11 +15,14 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 
 @SuppressWarnings("serial")
 public class LoginComponent extends CustomComponent {
@@ -34,6 +37,8 @@ public class LoginComponent extends CustomComponent {
 	private ComboBox		languageSelect;
 	private CheckBox 		rememberMeButton;
 	private Button 			okButton;
+	private Button 			forgotButton;
+	
 	
 	public LoginComponent( InventoryUI app ) {
 		super();
@@ -48,21 +53,26 @@ public class LoginComponent extends CustomComponent {
 		okButton.addClickListener( listener );
 	}
 	
+	public void addForgotButtonListener( Button.ClickListener listener ) {
+		forgotButton.addClickListener( listener );
+	}
+	
 	private void initView() {
 
 		Panel panel = new Panel();
-//		panel.setWidth(  "400px" );
-//		panel.setHeight(  "240px" );
 		setCompositionRoot( panel );
-		setWidth(  "400px" );
-		setHeight(  "240px" );
+//		setWidth(  "500px" );
+//		setHeight(  "240px" );
+//		setWidth(  "40em" );
+		setWidthUndefined();
+		setHeight(  "20ex" );
 		
-		// Add components
-		// Add components
 		user = new TextField();
 		pwd = new PasswordField();
-		user.setWidth("200px");
-		pwd.setWidth("200px");
+//		user.setWidth("200px");
+//		pwd.setWidth("200px");
+		user.setWidth( "20em" );
+		pwd.setWidth( "20em" );
 
 		languageSelect = new ComboBox( null, Lang.getAvailableLocales());
 		languageSelect.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
@@ -100,7 +110,20 @@ public class LoginComponent extends CustomComponent {
 		
 		
 		rememberMeButton = new CheckBox();
+		
 		okButton = new Button();
+		Label glue = new Label( " " );
+//		glue.setWidth( "100%" );
+		glue.setWidth( "10em" );
+		forgotButton = new Button();
+		forgotButton.addStyleName( BaseTheme.BUTTON_LINK );
+
+		HorizontalLayout hl = new HorizontalLayout();
+		hl.setWidth( "100%" );
+		hl.addComponent( okButton );
+		hl.addComponent( glue );
+		hl.addComponent( forgotButton );
+		
 		
 		VerticalLayout vl = new VerticalLayout();
 		
@@ -108,7 +131,7 @@ public class LoginComponent extends CustomComponent {
 		vl.addComponent( pwd );
 		vl.addComponent( languageSelect );
 		vl.addComponent( rememberMeButton );
-		vl.addComponent( okButton );
+		vl.addComponent( hl );
 		
 		// Set the size as undefined at all levels
 		vl.setSpacing( true );
@@ -179,6 +202,7 @@ public class LoginComponent extends CustomComponent {
 		languageSelect.setCaption( app.getResourceStr( "login.language" ));
 		rememberMeButton.setCaption( app.getResourceStr( "login.rememberme" ));
 		okButton.setCaption( app.getResourceStr( "login.login" ));
+		forgotButton.setCaption( "Forgot username or password?" );
 
 		languageSelect.setItemCaption( Lang.LOCALE_EN, app.getResourceStr( "language.en" ));
 		languageSelect.setItemCaption( Lang.LOCALE_FI, app.getResourceStr( "language.fi" ));
