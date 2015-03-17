@@ -223,3 +223,7 @@ build/
 WebContent/VAADIN/widgetsets/
 src/log4j2.xml
 *.csv
+webResources_en_FI.properties
+webResources_fi_FI.properties
+webResources_ru_FI.properties
+webResources_et_FI.properties

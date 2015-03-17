@@ -1,6 +1,5 @@
 package com.c2point.tools.ui.orgmgmt;
 
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.c2point.tools.access.FunctionalityType;
-import com.c2point.tools.datalayer.UsersFacade;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
@@ -25,12 +23,10 @@ import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button.ClickEvent;
@@ -58,7 +54,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
     private TextField 	email;
     private TextField 	phone;
 
-    private TextArea	info;
+//    private TextArea	info;
 	
 	private Component	soSelector = null;
 	private Component	soNew = null;
@@ -100,22 +96,26 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 		
 		code = new TextField();
 		code.setWidth( "6em" );
-		code.setRequired( true );
+		code.setNullRepresentation( "" );
 		code.setImmediate( true );
 		
         name = new TextField();
         name.setTabIndex( 1 );
         name.setWidth( "100%" );
 //        name.setWidth( "15em" );
-        name.setNullRepresentation( "Enter Company Name ..." ); 
+        name.setNullRepresentation( "" );
         name.setRequired( true );
+        name.setRequiredError( model.getApp().getResourceStr( "general.error.field.empty" ));
         name.setValidationVisible( true );
 		name.setImmediate( true );
-
+		
         tunnus = new TextField();
         tunnus.setTabIndex( 2 );
         tunnus.setWidth( "6em" );
-        tunnus.setNullRepresentation( "Enter ID ..." ); 
+        tunnus.setNullRepresentation( "" );
+        tunnus.setRequired( true );
+        tunnus.setRequiredError(model.getApp().getResourceStr( "general.error.field.empty" ));
+        tunnus.setValidationVisible( true );
         tunnus.setImmediate(true);
 		
         nameLayout.addComponent( new Label( model.getApp().getResourceStr( "general.caption.code" ) + ":" ),	0,  0 ); 
@@ -144,7 +144,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
         street = new TextField();
         street.setTabIndex( 3 );
         street.setWidth("100%");
-        street.setNullRepresentation( "Street address ..." ); 
+        street.setNullRepresentation( "" );
         street.setRequired( false );
         street.setValidationVisible( true );
         street.setImmediate(true);
@@ -152,7 +152,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
         index = new TextField();
         index.setTabIndex( 4 );
         index.setWidth( "6em" );
-        index.setNullRepresentation( "Zip Code ..." ); 
+        index.setNullRepresentation( "" );
         index.setRequired( false );
         index.setValidationVisible( true );
         index.setImmediate(true);
@@ -161,14 +161,13 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
         city.setTabIndex( 5 );
 //        city.setWidth( "15em" );
         city.setWidth( "100%" );
-        city.setNullRepresentation( "City ..." ); 
+        city.setNullRepresentation( "" );
         city.setRequired( false );
         city.setValidationVisible( true );
         city.setImmediate(true);
 
     	country = new ComboBox();
     	country.setTabIndex( 6 );
-		country.setInputPrompt( "Select Country ..." );
 		country.setFilteringMode( FilteringMode.CONTAINS );
 		country.setNullSelectionAllowed( true );
 		country.setWidth( "10em" );
@@ -178,7 +177,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 	    phone = new TextField();
 	    phone.setTabIndex( 7 );
 	    phone.setWidth( "15em" );
-	    phone.setNullRepresentation( "Phone ..." ); 
+	    phone.setNullRepresentation( "" );
 	    phone.setRequired( false );
 	    phone.setValidationVisible( true );
 	    phone.setImmediate(true);
@@ -186,7 +185,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 	    email = new TextField();
 	    email.setTabIndex( 8 );
 	    email.setWidth("100%");
-	    email.setNullRepresentation( "Email ..." ); 
+	    email.setNullRepresentation( "" );
 	    email.setRequired( false );
 	    email.setValidationVisible( true );
 	    email.setImmediate(true);
@@ -307,22 +306,24 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 			this.shownOrg.setPhoneNumber( phone.getValue());
 			this.shownOrg.setEmail( email.getValue());
 			
-			OrgUser responsibleUser = this.shownOrg.getResponsible();
-			if ( responsibleUser == null ) {
-				
-				responsibleUser = new OrgUser();
-				
-				
-				this.shownOrg.setResponsible( responsibleUser );
-				
-				
-			}
 			
 			if ( isSoSelector ) {
 				
 				this.shownOrg.setResponsible(( OrgUser )serviceOwner.getValue());
 				
 			} else {
+
+				OrgUser responsibleUser = this.shownOrg.getResponsible();
+				if ( responsibleUser == null ) {
+					
+					responsibleUser = new OrgUser();
+					
+					this.shownOrg.addUser( responsibleUser );
+					
+					this.shownOrg.setResponsible( responsibleUser );
+					
+					
+				}
 				
 				responsibleUser.setFirstName( soFirstName.getValue());
 				responsibleUser.setLastName( soLastName.getValue());
@@ -523,9 +524,9 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 		logger.debug( "EditClose button has been pressed!" );
 
-		model.swipeEditMode();
-
-		if ( model.isEditMode()) {
+		if ( !model.isEditMode()) {
+			
+			model.setEditMode();
 
 			initUserComboBox();
 			
@@ -553,44 +554,58 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 			listenForChanges( soPhone );
 
 		} else {
+
 			if ( isEditedFlag()) {
+				
+				if ( valid()) {
 
-				// Changes must be stored
-				viewToData();
-
-				if ( this.shownOrg.getId() > 0 ) {
-					// This is existing record update
-					Organisation newOrg = model.update( this.shownOrg );
-					if ( newOrg == null ) {
-
-						String template = model.getApp().getResourceStr( "general.errors.update.header" );
-						Object[] params = { this.shownOrg.getName() };
-						template = MessageFormat.format( template, params );
-
-						Notification.show( template, Notification.Type.ERROR_MESSAGE );
-
+					// Changes must be stored
+					viewToData();
+	
+					if ( this.shownOrg.getId() > 0 ) {
+						// This is existing record update
+						Organisation newOrg = model.update( this.shownOrg );
+						if ( newOrg == null ) {
+	
+							String template = model.getApp().getResourceStr( "general.errors.update.header" );
+							Object[] params = { this.shownOrg.getName() };
+							template = MessageFormat.format( template, params );
+	
+							Notification.show( template, Notification.Type.ERROR_MESSAGE );
+	
+						} else {
+							currentWasSet( newOrg );
+						}
 					} else {
-						currentWasSet( newOrg );
+						// This is new record. It must be added
+						Organisation newOrg = model.add( this.shownOrg );
+						if ( newOrg == null ) {
+	
+							String template = model.getApp().getResourceStr( "general.errors.add.header" );
+							Object[] params = { this.shownOrg.getName() };
+							template = MessageFormat.format( template, params );
+	
+							Notification.show( template, Notification.Type.ERROR_MESSAGE );
+	
+						} else {
+							currentWasSet( newOrg );
+						}
+	
 					}
 				} else {
-					// This is new record. It must be added
-					Organisation newOrg = model.add( this.shownOrg );
-					if ( newOrg == null ) {
+					// Fields are invalid. Check, edit them and continue
 
-						String template = model.getApp().getResourceStr( "general.errors.add.header" );
-						Object[] params = { this.shownOrg.getName() };
-						template = MessageFormat.format( template, params );
-
-						Notification.show( template, Notification.Type.ERROR_MESSAGE );
-
-					} else {
-						currentWasSet( newOrg );
-					}
-
+					Notification.show( "Fields invalid!", Notification.Type.ERROR_MESSAGE );
+					
 				}
+			} else {
+
+				// Nothing was changed
+				model.clearEditMode();
+				stopListeningForChanges();
+				
 			}
 
-			stopListeningForChanges();
 		}
 
 
@@ -702,6 +717,9 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 		serviceOwner.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
 		serviceOwner.setNullSelectionAllowed( false );
 		serviceOwner.setInvalidAllowed( false );
+		serviceOwner.setRequired( true );
+		serviceOwner.setRequiredError(model.getApp().getResourceStr( "general.error.field.empty" ));
+		serviceOwner.setValidationVisible( true );
 		serviceOwner.setImmediate( true );
 		
 		layout.addComponent( new Label( "Service Owner: " ), 0, 0 );
@@ -723,23 +741,27 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 		soFirstName = new TextField();
 	    soFirstName.setTabIndex( 9 );
+	    soFirstName.setNullRepresentation( "" );
 		soFirstName.setRequired( true );
-		soFirstName.setNullRepresentation( "" );
+		soFirstName.setRequiredError(model.getApp().getResourceStr( "general.error.field.empty" ));
+		soFirstName.setValidationVisible( true );
 		soFirstName.setImmediate( true );
 
 		soLastName = new TextField();
 	    soLastName.setTabIndex( 10 );
+	    soLastName.setNullRepresentation( "" );
 		soLastName.setRequired( true );
-		soLastName.setRequiredError("The Field may not be empty.");
-		soLastName.setNullRepresentation( "" );
+		soLastName.setRequiredError(model.getApp().getResourceStr( "general.error.field.empty" ));
+		soLastName.setValidationVisible( true );
 		soLastName.setImmediate( true );
 
 		
 	    soPhone = new TextField();
 	    soPhone.setTabIndex( 11 );
 	    soPhone.setWidth( "15em" );
-	    soPhone.setNullRepresentation( "Phone ..." ); 
+	    soPhone.setNullRepresentation( "" );
 	    soPhone.setRequired( true );
+	    soPhone.setRequiredError(model.getApp().getResourceStr( "general.error.field.empty" ));
 	    soPhone.setValidationVisible( true );
 	    soPhone.setImmediate(true);
 	    
@@ -747,8 +769,9 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 	    soEmail = new TextField();
 	    soEmail.setTabIndex( 12 );
 	    soEmail.setWidth("100%");
-	    soEmail.setNullRepresentation( "Email ..." ); 
+	    soEmail.setNullRepresentation( "" );
 	    soEmail.setRequired( true );
+	    soEmail.setRequiredError(model.getApp().getResourceStr( "general.error.field.empty" ));
 	    soEmail.setValidationVisible( true );
 	    soEmail.setImmediate(true);
     	
@@ -818,5 +841,30 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 	
 	}
 
-	
+	private boolean valid() {
+
+		boolean bRes = name.isValid() && tunnus.isValid();
+		
+		if ( isSoSelector ) {
+		
+			bRes = bRes && serviceOwner.isValid();
+		} else {
+
+			bRes = bRes 
+					&& soFirstName.isValid()
+					&& soLastName.isValid()
+					&& soEmail.isValid()
+					&& soPhone.isValid();
+		}
+		
+		
+		return bRes;
+	}
+
+/*
+	private void setNormalizedValue( AbstractField field, Object value ) {
+		
+		if ( value != null ) field.setValue( value );
+	}
+*/
 }

@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -253,7 +252,7 @@ public class UsersFacade extends DataFacade {
 		
 		return results;
 	}
-	
+/*	
 	public void setUniqueCode( OrgUser user ) {
 
 		long lastUniqueCode = 0;
@@ -299,6 +298,6 @@ public class UsersFacade extends DataFacade {
 		user.setCode( newCode );
 		
 	}
-	
+*/	
 }
 

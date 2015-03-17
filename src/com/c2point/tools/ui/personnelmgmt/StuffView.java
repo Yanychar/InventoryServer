@@ -1,6 +1,5 @@
 package com.c2point.tools.ui.personnelmgmt;
 
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.vaadin.dialogs.ConfirmDialog;
 
 import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.utils.lang.Locales;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -41,7 +39,7 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 
 	private StuffListModel	model;
 
-	private TextField	code;
+//	private TextField	code;
 	private TextField 	firstName;
 	private TextField 	lastName;
 	private DateField 	birthday;
@@ -79,11 +77,11 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 		this.setMargin( true );
 		setSizeUndefined();
 
-		code = new TextField( model.getApp().getResourceStr( "general.caption.code" ) + ":" );
-		code.setRequired(true);
-		code.setRequiredError("The Field may not be empty.");
-		code.setNullRepresentation( "" );
-		code.setImmediate( true );
+//		code = new TextField( model.getApp().getResourceStr( "general.caption.code" ) + ":" );
+//		code.setRequired(true);
+//		code.setRequiredError("The Field may not be empty.");
+//		code.setNullRepresentation( "" );
+//		code.setImmediate( true );
 
 		firstName = new TextField( model.getApp().getResourceStr( "personnel.caption.firstname" ) + ":" );
 		firstName.setNullRepresentation( "" );
@@ -137,7 +135,7 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 		mobile.setNullRepresentation( "" );
 		mobile.setImmediate(true);
 
-		addComponent( code );
+//		addComponent( code );
 		addComponent( firstName );
 		addComponent( lastName );
 		addComponent( birthday );
@@ -184,10 +182,10 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 
 			// If this is a new user than it is necessary to set up Code.
 			// user can change code if he wants
-			if ( this.shownUser.getId() <= 0 ) {
-				model.setUserCode( this.shownUser );
-			}
-			code.setValue( this.shownUser.getCode());
+//			if ( this.shownUser.getId() <= 0 ) {
+//				model.setUserCode( this.shownUser );
+//			}
+//			code.setValue( this.shownUser.getCode());
 
 		}
 
@@ -196,7 +194,7 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 	private void viewToData() {
 
 		if ( this.shownUser != null ) {
-			this.shownUser.setCode( code.getValue());
+//			this.shownUser.setCode( code.getValue());
 			this.shownUser.setFirstName( firstName.getValue());
 			this.shownUser.setLastName( lastName.getValue());
 
@@ -360,7 +358,7 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 
 	private void enableFields() {
 
-		code.setEnabled( model.isEditMode() );
+//		code.setEnabled( model.isEditMode() );
 		firstName.setEnabled( model.isEditMode() );
 		lastName.setEnabled( model.isEditMode() );
 		birthday.setEnabled( model.isEditMode() );
@@ -386,7 +384,7 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 
 			setEditedFlag( false );
 
-			listenForChanges( code );
+//			listenForChanges( code );
 			listenForChanges( firstName );
 			listenForChanges( lastName );
 			listenForChanges( birthday );

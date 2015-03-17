@@ -146,7 +146,7 @@ public class OrgListModel extends AbstractModel {
 			
 			newOrg = OrganisationFacade.getInstance().add( addedOrg );
 			
-			addUpdateResponsibleIfNecessary( newOrg );
+//			addUpdateResponsibleIfNecessary( newOrg );
 			
 			if ( newOrg != null ) {
 				
@@ -167,7 +167,7 @@ public class OrgListModel extends AbstractModel {
 		// Update DB
 		if ( updatedOrg != null ) {
 
-			addUpdateResponsibleIfNecessary();
+//			addUpdateResponsibleIfNecessary();
 			
 			newOrg = OrganisationFacade.getInstance().update( updatedOrg );
 			
@@ -218,6 +218,7 @@ public class OrgListModel extends AbstractModel {
 		return UsersFacade.getInstance().list( selectedOrganisation );
 	}
 
+/*
 	// Check that responsible person exists already and add if necessary
 	private OrgUser addUpdateResponsibleIfNecessary() {
 		return addUpdateResponsibleIfNecessary( null );
@@ -235,8 +236,8 @@ public class OrgListModel extends AbstractModel {
 			
 			responsibleUser.setOrganisation( updatedOrg );
 			
-//			UsersFacade.getInstance().setUniqueCode( responsibleUser );
-			responsibleUser.setCode( "" );			
+			UsersFacade.getInstance().setUniqueCode( responsibleUser );
+//			responsibleUser.setCode( "" );			
 
 			newUser = UsersFacade.getInstance().add( responsibleUser );
 			
@@ -250,5 +251,5 @@ public class OrgListModel extends AbstractModel {
 		return newUser;
 		
 	}
-
+*/
 }

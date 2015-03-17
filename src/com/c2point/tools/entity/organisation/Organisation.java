@@ -99,7 +99,9 @@ public class Organisation extends SimplePojo {
 		
 		boolean res = false;
 		
-		if ( user.getOrganisation().getId() != this.getId()) {
+		if ( user.getOrganisation() == null 
+			||	
+			user.getOrganisation().getId() != this.getId()) {
 			user.setOrganisation( this );
 		}
 		
