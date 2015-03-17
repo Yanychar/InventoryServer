@@ -595,7 +595,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 				} else {
 					// Fields are invalid. Check, edit them and continue
 
-					Notification.show( "Fields invalid!", Notification.Type.ERROR_MESSAGE );
+					Notification.show( model.getApp().getResourceStr( "general.error.field.empty" ), Notification.Type.ERROR_MESSAGE );
 					
 				}
 			} else {
