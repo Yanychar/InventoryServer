@@ -55,5 +55,9 @@ public class OrgUser extends Person {
 	public Account getAccount() { return account; }
 	public void setAccount( Account account ) { this.account = account; }
 	
+	public String toString() {
+		
+		return getOrganisation().getName() + ", " + super.toString();
+	}
 	
 }

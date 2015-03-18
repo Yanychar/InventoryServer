@@ -1,6 +1,7 @@
 package com.c2point.tools.ui.login;
 
 import java.util.ArrayList;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,13 +11,15 @@ import com.c2point.tools.datalayer.TransactionsFacade;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractMainView;
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-@SuppressWarnings("serial")
 public class LoginView  extends AbstractMainView {
-
+	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( LoginView.class.getName());
 	
 	private LoginComponent			loginComponent;
@@ -134,30 +137,54 @@ public class LoginView  extends AbstractMainView {
 					
 					OrgUser user = loggedAccount.getUser();
 					
+					LoginSelectedUserHandler handler = new LoginSelectedUserHandler();
+					
 					if ( user != null ) {
 						
 						// There is one user only for this account
-						processLogIn( user );
+						handler.userSelected( user );
 						
 					} else {
 						
 						// There are more than one user for this account. Selection necessary
-						selectOneUser( loggedAccount );
+						selectOneUser( loggedAccount, handler );
 						
 					}
 					
 				} else /* if ( loggedAccount == null ) */ {
 
 					// Login Failed!!!
-					processLogInFAILED();
+					getInventoryUI().deleteCookies();
+
+					loginComponent.invalid();
 					
 				}
 			}
 		});
 		
+		loginComponent.addForgotButtonListener( new ClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 2L;
+
+			@Override
+			public void buttonClick( ClickEvent event ) {
+
+				// User forgot username/password
+				forgotPassword();
+			}
+		});
+		
+		
 	}
 	
-	private void selectOneUser( Account account ) {
+	interface UserSelectionIf {
+		void userSelected( OrgUser user );
+		void noSelection();
+	}
+	
+	private void selectOneUser( Account account, final UserSelectionIf proceed ) {
 
 		// More than one "user" for this account. Select one
 		try {
@@ -190,12 +217,12 @@ public class LoginView  extends AbstractMainView {
 				if ( selectedUser != null ) {
 
 					// There is one user only for this account
-					processLogIn( selectedUser );
+					proceed.userSelected( selectedUser );
 					
 				} else {
 					
 					// Nothing has been selected. Return back to Login screen
-					returnBackToLoginScreen();
+					proceed.noSelection();
 				}
 				
 				
@@ -212,7 +239,7 @@ public class LoginView  extends AbstractMainView {
 			public void buttonClick(ClickEvent event) {
 				
 				// Cancel has been pressed. Return back to Login screen
-				returnBackToLoginScreen();				
+				proceed.noSelection();
 			}
 		});
 		
@@ -220,17 +247,147 @@ public class LoginView  extends AbstractMainView {
 		
 	}
 	
-	private void returnBackToLoginScreen() {
-		enterCredentials();
+	private void forgotPassword() {
+		
+		String usrname = loginComponent.getName();
+		
+		logger.debug( "Username '" + usrname + "' pressed Forgot Password button" );
+		
+		// Username must be entered firstly
+		if ( usrname != null && usrname.trim().length() > 0 ) {
+			// Find account and appropriate user
+			Account account = AuthenticationFacade.getInstance().findByUserName( usrname.trim());
+			if ( account != null ) {
+				
+				// Get all User-Organisations for this account
+				//  For all of them ...
+				boolean bRes = false;
+				for ( OrgUser user : account.getUsers()) {
+					
+					// ... send password
+					bRes = sentCredentialsByEmail( account, user ); 
+					if ( !bRes ) {
+						
+						// Was not possible to send credentials to the user directly
+						// Credentials will be sent to organisation's responsible (for the service) person
+						OrgUser respPerson = user.getOrganisation().getResponsible();
+						
+						bRes = sentCredentialsByEmail( account, user, respPerson );
+
+						
+					}
+					
+				}
+				
+				if ( bRes ) {
+
+					// TODO: Show Notification that credentials were sent
+					
+				} else {
+
+					// TODO: Show ERROR Notification that credentials were NOT sent
+					
+				}
+				
+				
+				
+				
+			} else {
+
+				// Username was not found!
+				logger.debug( "Specified user '" + usrname + "' was not found!" );
+				// TODO show Error/Warning dialog
+				
+			}
+			
+			
+		} else {
+			// Username is not entered. Nothing to do. Ask to enter
+			logger.debug( "Username must be entered" );
+			Notification.show( 
+					this.getInventoryUI().getResourceStr( "general.warning.header" ),
+					this.getInventoryUI().getResourceStr( "login.warning.no.usrname" ),
+					Notification.Type.WARNING_MESSAGE
+			);		
+		}
 	}
 
-	private void processLogInFAILED() {
+	class LoginSelectedUserHandler implements UserSelectionIf {
 
-		getInventoryUI().deleteCookies();
+		@Override
+		public void userSelected( OrgUser selectedUser ) {
 
-		loginComponent.invalid();
+			processLogIn( selectedUser );
+			
+		}
+
+		@Override
+		public void noSelection() {
+
+			enterCredentials();
+			
+		}
 		
 	}
 	
+	class GetPasswordSelectedUserHandler implements UserSelectionIf {
+
+		@Override
+		public void userSelected( OrgUser selectedUser ) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void noSelection() {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+
+	private boolean sentCredentialsByEmail( Account account, OrgUser user ) {
+		return sentCredentialsByEmail( account, user, user );
+	}
 	
+	private boolean emailIsValid( String email ) {
+		
+		boolean bRes = ( email != null && email.trim().length() > 4 );
+		
+		if ( bRes ) {
+			
+			try {
+				new EmailValidator( "" ).validate( email );
+				bRes = true;
+			} catch ( InvalidValueException e ) {
+				
+			}
+		
+		}
+		
+		return bRes;
+		
+	}
+	
+	private boolean sentCredentialsByEmail( Account account, OrgUser user, OrgUser receiver ) {
+		
+		boolean bRes = false;
+		
+		if ( receiver != null && emailIsValid( receiver.getEmail())) {
+			logger.debug( "Receiver: " + receiver.getFirstAndLastNames() + ". "
+						+ "InventTori Service password for user " + user.getFirstAndLastNames() + " was sent!"
+			);
+
+			
+			
+		} else {
+			logger.debug( "FAILED to send credentials of " + user.getFirstAndLastNames() + " to " + receiver.getFirstAndLastNames());
+			
+		}
+						
+				
+		
+		return bRes;
+	}
+
 }

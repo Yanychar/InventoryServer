@@ -106,4 +106,9 @@ public class Person extends SimplePojo {
 		
 	}
 
+	public String toString() {
+		
+		return getFirstAndLastNames() + ", " + getEmail();
+	}
+	
 }
