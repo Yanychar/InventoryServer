@@ -1,11 +1,14 @@
 package com.c2point.tools.email;
 
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+
 import com.c2point.tools.entity.person.OrgUser;
 
 public class EmailSender {
 
 	
-	private ArrayList a;
+	private Queue<Message> msgQueue = new ArrayBlockingQueue<Message>( 20 );
 	
 	private EmailSender() {
 		
@@ -15,23 +18,43 @@ public class EmailSender {
 		
 		return EmailSender.send( new CredentialsMessage( receiver, user ) );
 		
+		
+		
 	}
 
-	private static boolean send( Message msg ) {
-
-		boolean bRes = false;
-
-		init();
-		
-		
-		close();
-		
-		return bRes;
-	}
 	
 	
 	private void sendMessagesFromTheQueue() {
 		
 	}
 
+	
+	public class SendingThread extends Thread {
+
+	    public void run() {
+	    	
+	    	while ( msgQueue.size() > 0 ) {
+	    		
+	    		Message msg = msgQueue.poll();
+	    		
+	    		if ( msg != null ) {
+	    			
+	    			send( msg );
+	    		}
+	    	}
+	    }
+
+		private boolean send( Message msg ) {
+
+			boolean bRes = false;
+
+			init();
+			
+			
+			close();
+			
+			return bRes;
+		}
+
+	}	
 }
