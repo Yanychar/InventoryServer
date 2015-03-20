@@ -14,9 +14,11 @@
   <Loggers>
 
     <Logger name="com.c2point.tools.ui.login"			level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
+	<Logger name="com.c2point.tools.email" 			level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
       
 <!--
 	<Logger name="com.c2point.tools" 					level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
+	<Logger name="com.c2point.tools.email" 			level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
 	<Logger name="com.c2point.tools.resources" 			level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
 
     <Logger name="com.c2point.tools.ui" 				level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>

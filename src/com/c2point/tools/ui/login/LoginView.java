@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import com.c2point.tools.InventoryUI;
 import com.c2point.tools.datalayer.AuthenticationFacade;
 import com.c2point.tools.datalayer.TransactionsFacade;
+import com.c2point.tools.email.EmailSender;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractMainView;
@@ -281,11 +282,21 @@ public class LoginView  extends AbstractMainView {
 				
 				if ( bRes ) {
 
-					// TODO: Show Notification that credentials were sent
+					// Show Notification that credentials were sent
+					Notification.show( 
+							this.getInventoryUI().getResourceStr( "general.notify.header" ),
+							this.getInventoryUI().getResourceStr( "login.notify.pwd.sent" ),
+							Notification.Type.TRAY_NOTIFICATION
+					);		
 					
 				} else {
 
-					// TODO: Show ERROR Notification that credentials were NOT sent
+					// Show ERROR Notification that credentials were NOT sent
+					Notification.show( 
+							this.getInventoryUI().getResourceStr( "general.error.header" ),
+							this.getInventoryUI().getResourceStr( "general.error.email.notsent" ),
+							Notification.Type.ERROR_MESSAGE
+					);		
 					
 				}
 				
@@ -296,7 +307,11 @@ public class LoginView  extends AbstractMainView {
 
 				// Username was not found!
 				logger.debug( "Specified user '" + usrname + "' was not found!" );
-				// TODO show Error/Warning dialog
+				Notification.show( 
+						this.getInventoryUI().getResourceStr( "general.warning.header" ),
+						this.getInventoryUI().getResourceStr( "login.error.nousrname" ),
+						Notification.Type.WARNING_MESSAGE
+				);		
 				
 			}
 			
@@ -306,7 +321,7 @@ public class LoginView  extends AbstractMainView {
 			logger.debug( "Username must be entered" );
 			Notification.show( 
 					this.getInventoryUI().getResourceStr( "general.warning.header" ),
-					this.getInventoryUI().getResourceStr( "login.warning.no.usrname" ),
+					this.getInventoryUI().getResourceStr( "login.error.nousrname" ),
 					Notification.Type.WARNING_MESSAGE
 			);		
 		}
@@ -374,17 +389,13 @@ public class LoginView  extends AbstractMainView {
 		boolean bRes = false;
 		
 		if ( receiver != null && emailIsValid( receiver.getEmail())) {
-			logger.debug( "Receiver: " + receiver.getFirstAndLastNames() + ". "
-						+ "InventTori Service password for user " + user.getFirstAndLastNames() + " was sent!"
-			);
 
-			
-			
-		} else {
-			logger.debug( "FAILED to send credentials of " + user.getFirstAndLastNames() + " to " + receiver.getFirstAndLastNames());
+			bRes = EmailSender.getInstance().sendCredentialsMsg( receiver, user);			
 			
 		}
 						
+		logger.debug( "Receiver: " + receiver.getFirstAndLastNames() + ". "
+				+ "InventTori Service password for user " + user.getFirstAndLastNames() + " was " + (bRes ? "" : "NOT ") + "sent!" );
 				
 		
 		return bRes;
