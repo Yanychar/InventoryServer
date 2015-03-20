@@ -4,6 +4,7 @@ package com.c2point.tools.email;
 public abstract class Message {
 
 	protected String receiver;
+	protected String subject;
 	protected String body;
 
 	protected Message( String receiver ) {
@@ -19,5 +20,7 @@ public abstract class Message {
 	public String getBody() { return body; }
 	public void setBody(String body) { this.body = body; }
 	
-
+	public String getSubject() { return subject; }
+	public void setSubject(String subject) { this.subject = subject; }
+	
 }

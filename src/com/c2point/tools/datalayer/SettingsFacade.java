@@ -1,5 +1,7 @@
 package com.c2point.tools.datalayer;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -12,6 +14,7 @@ import javax.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.Configuration;
 import com.c2point.tools.entity.Settings;
 import com.c2point.tools.entity.organisation.Organisation;
 
@@ -23,6 +26,7 @@ public class SettingsFacade extends DataFacade {
 	private static int					next_instance_number;
 	
 	private static Map<Long, Properties>	propMap = new HashMap<Long, Properties>();
+	private static long						SYSTEM_PROPS_KEY = -10;
 	
 	public static SettingsFacade getInstance() {
 		
@@ -140,5 +144,44 @@ public class SettingsFacade extends DataFacade {
 		
 	}
 
+
+	public String getSystemProperty( String key ) {
+		String value = null;
+		
+		Properties props = propMap.get( SYSTEM_PROPS_KEY );
+		
+		if ( props == null ) {
+			
+			try {
+				props = readSystemProperties();
+				propMap.put( SYSTEM_PROPS_KEY, props);
+				
+			} catch (IOException e) {
+				logger.error( e.getMessage());
+			}
+			
+		}
+
+		if ( props != null ) {
+			value = props.getProperty( key );
+		}
+		if ( value == null ) {
+			
+			logger.error( "Property '" + key + "' is not found in System Settings File!!! Define property!" );
+			
+		}
+		
+		
+		return value;
+	}
+
+	private Properties readSystemProperties() throws IOException {
+		
+		Properties props = new Properties();
+
+		props.load( new FileInputStream( Configuration.getSystemConfigFileName()));
+		
+		return props;
+	}
 	
 }
