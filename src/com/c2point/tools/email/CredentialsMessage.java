@@ -44,7 +44,12 @@ public class CredentialsMessage extends Message {
         } else {
         	// Credentials for person himself will be sent
             messageBody.write( "\n" );
-            messageBody.write( "Password for user '" + user.getLastAndFirstNames() + " is: " + user.getAccount().getPwd());
+            messageBody.write( "Credentials (usrname/pwd) for user '" 
+            		+ user.getLastAndFirstNames() 
+            		+ "' are: " 
+            		+ user.getAccount().getUsrName()
+            		+ "/"
+    				+ user.getAccount().getPwd());
         }
         
         
