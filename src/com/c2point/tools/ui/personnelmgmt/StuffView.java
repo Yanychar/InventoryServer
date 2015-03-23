@@ -407,7 +407,7 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 					OrgUser newUser = model.update( this.shownUser );
 					if ( newUser == null ) {
 
-						String template = model.getApp().getResourceStr( "general.errors.update.header" );
+						String template = model.getApp().getResourceStr( "general.error.update.header" );
 						Object[] params = { this.shownUser.getFirstAndLastNames() };
 						template = MessageFormat.format( template, params );
 
@@ -421,7 +421,7 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 					OrgUser newUser = model.add( this.shownUser );
 					if ( newUser == null ) {
 
-						String template = model.getApp().getResourceStr( "general.errors.add.header" );
+						String template = model.getApp().getResourceStr( "general.error.add.header" );
 						Object[] params = { this.shownUser.getFirstAndLastNames() };
 						template = MessageFormat.format( template, params );
 

@@ -181,7 +181,7 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 			case UNKNOWN:
 			default:
 				type = Notification.Type.ERROR_MESSAGE;
-				message = model.getApp().getResourceStr( "general.errors.unknown" );
+				message = model.getApp().getResourceStr( "general.error.unknown" );
 				break;
 			}
 		
@@ -195,7 +195,7 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 		
 		switch ( type ) {
 			case ERROR_MESSAGE:
-				header = this.model.getApp().getResourceStr( "general.errors.header" );
+				header = this.model.getApp().getResourceStr( "general.error.header" );
 				break;
 			case ASSISTIVE_NOTIFICATION:
 			case HUMANIZED_MESSAGE:

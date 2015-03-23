@@ -835,7 +835,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		
 		if ( addedItem == null ) {
 			// Failed to update
-			String template = model.getApp().getResourceStr( "general.errors.add.header" );
+			String template = model.getApp().getResourceStr( "general.error.add.header" );
 			Object[] params = { item.getTool().getName() };
 			template = MessageFormat.format( template, params );
 
@@ -856,7 +856,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		
 		if ( addedItem == null ) {
 			// Failed to update
-			String template = model.getApp().getResourceStr( "general.errors.add.header" );
+			String template = model.getApp().getResourceStr( "general.error.add.header" );
 			Object[] params = { item.getTool().getName() };
 			template = MessageFormat.format( template, params );
 
@@ -877,7 +877,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		
 		if ( updatedItem == null ) {
 			// Failed to update
-			String template = model.getApp().getResourceStr( "general.errors.update.header" );
+			String template = model.getApp().getResourceStr( "general.error.update.header" );
 			Object[] params = { item.getTool().getName() };
 			template = MessageFormat.format( template, params );
 

@@ -294,7 +294,7 @@ public class LoginView  extends AbstractMainView {
 					// Show ERROR Notification that credentials were NOT sent
 					Notification.show( 
 							this.getInventoryUI().getResourceStr( "general.error.header" ),
-							this.getInventoryUI().getResourceStr( "general.error.email.notsent" ),
+							this.getInventoryUI().getResourceStr( "general.error.credentials.byemail.notsent" ),
 							Notification.Type.ERROR_MESSAGE
 					);		
 					

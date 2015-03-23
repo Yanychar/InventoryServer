@@ -567,7 +567,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 						Organisation newOrg = model.update( this.shownOrg );
 						if ( newOrg == null ) {
 	
-							String template = model.getApp().getResourceStr( "general.errors.update.header" );
+							String template = model.getApp().getResourceStr( "general.error.update.header" );
 							Object[] params = { this.shownOrg.getName() };
 							template = MessageFormat.format( template, params );
 	
@@ -581,7 +581,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 						Organisation newOrg = model.add( this.shownOrg );
 						if ( newOrg == null ) {
 	
-							String template = model.getApp().getResourceStr( "general.errors.add.header" );
+							String template = model.getApp().getResourceStr( "general.error.add.header" );
 							Object[] params = { this.shownOrg.getName() };
 							template = MessageFormat.format( template, params );
 	
@@ -843,22 +843,63 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 	private boolean valid() {
 
-		boolean bRes = name.isValid() && tunnus.isValid();
+		if ( !name.isValid()) {
 		
-		if ( isSoSelector ) {
+			name.selectAll(); 
+			name.focus();
+			return false;
+		}
 		
-			bRes = bRes && serviceOwner.isValid();
-		} else {
-
-			bRes = bRes 
-					&& soFirstName.isValid()
-					&& soLastName.isValid()
-					&& soEmail.isValid()
-					&& soPhone.isValid();
+		if ( !tunnus.isValid()) {
+			
+			tunnus.selectAll(); 
+			tunnus.focus();
+			return false;
 		}
 		
 		
-		return bRes;
+		if ( isSoSelector ) {
+		
+			if ( !serviceOwner.isValid()) {
+				
+				serviceOwner.focus();
+				return false;
+			}
+			
+		} else {
+
+			if ( !soFirstName.isValid()) {
+				
+				soFirstName.selectAll(); 
+				soFirstName.focus();
+				return false;
+			}
+			
+			if ( !soLastName.isValid()) {
+				
+				soLastName.selectAll(); 
+				soLastName.focus();
+				return false;
+			}
+			
+			if ( !soEmail.isValid()) {
+				
+				soEmail.selectAll(); 
+				soEmail.focus();
+				return false;
+			}
+			
+			if ( !tunnus.isValid()) {
+				
+				soPhone.selectAll(); 
+				soPhone.focus();
+				return false;
+			}
+			
+		}
+		
+		return true;
+		
 	}
 
 /*
