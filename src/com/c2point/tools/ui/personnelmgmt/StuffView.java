@@ -12,32 +12,41 @@ import org.vaadin.dialogs.ConfirmDialog;
 
 import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
+import com.c2point.tools.ui.ChangesCollector;
+import com.c2point.tools.ui.accountmgmt.AccountView;
 import com.c2point.tools.utils.lang.Locales;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.datefield.Resolution;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.VerticalLayout;
 
-public class StuffView extends FormLayout implements StuffChangedListener {
+public class StuffView extends VerticalLayout implements StuffChangedListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( StuffView.class.getName());
 
 
 	private StuffListModel	model;
+	private ChangesCollector	changesCollector = new ChangesCollector();
 
 //	private TextField	code;
 	private TextField 	firstName;
@@ -53,6 +62,12 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 	private TextField	email;
 	private TextField	mobile;
 
+	private Label		noAccountMsg;
+	private TextField	usrname;
+	private TextField	password;
+	private CheckBox	showPassword;
+	private Button		editcreateButton;
+	
 	private Button		editcloseButton;
 	private Button		deleteButton;
 
@@ -135,20 +150,102 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 		mobile.setNullRepresentation( "" );
 		mobile.setImmediate(true);
 
-//		addComponent( code );
-		addComponent( firstName );
-		addComponent( lastName );
-		addComponent( birthday );
-		addComponent( street );
-		addComponent( pobox );
-		addComponent( index );
-		addComponent( city );
-		addComponent( country );
-		addComponent( email );
-		addComponent( mobile );
+/////
+		
+		noAccountMsg = new Label ( "<B>No account. Shall be created</B>", ContentMode.HTML );
+		
+		usrname = new TextField( "Username" + ":" );
+		usrname.setWidth( "20em" );
+		usrname.setImmediate( true );
 
+		password = new TextField( "Password" + ":" );
+		password.setWidth( "20em" );
+		password.setImmediate( true );
+		
+		showPassword = new CheckBox( "Show password" + "?");
+		showPassword.setValue( false );
+		showPassword.addValueChangeListener( new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+
+				if ( showPassword.getValue()) {
+					// It is necessary to ask "Are you sure?"
+					ConfirmDialog.show( model.getApp(), 
+							"Confirm", 
+							"Are you sure you want to show passwords?", 
+							model.getApp().getResourceStr( "general.button.ok" ), 
+							model.getApp().getResourceStr( "general.button.cancel" ), 
+							new ConfirmDialog.Listener() {
+								private static final long serialVersionUID = 1L;
+
+								@Override
+								public void onClose( ConfirmDialog dialog ) {
+									
+									showPassword.setValue( dialog.isConfirmed());
+									updateAccountFields();
+									
+								}
+						});
+				}
+				
+			}
+		});
+
+		
+		editcreateButton = new Button( "EditCreate" );
+
+		editcreateButton.addClickListener( new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick( ClickEvent event) {
+
+				accountMgmt();
+
+			}
+		});
+
+		
+		FormLayout fl_1 = new FormLayout();
+		fl_1.setSpacing( true );
+		
+//		fl_1.addComponent( code );
+		fl_1.addComponent( firstName );
+		fl_1.addComponent( lastName );
+		fl_1.addComponent( birthday );
+		fl_1.addComponent( street );
+		fl_1.addComponent( pobox );
+		fl_1.addComponent( index );
+		fl_1.addComponent( city );
+		fl_1.addComponent( country );
+		fl_1.addComponent( email );
+		fl_1.addComponent( mobile );
+
+
+		FormLayout fl_2 = new FormLayout();
+		fl_2.setSpacing( true );
+		
+		fl_2.addComponent( noAccountMsg );
+		fl_2.addComponent( usrname );
+		fl_2.addComponent( password );
+		fl_2.addComponent( showPassword );
+		fl_2.addComponent( editcreateButton );
+		
+		Label separator_1 = new Label( "<hr/>", ContentMode.HTML );
+		separator_1.setWidth( "100%" );
+		Label separator2 = new Label( "<hr/>", ContentMode.HTML );
+		separator2.setWidth( "100%" );
+		
+
+		addComponent( fl_1 );
+		addComponent( separator_1 );
+		addComponent( fl_2 );
+		addComponent( separator2 );
 		addComponent( getButtonsBar());
 
+		updateAccountFields();
 		updateButtons();
 		enableFields();
 	}
@@ -187,6 +284,16 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 //			}
 //			code.setValue( this.shownUser.getCode());
 
+			if ( this.shownUser.getAccount() != null ) {
+				
+				usrname.setValue( this.shownUser.getAccount().getUsrName());
+				password.setValue( this.shownUser.getAccount().getPwd());
+			} else {
+				usrname.setValue( "" );
+				password.setValue( "" );
+			}
+			
+			
 		}
 
 	}
@@ -236,6 +343,9 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 			enableFields();
 		}
 
+		showPassword.setValue( false );
+		updateAccountFields();
+		
 		if ( user != null && user.getId() <= 0 ) {
 
 			logger.debug( "New OrgUser created. Need to be edited and saved!" );
@@ -337,6 +447,32 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 
 	}
 
+	private void updateAccountFields() {
+		if ( this.shownUser != null 
+				&& this.shownUser.getAccount() != null ) {
+			
+				noAccountMsg.setVisible( false );
+				usrname.setVisible( true );
+				password.setVisible( showPassword.getValue());
+				showPassword.setVisible( true );
+
+				editcreateButton.setCaption( model.getApp().getResourceStr( "general.button.edit" ));
+				
+		} else {
+			
+			noAccountMsg.setVisible( true );
+			usrname.setVisible( false );
+			password.setVisible( false );
+			showPassword.setVisible( false );
+
+			editcreateButton.setCaption( model.getApp().getResourceStr( "general.button.create" ));
+			
+		}
+
+		editcreateButton.setVisible( model.isEditMode());
+		
+	}
+	
 	private void updateButtons() {
 
 		if ( model.isEditMode() ) {
@@ -345,32 +481,42 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 			editcloseButton.setIcon( new ThemeResource("icons/16/approve.png"));
 
 			deleteButton.setVisible( false );
-
+			
 		} else {
 
 			editcloseButton.setCaption( model.getApp().getResourceStr( "general.button.edit" ));
 			editcloseButton.setIcon( new ThemeResource("icons/16/edit.png"));
 
 			deleteButton.setVisible( true );
+
 		}
 
 	}
 
 	private void enableFields() {
 
-//		code.setEnabled( model.isEditMode() );
-		firstName.setEnabled( model.isEditMode() );
-		lastName.setEnabled( model.isEditMode() );
-		birthday.setEnabled( model.isEditMode() );
+		boolean enable = model.isEditMode();
+		
+//		code.setEnabled( enable );
+		firstName.setEnabled( enable );
+		lastName.setEnabled( enable );
+		birthday.setEnabled( enable );
 
-		street.setEnabled( model.isEditMode() );
-		pobox.setEnabled( model.isEditMode() );
-		index.setEnabled( model.isEditMode() );
-		city.setEnabled( model.isEditMode() );
-		country.setEnabled( model.isEditMode() );
+		street.setEnabled( enable );
+		pobox.setEnabled( enable );
+		index.setEnabled( enable );
+		city.setEnabled( enable );
+		country.setEnabled( enable );
 
-		email.setEnabled( model.isEditMode() );
-		mobile.setEnabled( model.isEditMode() );
+		email.setEnabled( enable );
+		mobile.setEnabled( enable );
+		
+		// Here account management fields handling
+		noAccountMsg.setEnabled( enable );
+		usrname.setEnabled( false );
+		password.setEnabled( false );
+//		showPassword.setEnabled( enable );
+		editcreateButton.setEnabled( enable );
 
 	}
 
@@ -385,16 +531,16 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 			setEditedFlag( false );
 
 //			listenForChanges( code );
-			listenForChanges( firstName );
-			listenForChanges( lastName );
-			listenForChanges( birthday );
-			listenForChanges( street );
-			listenForChanges( pobox );
-			listenForChanges( index );
-			listenForChanges( city );
-			listenForChanges( country );
-			listenForChanges( email );
-			listenForChanges( mobile );
+			changesCollector.listenForChanges( firstName );
+			changesCollector.listenForChanges( lastName );
+			changesCollector.listenForChanges( birthday );
+			changesCollector.listenForChanges( street );
+			changesCollector.listenForChanges( pobox );
+			changesCollector.listenForChanges( index );
+			changesCollector.listenForChanges( city );
+			changesCollector.listenForChanges( country );
+			changesCollector.listenForChanges( email );
+			changesCollector.listenForChanges( mobile );
 
 		} else {
 			if ( isEditedFlag()) {
@@ -434,53 +580,21 @@ public class StuffView extends FormLayout implements StuffChangedListener {
 				}
 			}
 
-			stopListeningForChanges();
+			changesCollector.stopListeningForChanges();
 		}
 
 
+		updateAccountFields();
 		updateButtons();
 		enableFields();
 	}
 
-	@SuppressWarnings("rawtypes")
-	class Pair {
-		AbstractField field;
-		ValueChangeListener listener;
-
-		Pair( AbstractField field, ValueChangeListener listener ) {
-			this.field = field;
-			this.listener = listener;
-		}
-	}
-
-	private List<Pair> listenersList = new ArrayList<Pair>();
-	@SuppressWarnings("rawtypes")
-	private void listenForChanges( final AbstractField field ) {
-
-		ValueChangeListener listener = new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-
-				if ( logger.isDebugEnabled()) logger.debug( "Field '" + field.getClass().getSimpleName() + "' was changed!" );
-
-				setEditedFlag( true );
-
-			}
-
-		};
-
-		field.addValueChangeListener( listener );
-		listenersList.add( new Pair( field, listener ));
-
-	}
-	private void stopListeningForChanges() {
-
-		for( Pair pair : listenersList ) {
-			pair.field.removeValueChangeListener( pair.listener );
-		}
-
+	// This method call AccountView dialog
+	private void accountMgmt() {
+	
+		AccountView view = new AccountView( model ); 
+		model.getApp().addWindow( view );
+		
 	}
 
 }

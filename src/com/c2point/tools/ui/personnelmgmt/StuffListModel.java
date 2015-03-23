@@ -1,15 +1,19 @@
 package com.c2point.tools.ui.personnelmgmt;
 
+import java.text.MessageFormat;
 import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.datalayer.AuthenticationFacade;
 import com.c2point.tools.datalayer.PresenceFilterType;
 import com.c2point.tools.datalayer.UsersFacade;
+import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel;
+import com.vaadin.ui.Notification;
 
 public class StuffListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( StuffListModel.class.getName());
@@ -193,6 +197,109 @@ public class StuffListModel extends AbstractModel {
 		// Code will be set by UsersFacade
 		UsersFacade.getInstance().setUniqueCode( user );
 		
+	}
+*/
+	
+	public boolean saveAccount( String newName, String newPwd ) {
+		
+		boolean bRes = false;
+
+		OrgUser user = this.getSelectedUser();
+		
+		if ( user != null ) {
+			
+			Account account = user.getAccount();
+			
+			if ( account == null ) {
+				
+				account = new Account( newName, newPwd, user );
+				
+			} else {
+				
+				account.setUsrName( newName );
+				account.setPwd( newPwd );
+				
+			}
+			
+			
+			
+		}
+		if ( this.shownOrg.getId() > 0 ) {
+			// This is existing record update
+			Organisation newOrg = model.update( this.shownOrg );
+			if ( newOrg == null ) {
+
+				String template = model.getApp().getResourceStr( "general.error.update.header" );
+				Object[] params = { this.shownOrg.getName() };
+				template = MessageFormat.format( template, params );
+
+				Notification.show( template, Notification.Type.ERROR_MESSAGE );
+
+			} else {
+				currentWasSet( newOrg );
+			}
+		} else {
+			// This is new record. It must be added
+			Organisation newOrg = model.add( this.shownOrg );
+			if ( newOrg == null ) {
+
+				String template = model.getApp().getResourceStr( "general.error.add.header" );
+				Object[] params = { this.shownOrg.getName() };
+				template = MessageFormat.format( template, params );
+
+				Notification.show( template, Notification.Type.ERROR_MESSAGE );
+
+			} else {
+				currentWasSet( newOrg );
+			}
+
+		}
+		
+		
+		logger.debug( "Tried to save account. Result: " + bRes );
+		return bRes;
+	}
+	
+	public boolean checkName( String newName ) {
+		
+		boolean bRes = false;
+	
+		if ( getEditMode() == EditModeType.ADD ) {
+			logger.debug( "ADD mode. Just search for existing name" );
+			bRes = AuthenticationFacade.getInstance().findByUserName( newName ) == null;
+			
+		} else if ( getEditMode() == EditModeType.EDIT ) {
+			logger.debug( "Edit mode. Just search for existing name" );
+			
+			Account account = AuthenticationFacade.getInstance().findByUserName( newName );
+			
+			if ( account == null 
+				||
+				 account.getId() == this.getSelectedUser().getAccount().getId()) {
+
+				// Account found and this is account we are editing right now!
+				bRes = true;
+			}
+			
+		} else {
+			logger.debug( "VIEW mode. Nothing to check" );
+			bRes = true;
+		}
+			
+		logger.debug( "newName was checked. Result: " + bRes );
+		return bRes;
+	}
+	
+	
+/*	
+	public boolean checkPassword( String newPwd ) {
+		
+		boolean bRes = true;
+		
+		
+		
+		logger.debug( "newPwd was checked. Result: " + bRes );
+		return bRes;
 	}
 */	
 }

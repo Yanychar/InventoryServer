@@ -1,9 +1,6 @@
 package com.c2point.tools.ui.orgmgmt;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -12,14 +9,12 @@ import com.c2point.tools.access.FunctionalityType;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
+import com.c2point.tools.ui.ChangesCollector;
 import com.c2point.tools.ui.util.UIhelper;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -39,6 +34,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 
 	private OrgListModel	model;
+	private ChangesCollector	changesCollector = new ChangesCollector();
 
 	private TextField	code;
 	private TextField 	name;
@@ -532,26 +528,26 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 			
 			setEditedFlag( false );
 
-			listenForChanges( code );
-			listenForChanges( name );
-			listenForChanges( tunnus );
+			changesCollector.listenForChanges( code );
+			changesCollector.listenForChanges( name );
+			changesCollector.listenForChanges( tunnus );
 
-			listenForChanges( street );
-//			listenForChanges( poBox );
-			listenForChanges( index );
-			listenForChanges( city );
-			listenForChanges( country );
+			changesCollector.listenForChanges( street );
+//			changesCollector.listenForChanges( poBox );
+			changesCollector.listenForChanges( index );
+			changesCollector.listenForChanges( city );
+			changesCollector.listenForChanges( country );
 
-			listenForChanges( phone );
-			listenForChanges( email );
+			changesCollector.listenForChanges( phone );
+			changesCollector.listenForChanges( email );
 		    
-//			listenForChanges( info );
-			listenForChanges( serviceOwner );
+//			changesCollector.listenForChanges( info );
+			changesCollector.listenForChanges( serviceOwner );
 
-			listenForChanges( soFirstName );
-			listenForChanges( soLastName );
-			listenForChanges( soEmail );
-			listenForChanges( soPhone );
+			changesCollector.listenForChanges( soFirstName );
+			changesCollector.listenForChanges( soLastName );
+			changesCollector.listenForChanges( soEmail );
+			changesCollector.listenForChanges( soPhone );
 
 		} else {
 
@@ -602,7 +598,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 				// Nothing was changed
 				model.clearEditMode();
-				stopListeningForChanges();
+				changesCollector.stopListeningForChanges();
 				
 			}
 
@@ -611,47 +607,6 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 		updateButtons();
 		enableFields();
-	}
-
-	@SuppressWarnings("rawtypes")
-	class Pair {
-		AbstractField field;
-		ValueChangeListener listener;
-
-		Pair( AbstractField field, ValueChangeListener listener ) {
-			this.field = field;
-			this.listener = listener;
-		}
-	}
-
-	private List<Pair> listenersList = new ArrayList<Pair>();
-	@SuppressWarnings("rawtypes")
-	private void listenForChanges( final AbstractField field ) {
-
-		ValueChangeListener listener = new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-
-				if ( logger.isDebugEnabled()) logger.debug( "Field '" + field.getClass().getSimpleName() + "' was changed!" );
-
-				setEditedFlag( true );
-
-			}
-
-		};
-
-		field.addValueChangeListener( listener );
-		listenersList.add( new Pair( field, listener ));
-
-	}
-	private void stopListeningForChanges() {
-
-		for( Pair pair : listenersList ) {
-			pair.field.removeValueChangeListener( pair.listener );
-		}
-
 	}
 
 	private void addServiceOwnerSelector() {

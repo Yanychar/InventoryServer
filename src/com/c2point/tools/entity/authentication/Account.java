@@ -129,6 +129,7 @@ public class Account extends SimplePojo {
 		users = new ArrayList<OrgUser>();
 			
 		users.add( user );
+		user.setAccount( this );
 
 	}
 	

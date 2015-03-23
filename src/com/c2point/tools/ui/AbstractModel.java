@@ -20,7 +20,7 @@ public class AbstractModel  {
 	protected EventListenerList	listenerList; 
 	
 	
-	public enum EditModeType { NONE, EDIT, ADD };
+	public enum EditModeType { VIEW, EDIT, ADD };
 	
 	private EditModeType	editMode;
 
@@ -29,7 +29,7 @@ public class AbstractModel  {
 		listenerList = new EventListenerList();
 		this.app = ( InventoryUI )UI.getCurrent();
 		
-		setEditMode( EditModeType.NONE );
+		setEditMode( EditModeType.VIEW );
 	}
 
 	public InventoryUI getApp() {
@@ -58,16 +58,16 @@ public class AbstractModel  {
 	public SecurityContext getSecurityContext() { return app.getSessionData().getContext(); }
 
 	public EditModeType getEditMode() { return this.editMode; }
-	public boolean isEditMode() { return ( this.editMode != EditModeType.NONE ); }
+	public boolean isEditMode() { return ( this.editMode != EditModeType.VIEW ); }
 	public void setEditMode( EditModeType editMode ) { this.editMode = editMode; }
 	public void setEditMode() { setEditMode( EditModeType.EDIT ); }
-	public void clearEditMode() { setEditMode( EditModeType.NONE ); }
+	public void clearEditMode() { setEditMode( EditModeType.VIEW ); }
 	public void swipeEditMode() {
 		
-		if ( this.editMode == EditModeType.NONE ) {
+		if ( this.editMode == EditModeType.VIEW ) {
 			setEditMode( EditModeType.EDIT ); 
 		} else {
-			setEditMode( EditModeType.NONE ); 
+			setEditMode( EditModeType.VIEW ); 
 		}
 	}
 	
