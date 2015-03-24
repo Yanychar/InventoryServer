@@ -39,6 +39,8 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 
 public class StuffView extends VerticalLayout implements StuffChangedListener {
 	private static final long serialVersionUID = 1L;
@@ -594,6 +596,17 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 	
 		AccountView view = new AccountView( model ); 
 		model.getApp().addWindow( view );
+		
+		view.addCloseListener( new CloseListener() {
+
+			@Override
+			public void windowClose(CloseEvent e) {
+				
+				logger.debug( "AccountView has been closed" );
+				updateAccountFields();				
+			}
+			
+		});
 		
 	}
 

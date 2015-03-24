@@ -221,9 +221,12 @@ public class StuffListModel extends AbstractModel {
 				
 			}
 			
-			
+//			fireChanged( user );
+			bRes = true;
 			
 		}
+
+/*			
 		if ( this.shownOrg.getId() > 0 ) {
 			// This is existing record update
 			Organisation newOrg = model.update( this.shownOrg );
@@ -254,7 +257,7 @@ public class StuffListModel extends AbstractModel {
 			}
 
 		}
-		
+*/		
 		
 		logger.debug( "Tried to save account. Result: " + bRes );
 		return bRes;

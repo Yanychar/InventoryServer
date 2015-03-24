@@ -63,11 +63,6 @@ public class Account extends SimplePojo {
     private Date			dateEndedForDB;
 	
 	
-	
-	
-	
-//	@OneToOne(optional=false, fetch=FetchType.LAZY)
-
 	public Account( String usrName, String pwd, OrgUser user ) {
 		super();
 		
@@ -126,10 +121,12 @@ public class Account extends SimplePojo {
 	
 	private void setUser( OrgUser user ) {
 		
-		users = new ArrayList<OrgUser>();
-			
-		users.add( user );
-		user.setAccount( this );
+		if ( user != null ) {
+			users = new ArrayList<OrgUser>();
+				
+			users.add( user );
+			user.setAccount( this );
+		}
 
 	}
 	
