@@ -254,7 +254,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		}
 
 		item.getItemProperty( "category" ).setValue( getCategoryChain( toolItem.getTool().getCategory()));
-		item.getItemProperty( "name" ).setValue( toolItem.getTool().getName());
+		item.getItemProperty( "name" ).setValue( toolItem.getTool().getFullName());
 		item.getItemProperty( "status" ).setValue( toolItem.getStatus().toString( model.getApp().getSessionData().getBundle()));
 		try {
 			item.getItemProperty( "user" ).setValue( toolItem.getCurrentUser().getLastAndFirstNames());
@@ -597,6 +597,11 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 				if ( tool.getDescription() != null &&
 					 tool.getDescription().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
 
+				try {
+					if ( tool.getManufacturer().getName().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
+				} catch ( Exception e ) {}
+				
+				
 				if ( tool.getModel() != null &&
 						 tool.getModel().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
 				

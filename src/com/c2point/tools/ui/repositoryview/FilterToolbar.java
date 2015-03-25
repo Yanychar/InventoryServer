@@ -8,12 +8,20 @@ import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.tool.Manufacturer;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.themes.BaseTheme;
 
 public class FilterToolbar extends HorizontalLayout {
 	private static final long serialVersionUID = 1L;
@@ -22,9 +30,9 @@ public class FilterToolbar extends HorizontalLayout {
 
 	private ToolsListModel		model; 
 	
-	private ComboBox			userFilter;
-	private ComboBox			statusFilter;
-	private ComboBox			manufFilter;
+	private TextField			searchText;
+
+//	private ComboBox			statusFilter;
 
 	public FilterToolbar( ToolsListModel model ) {
 		super();
@@ -40,18 +48,57 @@ public class FilterToolbar extends HorizontalLayout {
 		this.setMargin( new MarginInfo( false, true, false, true ));
 		this.setSpacing( true );
 
-		Label userFilterLabel = new Label( this.model.getApp().getResourceStr( "repositorymgmt.filter.label.user" ));
-		userFilterLabel.setWidth( null );
-
-		userFilter = new ComboBox();
-		userFilter.setFilteringMode( FilteringMode.CONTAINS );
-		userFilter.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
-		userFilter.setNullSelectionAllowed( true );
-		userFilter.setInputPrompt( this.model.getApp().getResourceStr( "repositorymgmt.filter.prompt.user" ));
-		userFilter.setInvalidAllowed( false );
-		userFilter.setImmediate(true);
+		Label searchIcon = new Label();
+		searchIcon.setIcon(new ThemeResource("icons/16/search.png"));
+		searchIcon.setWidth( "2em" );
 		
+		searchText = new TextField();
+		searchText.setWidth("30ex");
+		searchText.setNullSettingAllowed(true);
+		searchText.setInputPrompt( "Search ...");
+		searchText.setImmediate( true );
+		
+		searchText.addTextChangeListener( new TextChangeListener() {
 
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void textChange( TextChangeEvent event ) {
+				
+//				searchFieldUpdated( event.getText());
+				
+			}
+			
+		});
+
+		
+		Button deleteIcon = new Button();
+		deleteIcon.setStyleName( BaseTheme.BUTTON_LINK );
+		deleteIcon.setIcon( new ThemeResource("icons/16/reject.png"));
+		
+		deleteIcon.addClickListener( new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick( ClickEvent event) {
+
+				if ( logger.isDebugEnabled()) logger.debug( "DeleteIcon image had been pressed" );
+				
+				if ( searchText != null && searchText.getValue() != null && searchText.getValue().length() > 0 ) {
+
+					if ( logger.isDebugEnabled()) logger.debug( "Search text shall be set to empty string" );
+					
+					searchText.setValue( "" );
+//					searchFieldUpdated( null );
+					
+				}
+				
+			}
+			
+		});
+		
+		
+/*
 		Label statusFilterLabel = new Label( this.model.getApp().getResourceStr( "repositorymgmt.filter.label.status" ));
 		statusFilterLabel.setWidth( null );
 
@@ -62,64 +109,28 @@ public class FilterToolbar extends HorizontalLayout {
 		statusFilter.setInputPrompt( this.model.getApp().getResourceStr( "repositorymgmt.filter.prompt.status" ));
 		statusFilter.setInvalidAllowed( false );
 		statusFilter.setImmediate(true);
+*/
 
-		Label manufFilterLabel = new Label( this.model.getApp().getResourceStr( "repositorymgmt.filter.label.manufacturer" ));
-		manufFilterLabel.setWidth( null );
+//		initStatusFilter();
 
-		manufFilter = new ComboBox();
-		manufFilter.setFilteringMode( FilteringMode.CONTAINS );
-		manufFilter.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
-		manufFilter.setNullSelectionAllowed( true );
-		manufFilter.setInputPrompt( this.model.getApp().getResourceStr( "repositorymgmt.filter.prompt.manufacturer" ));
-		manufFilter.setInvalidAllowed( false );
-		manufFilter.setImmediate(true);
+		addComponent( searchIcon );
+		addComponent( searchText );
+		addComponent( deleteIcon );
+
 		
 		
-		initUserFilter();
-		initStatusFilter();
-		initManufFilter();
-
-		this.addComponent( userFilterLabel );
-		this.addComponent( userFilter );
-		this.addComponent( statusFilterLabel );
-		this.addComponent( statusFilter );
-		this.addComponent( manufFilterLabel );
-		this.addComponent( manufFilter );
+//		this.addComponent( statusFilterLabel );
+//		this.addComponent( statusFilter );
 		
 		Label glue = new Label( "" );
-		this.addComponent( glue );
-		this.setExpandRatio( glue,  1.0f );
+		addComponent( glue );
+		setExpandRatio( glue,  1.0f );
 
 	}
 	
-	public ComboBox getUserFilter() { return userFilter; }
-	public ComboBox getStatusFilter() { return statusFilter; }
-	public ComboBox getManufFilter() { return manufFilter; }
-
-	private void initUserFilter() {
-	
-		for ( OrgUser user : model.getUsers()) {
-			
-			userFilter.addItem( user );
-			userFilter.setItemCaption( user, user.getLastAndFirstNames());
-			
-		}
-	
-		userFilter.addValueChangeListener( new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-	
-			@Override
-			public void valueChange( ValueChangeEvent event ) {
-				
-				model.setUserFilter(( OrgUser ) userFilter.getValue());
-			}
-			
-		});
-		
-		userFilter.setValue( null );
-		
-	}
-	
+/*
+  	public ComboBox getStatusFilter() { return statusFilter; }
+ 
 	private void initStatusFilter() {
 
 		statusFilter.addItem( ItemStatus.FREE );
@@ -149,30 +160,7 @@ public class FilterToolbar extends HorizontalLayout {
 		});
 		
 	}
-	
-	private void initManufFilter() {
-		
-		for ( Manufacturer manuf : model.getManufacturers()) {
-			
-			manufFilter.addItem( manuf );
-			manufFilter.setItemCaption( manuf, manuf.getName());
-			
-		}
-	
-		manufFilter.addValueChangeListener( new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-	
-			@Override
-			public void valueChange( ValueChangeEvent event ) {
-				
-				model.setManufFilter(( Manufacturer ) manufFilter.getValue());
-			}
-			
-		});
-		
-		userFilter.setValue( null );
-		
-	}
+*/
 	
 
 }
