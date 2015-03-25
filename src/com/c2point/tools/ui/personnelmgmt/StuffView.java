@@ -256,9 +256,6 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 	public StuffListModel getModel() { return model; }
 	public void setModel( StuffListModel model ) { this.model = model; }
 
-	public boolean isEditedFlag() { return editedFlag;}
-	public void setEditedFlag(boolean editedFlag) {this.editedFlag = editedFlag; }
-
 	private void dataToView() {
 
 		if ( this.shownUser != null ) {
@@ -285,7 +282,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 //				model.setUserCode( this.shownUser );
 //			}
 //			code.setValue( this.shownUser.getCode());
-
+/*
 			if ( this.shownUser.getAccount() != null ) {
 				
 				usrname.setValue( this.shownUser.getAccount().getUsrName());
@@ -294,7 +291,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 				usrname.setValue( "" );
 				password.setValue( "" );
 			}
-			
+*/			
 			
 		}
 
@@ -460,6 +457,9 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 
 				editcreateButton.setCaption( model.getApp().getResourceStr( "general.button.edit" ));
 				
+				usrname.setValue( this.shownUser.getAccount().getUsrName());
+				password.setValue( this.shownUser.getAccount().getPwd());
+				
 		} else {
 			
 			noAccountMsg.setVisible( true );
@@ -468,6 +468,9 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 			showPassword.setVisible( false );
 
 			editcreateButton.setCaption( model.getApp().getResourceStr( "general.button.create" ));
+
+			usrname.setValue( "" );
+			password.setValue( "" );
 			
 		}
 
@@ -530,7 +533,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 
 		if ( model.isEditMode()) {
 
-			setEditedFlag( false );
+			changesCollector.clearChanges();
 
 //			listenForChanges( code );
 			changesCollector.listenForChanges( firstName );
@@ -543,9 +546,11 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 			changesCollector.listenForChanges( country );
 			changesCollector.listenForChanges( email );
 			changesCollector.listenForChanges( mobile );
+			changesCollector.listenForChanges( usrname );
+			changesCollector.listenForChanges( password );
 
 		} else {
-			if ( isEditedFlag()) {
+			if ( changesCollector.wasItChanged()) {
 
 				// Changes must be stored
 				viewToData();

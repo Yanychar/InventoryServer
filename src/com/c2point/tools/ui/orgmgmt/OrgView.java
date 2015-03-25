@@ -226,9 +226,6 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 	public OrgListModel getModel() { return model; }
 	public void setModel( OrgListModel model ) { this.model = model; }
 
-	public boolean isEditedFlag() { return editedFlag;}
-	public void setEditedFlag(boolean editedFlag) {this.editedFlag = editedFlag; }
-
 	private void dataToView() {
 
 		if ( this.shownOrg != null ) {
@@ -526,7 +523,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 			initUserComboBox();
 			
-			setEditedFlag( false );
+			changesCollector.clearChanges();
 
 			changesCollector.listenForChanges( code );
 			changesCollector.listenForChanges( name );
@@ -551,7 +548,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 		} else {
 
-			if ( isEditedFlag()) {
+			if ( changesCollector.wasItChanged()) {
 				
 				if ( valid()) {
 
