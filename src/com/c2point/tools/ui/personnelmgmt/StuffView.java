@@ -1,8 +1,6 @@
 package com.c2point.tools.ui.personnelmgmt;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,18 +10,17 @@ import org.vaadin.dialogs.ConfirmDialog;
 
 import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
+import com.c2point.tools.ui.AbstractModel.EditModeType;
 import com.c2point.tools.ui.ChangesCollector;
 import com.c2point.tools.ui.accountmgmt.AccountView;
 import com.c2point.tools.utils.lang.Locales;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -34,11 +31,11 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
@@ -105,8 +102,8 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 		firstName.setImmediate( true );
 
 		lastName = new TextField( model.getApp().getResourceStr( "personnel.caption.lastname" ) + ":" );
-		lastName.setRequired(true);
-		lastName.setRequiredError("The Field may not be empty.");
+		lastName.setRequired( true );
+		lastName.setRequiredError( "The Field may not be empty." );
 		lastName.setNullRepresentation( "" );
 		lastName.setImmediate( true );
 
@@ -529,9 +526,8 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 
 		logger.debug( "EditClose button has been pressed!" );
 
-		model.swipeEditMode();
 
-		if ( model.isEditMode()) {
+		if ( !model.isEditMode()) {
 
 			changesCollector.clearChanges();
 
@@ -549,45 +545,55 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 			changesCollector.listenForChanges( usrname );
 			changesCollector.listenForChanges( password );
 
+			model.setEditMode( this.shownUser.getId() > 0 ? EditModeType.EDIT : EditModeType.ADD );
+
 		} else {
 			if ( changesCollector.wasItChanged()) {
 
-				// Changes must be stored
-				viewToData();
-
-				if ( this.shownUser.getId() > 0 ) {
-					// This is existing record update
-					OrgUser newUser = model.update( this.shownUser );
-					if ( newUser == null ) {
-
-						String template = model.getApp().getResourceStr( "general.error.update.header" );
-						Object[] params = { this.shownUser.getFirstAndLastNames() };
-						template = MessageFormat.format( template, params );
-
-						Notification.show( template, Notification.Type.ERROR_MESSAGE );
-
+				if ( validate()) {
+					// Changes must be stored
+					viewToData();
+	
+					if ( this.shownUser.getId() > 0 ) {
+						// This is existing record update
+						OrgUser newUser = model.update( this.shownUser );
+						if ( newUser == null ) {
+	
+							String template = model.getApp().getResourceStr( "general.error.update.header" );
+							Object[] params = { this.shownUser.getFirstAndLastNames() };
+							template = MessageFormat.format( template, params );
+	
+							Notification.show( template, Notification.Type.ERROR_MESSAGE );
+	
+						} else {
+							currentWasSet( null );
+						}
 					} else {
-						currentWasSet( null );
+						// This is new record. It must be added
+						OrgUser newUser = model.add( this.shownUser );
+						if ( newUser == null ) {
+	
+							String template = model.getApp().getResourceStr( "general.error.add.header" );
+							Object[] params = { this.shownUser.getFirstAndLastNames() };
+							template = MessageFormat.format( template, params );
+	
+							Notification.show( template, Notification.Type.ERROR_MESSAGE );
+	
+						} else {
+							currentWasSet( null );
+						}
+	
 					}
 				} else {
-					// This is new record. It must be added
-					OrgUser newUser = model.add( this.shownUser );
-					if ( newUser == null ) {
-
-						String template = model.getApp().getResourceStr( "general.error.add.header" );
-						Object[] params = { this.shownUser.getFirstAndLastNames() };
-						template = MessageFormat.format( template, params );
-
-						Notification.show( template, Notification.Type.ERROR_MESSAGE );
-
-					} else {
-						currentWasSet( null );
-					}
-
+					
+					return;
 				}
 			}
 
 			changesCollector.stopListeningForChanges();
+
+			model.setEditMode( EditModeType.VIEW );
+			
 		}
 
 
@@ -603,6 +609,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 		model.getApp().addWindow( view );
 		
 		view.addCloseListener( new CloseListener() {
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void windowClose(CloseEvent e) {
@@ -615,4 +622,54 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 		
 	}
 
+	private boolean validate() {
+
+/*
+		private DateField 	birthday;
+
+		private TextField	email;
+		private TextField	mobile;
+*/		
+		
+		if ( !lastName.isValid() || lastName.getValue() == null || lastName.getValue().trim().length() == 0 ) {   
+				
+			Notification.show( "Error", "Field cannot be empty!", Type.ERROR_MESSAGE );
+
+			usrname.selectAll();
+			usrname.focus();
+
+			return false;
+		}
+		
+		if ( !birthday.isValid()) {   
+			
+			Notification.show( "Error", "Field cannot be empty!", Type.ERROR_MESSAGE );
+
+			birthday.focus();
+
+			return false;
+		}
+
+		if ( !mobile.isValid() || mobile.getValue() == null || mobile.getValue().trim().length() == 0 ) {
+			
+			mobile.selectAll();
+			mobile.focus();
+
+			if ( !email.isValid() || email.getValue() == null || email.getValue().trim().length() == 0 ) {
+				
+				Notification.show( "Error", "Field cannot be empty!", Type.ERROR_MESSAGE );
+
+				mobile.selectAll();
+				mobile.focus();
+//				email.selectAll();
+//				email.focus();
+
+				return false;
+			}
+		}
+				
+		return true;
+	}
+	
+	
 }

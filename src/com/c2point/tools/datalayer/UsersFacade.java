@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.InventoryUI;
+import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.transactions.TransactionOperation;
@@ -134,6 +135,15 @@ public class UsersFacade extends DataFacade {
 	public OrgUser delete( OrgUser user ) {
 		
 		user.setDeleted();
+		
+		// Delete account if one user only
+		Account account = user.getAccount();
+		if ( account != null && account.getActiveUsers().size() == 0 ) {
+			
+			account.setDeleted();
+		}
+		
+		
 		return updateOrDelete( user, true );
 	}
 

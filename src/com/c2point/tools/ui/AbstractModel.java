@@ -62,13 +62,5 @@ public class AbstractModel  {
 	public void setEditMode( EditModeType editMode ) { this.editMode = editMode; }
 	public void setEditMode() { setEditMode( EditModeType.EDIT ); }
 	public void clearEditMode() { setEditMode( EditModeType.VIEW ); }
-	public void swipeEditMode() {
-		
-		if ( this.editMode == EditModeType.VIEW ) {
-			setEditMode( EditModeType.EDIT ); 
-		} else {
-			setEditMode( EditModeType.VIEW ); 
-		}
-	}
-	
+
 }

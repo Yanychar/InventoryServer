@@ -119,6 +119,16 @@ public class Account extends SimplePojo {
 		return null;
 	}
 	
+	/*
+	 * Return NON deleted Users list 
+	 */
+	public Collection<OrgUser> getActiveUsers() { 
+
+		Collection<OrgUser> retList = normalize();
+		
+		return retList;
+	}
+	
 	private void setUser( OrgUser user ) {
 		
 		if ( user != null ) {
