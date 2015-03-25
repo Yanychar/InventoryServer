@@ -1,11 +1,12 @@
 package com.c2point.tools.ui.repositoryview;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ItemStatus;
-import com.c2point.tools.entity.tool.Manufacturer;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
@@ -25,19 +26,20 @@ import com.vaadin.ui.themes.BaseTheme;
 
 public class FilterToolbar extends HorizontalLayout {
 	private static final long serialVersionUID = 1L;
-	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( FilterToolbar.class.getName());
 
+	private FilterListener		filterListener;
 	private ToolsListModel		model; 
 	
 	private TextField			searchText;
 
-//	private ComboBox			statusFilter;
+	private ComboBox			statusFilter;
 
-	public FilterToolbar( ToolsListModel model ) {
+	public FilterToolbar( FilterListener filterListener, ToolsListModel model ) {
 		super();
 	
 		this.model = model;
+		this.filterListener = filterListener;
 		
 		initUI();
 	}
@@ -65,7 +67,7 @@ public class FilterToolbar extends HorizontalLayout {
 			@Override
 			public void textChange( TextChangeEvent event ) {
 				
-//				searchFieldUpdated( event.getText());
+				prepareEndSendFilteringEvent( event.getText());
 				
 			}
 			
@@ -89,7 +91,7 @@ public class FilterToolbar extends HorizontalLayout {
 					if ( logger.isDebugEnabled()) logger.debug( "Search text shall be set to empty string" );
 					
 					searchText.setValue( "" );
-//					searchFieldUpdated( null );
+					prepareEndSendFilteringEvent( null );
 					
 				}
 				
@@ -98,7 +100,7 @@ public class FilterToolbar extends HorizontalLayout {
 		});
 		
 		
-/*
+
 		Label statusFilterLabel = new Label( this.model.getApp().getResourceStr( "repositorymgmt.filter.label.status" ));
 		statusFilterLabel.setWidth( null );
 
@@ -109,9 +111,8 @@ public class FilterToolbar extends HorizontalLayout {
 		statusFilter.setInputPrompt( this.model.getApp().getResourceStr( "repositorymgmt.filter.prompt.status" ));
 		statusFilter.setInvalidAllowed( false );
 		statusFilter.setImmediate(true);
-*/
 
-//		initStatusFilter();
+		initStatusFilter();
 
 		addComponent( searchIcon );
 		addComponent( searchText );
@@ -119,8 +120,8 @@ public class FilterToolbar extends HorizontalLayout {
 
 		
 		
-//		this.addComponent( statusFilterLabel );
-//		this.addComponent( statusFilter );
+		this.addComponent( statusFilterLabel );
+		this.addComponent( statusFilter );
 		
 		Label glue = new Label( "" );
 		addComponent( glue );
@@ -128,7 +129,7 @@ public class FilterToolbar extends HorizontalLayout {
 
 	}
 	
-/*
+
   	public ComboBox getStatusFilter() { return statusFilter; }
  
 	private void initStatusFilter() {
@@ -153,14 +154,33 @@ public class FilterToolbar extends HorizontalLayout {
 			@Override
 			public void valueChange( ValueChangeEvent event ) {
 				
-				model.setStatusFilter(( ItemStatus )statusFilter.getValue());
+//				model.setStatusFilter(( ItemStatus )statusFilter.getValue());
+				prepareEndSendFilteringEvent();
 				
 			}
 			
 		});
 		
+		
+		
 	}
-*/
-	
 
+	private void prepareEndSendFilteringEvent() {
+		
+		prepareEndSendFilteringEvent( searchText.getValue());
+
+	}
+	private void prepareEndSendFilteringEvent( String filterStr ) {
+		
+		Collection<String> strArray = null;
+		
+		if ( filterStr != null && filterStr.trim().length() > 0 ) {
+			
+			strArray = new ArrayList<String>();
+			strArray.add( filterStr );
+		}
+
+		filterListener.filterWasChanged( strArray, ( ItemStatus )statusFilter.getValue() );
+	}
+	
 }
