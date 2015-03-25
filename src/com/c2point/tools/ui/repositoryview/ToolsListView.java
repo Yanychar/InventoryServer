@@ -5,7 +5,11 @@ import java.util.Collection;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
+import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.ui.category.CategoryModelListener;
+import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -21,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ToolsListView extends VerticalLayout implements CategoryModelListener, ToolsModelListener {
+public class ToolsListView extends VerticalLayout implements CategoryModelListener, ToolsModelListener, FilterListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( ToolsListView.class.getName());
 	
@@ -124,7 +128,7 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 	private FilterToolbar getFilterToolBar() {
 		
 		if ( toolBarLayout == null ) {
-			toolBarLayout = new FilterToolbar( model );
+			toolBarLayout = new FilterToolbar( this, model );
 		}
 		return toolBarLayout;
 	}
@@ -308,5 +312,117 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 		return ""; 
 		
 	}
+
+	class ToolsViewFilter implements Container.Filter {
+		private static final long serialVersionUID = 1L;
+		
+		private Collection<String>	strArray;
+		private ItemStatus 			status;
+		
+		public ToolsViewFilter( Collection<String> strArray, ItemStatus status ) {
+		
+			this.strArray = strArray;
+			this.status = status;
+		}
+		
+		
+		
+		@Override
+		public boolean passesFilter( Object itemId, Item item )
+				throws UnsupportedOperationException {
+			
+			// If no filter defined that any record is OK. Return TRUE
+			if (( strArray == null || strArray.size() == 0 ) && status == null ) return true;
+						
+			ToolItem toolItem;
+			try {
+				toolItem = ( ToolItem ) item.getItemProperty( "data" ).getValue();
+			} catch ( Exception e ) {
+				return false;
+			}
+
+			if ( toolItem == null ) return false;
+
+			if ( this.status != null && toolItem.getStatus() != this.status ) return false;
+
+			Tool tool = toolItem.getTool();
+			
+			if (( strArray == null || strArray.size() == 0 )) return true;
+			
+			for ( String searchStr : strArray ) {
+			
+				try {
+					searchStr = searchStr.toLowerCase().trim();
+					
+					if ( tool.getName() != null &&
+						 tool.getName().toLowerCase().indexOf( searchStr ) != -1 ) return true;
+					
+					if ( tool.getDescription() != null &&
+						 tool.getDescription().toLowerCase().indexOf( searchStr ) != -1 ) return true;
+	
+					try {
+						if ( tool.getManufacturer().getName().toLowerCase().indexOf( searchStr ) != -1 ) return true;
+					} catch ( Exception e ) {}
+					
+					
+					if ( tool.getModel() != null &&
+							 tool.getModel().toLowerCase().indexOf( searchStr ) != -1 ) return true;
+					
+					if ( toolItem.getBarcode() != null &&
+						 toolItem.getBarcode().toLowerCase().indexOf( searchStr ) != -1 ) return true;
+					
+					if ( toolItem.getSerialNumber() != null &&
+						 toolItem.getSerialNumber().toLowerCase().indexOf( searchStr ) != -1 ) return true;
+					
+					if ( toolItem.getCurrentUser() != null &&
+						 toolItem.getCurrentUser().getFirstAndLastNames().toLowerCase().indexOf( searchStr ) != -1 ) return true;
+
+					
+				} catch ( Exception e ) {
+					return false;
+				}
+			}
+			
+			return false;
+		}
+
+		@Override
+		public boolean appliesToProperty( Object propertyId ) {
+			
+			return ( propertyId != null && propertyId.equals( "data" )); 
+			
+		}
+
+	}	
+
+	@Override
+	public boolean filterWasChanged( Collection<String> strArray, ItemStatus status ) {
+
+		boolean found = false;
+		
+		((Filterable) itemsTable.getContainerDataSource()).removeAllContainerFilters();
+
+		if ( strArray != null && strArray.size() > 0 && itemsTable.getContainerDataSource() != null || status != null ) {
+
+			
+			Filter filter = new ToolsViewFilter( strArray, status );
+					
+			((Filterable) itemsTable.getContainerDataSource()).addContainerFilter( filter );
+					
+			found = itemsTable.getContainerDataSource().size() > 0;
+				
+			if ( itemsTable != null && itemsTable.getContainerDataSource() instanceof Container.Ordered ) {
+			
+				itemsTable.setValue( found ? itemsTable.firstItemId() : null );
+			}
+				
+			if ( logger.isDebugEnabled()) logger.debug( "Search: str = '" + strArray + "'. Found? " + found );
+			
+		}
+		
+		return found;
+		
+	}
+
 	
 }
