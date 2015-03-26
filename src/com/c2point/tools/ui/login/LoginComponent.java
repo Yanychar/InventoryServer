@@ -24,9 +24,9 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
-@SuppressWarnings("serial")
 public class LoginComponent extends CustomComponent {
-	
+	private static final long serialVersionUID = 1L;
+
 	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( LoginComponent.class.getName());
 
@@ -80,6 +80,7 @@ public class LoginComponent extends CustomComponent {
 		languageSelect.setImmediate(true);
 
 		languageSelect.addValueChangeListener( new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void valueChange( ValueChangeEvent event ) {
