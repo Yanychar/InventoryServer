@@ -30,6 +30,13 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 	private static Logger logger = LogManager.getLogger( MainView.class.getName());
 
 	private HorizontalSplitPanel	mainSplit;
+
+	private Button homeButton;
+	private Button inventoryButton;
+	private Button msgButton;
+	private Button transButton;
+	private Button reportButton;
+	private Button setButton;
 	
 	public MainView() {
 
@@ -75,7 +82,7 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 		addComponent( mainSplit );
 		setExpandRatio( mainSplit, 1.0F );
 		
-		
+		inventoryButton.click();
 	}
 
 	private Component getMenuBar() {
@@ -84,15 +91,12 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 		
 //		layout.setSpacing( true );
 
-		
-		
-        	
-		Button homeButton 		= createMenuButton( "Home", 		"icons/64/home.png", layout );
-		Button inventoryButton	= createMenuButton( "Inventory", 	"icons/64/inventory.png", layout );
-		Button msgButton		= createMenuButton( "Messages", 	"icons/64/mailbox.png", layout );
-		Button transButton 		= createMenuButton( "Transactions", "icons/64/transactions.png", layout );
-		Button reportButton		= createMenuButton( "Reporting", 	"icons/64/reporting.png", layout );
-		Button setButton 		= createMenuButton( "Settings", 	"icons/64/settings.png", layout );
+		homeButton 		= createMenuButton( "Home", 		"icons/64/home.png", layout );
+		inventoryButton	= createMenuButton( "Inventory", 	"icons/64/inventory.png", layout );
+		msgButton		= createMenuButton( "Messages", 	"icons/64/mailbox.png", layout );
+		transButton 		= createMenuButton( "Transactions", "icons/64/transactions.png", layout );
+		reportButton		= createMenuButton( "Reporting", 	"icons/64/reporting.png", layout );
+		setButton 		= createMenuButton( "Settings", 	"icons/64/settings.png", layout );
 		/* Inventory",
       "transactions", "reporting", "settings" }		
 */		

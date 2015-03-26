@@ -1,7 +1,6 @@
 package com.c2point.tools.ui;
 
 import com.c2point.tools.InventoryUI;
-import com.c2point.tools.entity.SimplePojo;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Or;

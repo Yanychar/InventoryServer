@@ -1,18 +1,13 @@
 package com.c2point.tools.ui.accountmgmt;
 
-import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.ui.ChangesCollector;
 import com.c2point.tools.ui.personnelmgmt.StuffListModel;
 import com.c2point.tools.utils.PasswordGenerator;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
