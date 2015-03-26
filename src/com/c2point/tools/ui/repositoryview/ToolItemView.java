@@ -154,7 +154,13 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 	@Override
 	public void wasAdded(ToolItem item) {}
 	@Override
-	public void wasChanged(ToolItem item) {}
+	public void wasChanged(ToolItem item) {
+
+		if ( logger.isDebugEnabled()) logger.debug( "ToolItemView received event 'Item was changed'. Item:" + item );
+		
+		dataToView();
+		
+	}
 	@Override
 	public void wasDeleted(ToolItem item) {}
 	@Override
@@ -163,7 +169,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 	@Override
 	public void currentWasSet( ToolItem item ) {
 
-		if ( logger.isDebugEnabled()) logger.debug( "ToolItemView received event about user selection. Ready to show:" + item );
+		if ( logger.isDebugEnabled()) logger.debug( "ToolItemView received event 'Item Selected'. Item:" + item );
 
 		this.shownItem = item;
 //		setVisible( item != null );

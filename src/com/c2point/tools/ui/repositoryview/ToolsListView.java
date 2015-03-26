@@ -87,8 +87,8 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 
 		// Configure table
 		itemsTable.setSelectable( true );
+		itemsTable.setNullSelectionAllowed( false );
 		itemsTable.setMultiSelect( false );
-//		table.setNullSelectionAllowed( false );
 		itemsTable.setColumnCollapsingAllowed( false );
 		itemsTable.setColumnReorderingAllowed( false );
 //		table.setColumnHeaderMode( Table.ColumnHeaderMode.HIDDEN );
