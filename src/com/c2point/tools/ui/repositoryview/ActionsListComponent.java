@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import com.c2point.tools.access.FunctionalityType;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
+import com.c2point.tools.ui.listeners.ToolItemChangedListener;
 import com.c2point.tools.ui.repositoryview.handlers.ChangeStatusHandler;
 import com.c2point.tools.ui.repositoryview.handlers.CommandListener;
 import com.c2point.tools.ui.repositoryview.handlers.RequestToolHandler;
@@ -21,7 +22,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
-public class ActionsListComponent extends VerticalLayout implements ToolsModelListener {
+public class ActionsListComponent extends VerticalLayout implements ToolItemChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -99,29 +100,6 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 		addComponent( commandButton );
 		
 		return commandButton;
-	}
-
-	@Override
-	public void wasChanged(ToolItem repItem) {
-
-		updateUI();
-		
-	}
-
-	@Override
-	public void listWasChanged() {
-
-		updateUI();
-		
-	}
-
-	@Override
-	public void selected( ToolItem repItem ) {
-
-		logger.debug( "ActionListComponent received Tools Selection Changed event from ToolsModel" );
-
-		updateUI();
-		
 	}
 
 	private void showNotification( CommandListener.ExitStatus exitStatus, ToolItem item, OrgUser user ) {
@@ -238,5 +216,33 @@ public class ActionsListComponent extends VerticalLayout implements ToolsModelLi
 		}
 		
 	}
-	
+
+	@Override
+	public void wasAdded(ToolItem item) {}
+	@Override
+	public void wasDeleted(ToolItem item) {}
+
+	@Override
+	public void wholeListChanged() {
+
+		updateUI();
+		
+	}
+
+	@Override
+	public void currentWasSet(ToolItem item) {
+
+		logger.debug( "ActionListComponent received Tools Selection Changed event from ToolsModel" );
+
+		updateUI();
+		
+	}
+
+	@Override
+	public void wasChanged(ToolItem repItem) {
+
+		updateUI();
+		
+	}
+
 }

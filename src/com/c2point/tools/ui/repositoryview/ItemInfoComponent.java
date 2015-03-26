@@ -5,11 +5,12 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
+import com.c2point.tools.ui.listeners.ToolItemChangedListener;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 
-public class ItemInfoComponent extends GridLayout implements ToolsModelListener {
+public class ItemInfoComponent extends GridLayout implements ToolItemChangedListener {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = LogManager.getLogger( ItemInfoComponent.class.getName());
@@ -180,26 +181,23 @@ public class ItemInfoComponent extends GridLayout implements ToolsModelListener 
 	}
 
 	@Override
-	public void wasChanged(ToolItem repItem) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void wasAdded(ToolItem item) {}
 
 	@Override
-	public void listWasChanged() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void wasDeleted(ToolItem item) {}
 
 	@Override
-	public void selected( ToolItem repItem ) {
+	public void wholeListChanged() {}
+
+	@Override
+	public void currentWasSet(ToolItem item) {
 
 		logger.debug( "infoComponent received Tools Selection Changed event from ToolsModel" );
 		
-		if ( repItem != null ) {
+		if ( item != null ) {
 			logger.debug( "  There are selection in the Repository Items List" );
 
-			showItem( repItem );
+			showItem( item );
 			
 		} else {
 			logger.debug( "  There is NO selection in the Repository Items List" );
@@ -208,21 +206,10 @@ public class ItemInfoComponent extends GridLayout implements ToolsModelListener 
 				
 		}
 		
-/*
-		try {
-			if ( event.getProperty().getValue() instanceof RepositoryItem ) {
-			
-				showItem(( RepositoryItem )event.getProperty().getValue());
-			}
-		}
-		catch( Exception e ) {
-			
-			clearItem();
-			
-		}
-*/		
-		
 	}
 	
+	@Override
+	public void wasChanged(ToolItem repItem) {}
+
 
 }

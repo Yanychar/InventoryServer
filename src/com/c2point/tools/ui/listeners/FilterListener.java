@@ -1,4 +1,4 @@
-package com.c2point.tools.ui.repositoryview;
+package com.c2point.tools.ui.listeners;
 
 import java.util.Collection;
 import java.util.EventListener;

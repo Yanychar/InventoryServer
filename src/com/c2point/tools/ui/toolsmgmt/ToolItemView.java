@@ -12,6 +12,8 @@ import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
+import com.c2point.tools.ui.listeners.EditInitiationListener;
+import com.c2point.tools.ui.listeners.ToolItemChangedListener;
 import com.c2point.tools.ui.toolsmgmt.ToolsListModel.EditMode;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;

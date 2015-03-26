@@ -155,7 +155,7 @@ public class HwCategoriesComponent extends ListWithSearchComponent implements Ca
 
 		addTopCategory( topCategory );
 		
-		Collection<Category> categoriesList = this.model.getTopCategories();
+		Collection<Category> categoriesList = this.model.getCategories();
 		
 		if ( categoriesList != null && categoriesList.size() > 0 ) {
 			

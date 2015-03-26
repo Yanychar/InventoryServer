@@ -16,6 +16,8 @@ import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.ui.AbstractModel;
+import com.c2point.tools.ui.listeners.EditInitiationListener;
+import com.c2point.tools.ui.listeners.ToolItemChangedListener;
 
 public class ToolsListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( ToolsListModel.class.getName());
@@ -150,7 +152,7 @@ public class ToolsListModel extends AbstractModel {
 
 	public Collection<Category> getCategories() {
 		
-		return CategoriesFacade.getInstance().listTop( org, true );
+		return CategoriesFacade.getInstance().listTop( org );
 	}
 
 	private Category topCat = null; 

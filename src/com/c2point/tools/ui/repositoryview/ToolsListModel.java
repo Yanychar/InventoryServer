@@ -18,6 +18,7 @@ import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.ui.category.CategoryModelListener;
+import com.c2point.tools.ui.listeners.ToolItemChangedListener;
 
 public class ToolsListModel extends AbstractModel {
 
@@ -49,28 +50,22 @@ public class ToolsListModel extends AbstractModel {
 		
 		fireCategoryListChanged();
 
-		fireToolListChanged();		
+		fireListChanged();		
 		
 	}
 
 	public Organisation getOrg() { return org; }
 	public void setOrg( Organisation org ) { this.org = org; }
 	
-	public Collection<Category> getTopCategories() {
+	public Collection<Category> getCategories() {
 		
-		Collection<Category> retList = null;
+		return CategoriesFacade.getInstance().listTop( this.getApp().getSessionData().getOrg());
 		
-		retList = CategoriesFacade.getInstance().listTop( this.getApp().getSessionData().getOrg());
-		
-		// Read data from DB here 
-		
-		return retList;
 	}
 
 	public void addChangedListener( CategoryModelListener listener ) {
 		listenerList.add( CategoryModelListener.class, listener);
 	}
-	
 	
 	protected void fireCategoryListChanged() {
 		Object[] listeners = listenerList.getListenerList();
@@ -138,68 +133,51 @@ public class ToolsListModel extends AbstractModel {
 	 * * Tool selection notification
 	 */
 
+	public void addChangedListener( ToolItemChangedListener listener ) {
+		listenerList.add( ToolItemChangedListener.class, listener);
+	}
+	
+	public void fireChanged( ToolItem item ) {
+		Object[] listeners = listenerList.getListenerList();
+
+	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
+	    	if ( listeners[ i ] == ToolItemChangedListener.class) {
+	    		(( ToolItemChangedListener )listeners[ i + 1 ] ).wasChanged( item );
+	         }
+	     }
+	 }
+	
+	protected void fireListChanged() {
+		Object[] listeners = listenerList.getListenerList();
+		
+		if ( logger.isDebugEnabled()) logger.debug( "ToolsManagementModel issued WholeListChanged event!" );
+
+	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
+	    	if ( listeners[ i ] == ToolItemChangedListener.class) {
+	    		(( ToolItemChangedListener )listeners[ i + 1 ] ).wholeListChanged();
+	         }
+	     }
+	 }
+
+	protected void fireSelected( ToolItem item ) {
+		Object[] listeners = listenerList.getListenerList();
+
+	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
+	    	if ( listeners[ i ] == ToolItemChangedListener.class) {
+	    		(( ToolItemChangedListener )listeners[ i + 1 ] ).currentWasSet( item );
+	         }
+	     }
+	 }
+
+	
 	public ToolItem getSelectedItem() { return selectedItem; }
 	public void setSelectedItem( ToolItem selectedItem ) {
 		
 		this.selectedItem = selectedItem; 
-		fireToolSelected( selectedItem );
+		fireSelected( selectedItem );
 		
 	}
 
-/*	
-	public void toolSelected( ToolItem repItem ) {
-		
-		fireToolSelected( repItem );
-	}
-
-	public void toolSelected( Object obj ) {
-		
-		if ( obj instanceof ToolItem ) {
-			
-			toolSelected(( ToolItem )obj );
-			
-		}
-		
-	}
-*/	
-	
-	public void addChangedListener( ToolsModelListener listener ) {
-		listenerList.add( ToolsModelListener.class, listener);
-	}
-	
-	
-	protected void fireToolListChanged() {
-		Object[] listeners = listenerList.getListenerList();
-
-	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == ToolsModelListener.class) {
-	    		(( ToolsModelListener )listeners[ i + 1 ] ).listWasChanged();
-	         }
-	     }
-	 }
-
-	public void fireToolChanged( ToolItem repItem ) {
-		Object[] listeners = listenerList.getListenerList();
-
-	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == ToolsModelListener.class) {
-	    		(( ToolsModelListener )listeners[ i + 1 ] ).wasChanged( repItem );
-	         }
-	     }
-	 }
-	
-	protected void fireToolSelected( ToolItem repItem ) {
-		Object[] listeners = listenerList.getListenerList();
-
-	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == ToolsModelListener.class) {
-	    		(( ToolsModelListener )listeners[ i + 1 ] ).selected( repItem );
-	         }
-	     }
-	 }
-
-	
-	
 	
 	/*
 	 *  Implementation of repositoryItem-s search
@@ -251,19 +229,19 @@ public class ToolsListModel extends AbstractModel {
 	public void setUserFilter( OrgUser user ) {
 
 		itemsFilter.setUser(user );
-		fireToolListChanged();		
+		fireListChanged();		
 	}
 	
 	public void setStatusFilter( ItemStatus status ) {
 
 		itemsFilter.setStatus( status );
-		fireToolListChanged();		
+		fireListChanged();		
 	}
 
 	public void setManufFilter( Manufacturer manuf ) {
 
 		itemsFilter.setManuf(manuf);
-		fireToolListChanged();		
+		fireListChanged();		
 	}
 	
 	

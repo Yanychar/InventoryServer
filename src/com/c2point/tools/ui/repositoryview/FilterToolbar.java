@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.entity.repository.ItemStatus;
+import com.c2point.tools.ui.listeners.FilterListener;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.FieldEvents.TextChangeEvent;

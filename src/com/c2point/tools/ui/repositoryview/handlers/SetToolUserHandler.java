@@ -36,7 +36,7 @@ public class SetToolUserHandler extends AbstractHandler {
 			
 			exitStatus = CommandListener.ExitStatus.ITEM_TOOKOVER;
 
-			getModel().fireToolChanged( updatedItem );
+			getModel().fireChanged( updatedItem );
 			
 		} else {
 			

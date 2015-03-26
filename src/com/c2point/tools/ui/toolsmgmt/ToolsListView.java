@@ -1,12 +1,14 @@
 package com.c2point.tools.ui.toolsmgmt;
 
 import java.util.Collection;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Tool;
+import com.c2point.tools.ui.listeners.ToolItemChangedListener;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;

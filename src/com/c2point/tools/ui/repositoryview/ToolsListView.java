@@ -7,6 +7,8 @@ import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.ui.category.CategoryModelListener;
+import com.c2point.tools.ui.listeners.FilterListener;
+import com.c2point.tools.ui.listeners.ToolItemChangedListener;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
@@ -25,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ToolsListView extends VerticalLayout implements CategoryModelListener, ToolsModelListener, FilterListener {
+public class ToolsListView extends VerticalLayout implements CategoryModelListener, ToolItemChangedListener, FilterListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( ToolsListView.class.getName());
 	
@@ -44,7 +46,7 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 		initUI();
 		
 		model.addChangedListener(( CategoryModelListener ) this );		
-		model.addChangedListener(( ToolsModelListener ) this );		
+		model.addChangedListener(( ToolItemChangedListener ) this );		
 //		model.addChangedListener( infoComp );
 		
 	}
@@ -206,27 +208,6 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 		dataFromModel();
 		
 	}
-
-	@Override
-	public void wasChanged( ToolItem item ) {
-
-		logger.debug( "Tool Items List receives notification: Tool Item was Changed!" );
-		
-		// Find correct Item. Start from selected one
-		// update row with data 
-		addOrUpdateItem( item );
-		
-		// set correct selection
-		itemsTable.setValue( item.getId());
-		
-	}
-
-	@Override
-	public void selected(ToolItem repItem) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	
 	@Override
 	public void selected( Category category ) {
@@ -424,5 +405,37 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 		
 	}
 
+	@Override
+	public void wasAdded(ToolItem item) {}
+	@Override
+	public void wasDeleted(ToolItem item) {}
+
+	@Override
+	public void wholeListChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void currentWasSet(ToolItem item) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void wasChanged( ToolItem item ) {
+
+		logger.debug( "Tool Items List receives notification: Tool Item was Changed!" );
+		
+		// Find correct Item. Start from selected one
+		// update row with data 
+		addOrUpdateItem( item );
+		
+		// set correct selection
+		itemsTable.setValue( item.getId());
+		
+	}
+
+	
 	
 }

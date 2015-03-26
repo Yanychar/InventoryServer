@@ -65,7 +65,7 @@ public class ChangeStatusHandler extends AbstractHandler {
 					true 
 			).show( Page.getCurrent());
 			
-			getModel().fireToolChanged( updatedItem );
+			getModel().fireChanged( updatedItem );
 			
 		} else {
 
