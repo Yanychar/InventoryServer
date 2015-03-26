@@ -6,7 +6,9 @@ import java.util.Collection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.repository.ItemStatus;
+import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.ui.listeners.FilterListener;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -23,6 +25,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class FilterToolbar extends HorizontalLayout {
@@ -30,13 +33,13 @@ public class FilterToolbar extends HorizontalLayout {
 	private static Logger logger = LogManager.getLogger( FilterToolbar.class.getName());
 
 	private FilterListener		filterListener;
-	private ToolsListModel		model; 
+	private AbstractModel		model; 
 	
 	private TextField			searchText;
 
 	private ComboBox			statusFilter;
 
-	public FilterToolbar( FilterListener filterListener, ToolsListModel model ) {
+	public FilterToolbar( FilterListener filterListener, AbstractModel model ) {
 		super();
 	
 		this.model = model;
@@ -102,14 +105,14 @@ public class FilterToolbar extends HorizontalLayout {
 		
 		
 
-		Label statusFilterLabel = new Label( this.model.getApp().getResourceStr( "repositorymgmt.filter.label.status" ));
+		Label statusFilterLabel = new Label( (( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.filter.label.status" ));
 		statusFilterLabel.setWidth( null );
 
 		statusFilter = new ComboBox();
 		statusFilter.setFilteringMode( FilteringMode.CONTAINS );
 		statusFilter.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
 		statusFilter.setNullSelectionAllowed( true );
-		statusFilter.setInputPrompt( this.model.getApp().getResourceStr( "repositorymgmt.filter.prompt.status" ));
+		statusFilter.setInputPrompt( (( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.filter.prompt.status" ));
 		statusFilter.setInvalidAllowed( false );
 		statusFilter.setImmediate(true);
 
@@ -142,12 +145,12 @@ public class FilterToolbar extends HorizontalLayout {
 		statusFilter.addItem( ItemStatus.STOLEN );
 		statusFilter.addItem( ItemStatus.RESERVED );
 
-		statusFilter.setItemCaption( ItemStatus.FREE, ItemStatus.FREE.toString( model.getApp().getSessionData().getBundle()));
-		statusFilter.setItemCaption( ItemStatus.INUSE, ItemStatus.INUSE.toString( model.getApp().getSessionData().getBundle()));
-		statusFilter.setItemCaption( ItemStatus.BROKEN, ItemStatus.BROKEN.toString( model.getApp().getSessionData().getBundle()));
-		statusFilter.setItemCaption( ItemStatus.REPAIRING, ItemStatus.REPAIRING.toString( model.getApp().getSessionData().getBundle()));
-		statusFilter.setItemCaption( ItemStatus.STOLEN, ItemStatus.STOLEN.toString( model.getApp().getSessionData().getBundle()));
-		statusFilter.setItemCaption( ItemStatus.RESERVED, ItemStatus.RESERVED.toString( model.getApp().getSessionData().getBundle()));
+		statusFilter.setItemCaption( ItemStatus.FREE, ItemStatus.FREE.toString((( InventoryUI )UI.getCurrent()).getSessionData().getBundle()));
+		statusFilter.setItemCaption( ItemStatus.INUSE, ItemStatus.INUSE.toString((( InventoryUI )UI.getCurrent()).getSessionData().getBundle()));
+		statusFilter.setItemCaption( ItemStatus.BROKEN, ItemStatus.BROKEN.toString((( InventoryUI )UI.getCurrent()).getSessionData().getBundle()));
+		statusFilter.setItemCaption( ItemStatus.REPAIRING, ItemStatus.REPAIRING.toString((( InventoryUI )UI.getCurrent()).getSessionData().getBundle()));
+		statusFilter.setItemCaption( ItemStatus.STOLEN, ItemStatus.STOLEN.toString((( InventoryUI )UI.getCurrent()).getSessionData().getBundle()));
+		statusFilter.setItemCaption( ItemStatus.RESERVED, ItemStatus.RESERVED.toString((( InventoryUI )UI.getCurrent()).getSessionData().getBundle()));
 		
 		statusFilter.addValueChangeListener( new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;

@@ -28,7 +28,7 @@ public class RepositoryManagementView extends HorizontalLayout {
 	public void initUI() {
 	
 		setWidth( "100%" );
-//		this.setSizeFull();
+		this.setSizeFull();
 		this.setSpacing( true );
 
 		Component component;
@@ -40,7 +40,7 @@ public class RepositoryManagementView extends HorizontalLayout {
 		
 		component = createToolsListComponent();
 		this.addComponent( component );
-		this.setExpandRatio( component, 0.6f );
+		this.setExpandRatio( component, 1f );
 
 		component = createActionsComponent();
 //		this.addComponent( component );
@@ -68,12 +68,13 @@ public class RepositoryManagementView extends HorizontalLayout {
 
 		Panel panel = new Panel();
 		panel.setContent( categoriesComponent );
+		panel.setHeight( "75%");
 
 		return panel;
 	}
 
 	private Component createToolsListComponent() {
-		
+/*		
 		toolsListComponent = new ToolsListView( this.model );
 
 		Panel panel = new Panel( "List of Tools" );
@@ -84,6 +85,13 @@ public class RepositoryManagementView extends HorizontalLayout {
 		panel.setHeight( "100%");
 		
 		return panel;
+		
+*/
+		
+		toolsListComponent = new ToolsListView( this.model );
+		
+		return toolsListComponent;
+		
 	}
 
 	private Component createActionsComponent() {
