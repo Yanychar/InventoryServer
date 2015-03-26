@@ -119,28 +119,34 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 		addComponent( serialNumber );
 		addComponent( barcode );
 		
-		updateFields();
+		disallowToUpdate();
 		
 	}
 	
 	public ToolsListModel getModel() { return model; }
 	public void setModel( ToolsListModel model ) { this.model = model; }
 
-	private void updateFields() {
+	private void allowToUpdate() {
+		allowToUpdate( true );
+	}
+	private void disallowToUpdate() {
+		allowToUpdate( false );
+	}
+	private void allowToUpdate( boolean allow ) {
 
-		toolText.setReadOnly( true );
-		code.setReadOnly( true );
-		description.setReadOnly( true );
-		category.setReadOnly( true );
-		manufacturer.setReadOnly( true );
-		toolModel.setReadOnly( true );
+		toolText.setReadOnly( !allow );
+		code.setReadOnly( !allow );
+		description.setReadOnly( !allow );
+		category.setReadOnly( !allow );
+		manufacturer.setReadOnly( !allow );
+		toolModel.setReadOnly( !allow );
 		
-		personalFlag.setReadOnly( true );
-		currentUser.setReadOnly( true );
-		status.setReadOnly( true );
-		reservedBy.setReadOnly( true );
-		serialNumber.setReadOnly( true );
-		barcode.setReadOnly( true );
+		personalFlag.setReadOnly( !allow );
+		currentUser.setReadOnly( !allow );
+		status.setReadOnly( !allow );
+		reservedBy.setReadOnly( !allow );
+		serialNumber.setReadOnly( !allow );
+		barcode.setReadOnly( !allow );
 			
 	}
 
@@ -164,52 +170,54 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 		
 		dataToView();
 
-		updateFields();
-		
 	}
 
 	private void dataToView() {
 
-		updateFields();
+		allowToUpdate();		
 		
-		
-		if ( this.shownItem != null ) {
-			
-			if ( this.shownItem.getTool() != null ) {
+		try {
+			if ( this.shownItem != null ) {
 				
-				toolText.setValue( this.shownItem.getTool().getName());
-				code.setValue( this.shownItem.getTool().getCode());
-				description.setValue( this.shownItem.getTool().getDescription());
-
-				category.setValue( shownItem.getTool().getCategory() != null 
-						? shownItem.getTool().getCategory().getName() 
+				if ( this.shownItem.getTool() != null ) {
+					
+					toolText.setValue( this.shownItem.getTool().getName());
+					code.setValue( this.shownItem.getTool().getCode());
+					description.setValue( this.shownItem.getTool().getDescription());
+	
+					category.setValue( shownItem.getTool().getCategory() != null 
+							? shownItem.getTool().getCategory().getName() 
+							: null );
+					
+					manufacturer.setValue( shownItem.getTool().getManufacturer() != null
+							? shownItem.getTool().getManufacturer().getName()
+							: null );
+	
+					toolModel.setValue( this.shownItem.getTool().getModel());
+					
+				}
+	
+				personalFlag.setValue( shownItem.isPersonalFlag());
+				
+				currentUser.setValue( shownItem.getCurrentUser() != null
+						? shownItem.getCurrentUser().getLastAndFirstNames()
+						: null );
+	
+				status.setValue( shownItem.getStatus().toString( model.getApp().getSessionData().getBundle()));
+				
+				reservedBy.setValue( shownItem.getReservedBy() != null
+						? shownItem.getReservedBy().getLastAndFirstNames()
 						: null );
 				
-				manufacturer.setValue( shownItem.getTool().getManufacturer() != null
-						? shownItem.getTool().getManufacturer().getName()
-						: null );
-
-				toolModel.setValue( this.shownItem.getTool().getModel());
-				
+				serialNumber.setValue( shownItem.getSerialNumber());
+				barcode.setValue( shownItem.getBarcode());
+	
 			}
-
-			personalFlag.setValue( shownItem.isPersonalFlag());
-			
-			currentUser.setValue( shownItem.getCurrentUser() != null
-					? shownItem.getCurrentUser().getLastAndFirstNames()
-					: null );
-
-			status.setValue( shownItem.getStatus().toString( model.getApp().getSessionData().getBundle()));
-			
-			reservedBy.setValue( shownItem.getReservedBy() != null
-					? shownItem.getReservedBy().getLastAndFirstNames()
-					: null );
-			
-			serialNumber.setValue( shownItem.getSerialNumber());
-			barcode.setValue( shownItem.getBarcode());
-
+		} catch ( Exception e ) {
+			logger.error( "Cannot update view: " + e.getMessage());
 		}
 		
+		disallowToUpdate();
 	}
 	
 }

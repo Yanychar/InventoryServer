@@ -53,13 +53,17 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 	
 	private void initUI() {
 
-		setSizeFull();
+//		setSizeFull();
+		setHeight( "100%" );
 
 		setMargin( true );
 		setSpacing( true );
 
-		
 		itemsTable = new Table();
+//		itemsTable.setSizeFull();
+		itemsTable.setHeight( "100%");
+		
+		
 		initTable();
 	
 		Panel infoPanel = new Panel();
@@ -70,10 +74,12 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 
 		this.addComponent( getFilterToolBar());
 		this.addComponent( itemsTable );
-		this.addComponent( infoPanel );
+//		this.addComponent( infoPanel );
 		
 //		this.setExpandRatio( table, 1.0f );
 //		this.setExpandRatio( infoPanel, 0.20f );
+
+		this.setExpandRatio( itemsTable, 1.0f );
 		
 	}
 	

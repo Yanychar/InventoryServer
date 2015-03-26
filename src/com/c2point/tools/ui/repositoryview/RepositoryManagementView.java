@@ -4,6 +4,7 @@ import com.c2point.tools.ui.category.HwCategoriesComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 
 public class RepositoryManagementView extends HorizontalLayout {
 	private static final long serialVersionUID = 1L;
@@ -11,8 +12,9 @@ public class RepositoryManagementView extends HorizontalLayout {
 	private ToolsListModel			model;
 
 	private HwCategoriesComponent	categoriesComponent;
-	private ToolsListView		toolsListComponent;
+	private ToolsListView			toolsListComponent;
 	private ActionsListComponent	actionsListComponent;
+	private ToolItemView			toolItemView;
 	
 
 	public RepositoryManagementView( ToolsListModel model ) {
@@ -25,10 +27,12 @@ public class RepositoryManagementView extends HorizontalLayout {
 	
 	public void initUI() {
 	
-		this.setSizeFull();
+		setWidth( "100%" );
+//		this.setSizeFull();
 		this.setSpacing( true );
 
 		Component component;
+		Component component2;
 		
 		component = createCategoryComponent();
 		this.addComponent( component );
@@ -39,9 +43,20 @@ public class RepositoryManagementView extends HorizontalLayout {
 		this.setExpandRatio( component, 0.6f );
 
 		component = createActionsComponent();
-		this.addComponent( component );
-		this.setExpandRatio( component, 0.2f );
+//		this.addComponent( component );
+//		this.setExpandRatio( component, 0.2f );
 		
+		component2 = createToolItemViewComponent();
+		
+		VerticalLayout vl = new VerticalLayout();
+		
+		vl.addComponent( component );
+		vl.addComponent( component2 );
+		
+		this.addComponent( vl );
+		this.setExpandRatio( vl, 0.4f );
+				
+				
 		categoriesComponent.selectTopCategory();
 		model.init();
 
@@ -63,6 +78,10 @@ public class RepositoryManagementView extends HorizontalLayout {
 
 		Panel panel = new Panel( "List of Tools" );
 		panel.setContent( toolsListComponent );
+//		panel.setSizeFull();
+// Eto tohno net!		panel.setHeight( "");
+// Net		panel.setSizeUndefined();
+		panel.setHeight( "100%");
 		
 		return panel;
 	}
@@ -78,5 +97,19 @@ public class RepositoryManagementView extends HorizontalLayout {
 		
 		return panel;
 	}
+	
+	private Component createToolItemViewComponent() {
+		
+		toolItemView = new ToolItemView( this.model );
+
+		Panel panel = new Panel( "Tool Data" );
+		panel.setContent( toolItemView );
+		
+		panel.setHeight( "100%" );
+		
+		return panel;
+	}
+	
+	
 	
 }
