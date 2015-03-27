@@ -9,7 +9,6 @@ import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.InventoryUI;
 import com.c2point.tools.ui.listeners.FilterListener;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
-
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
@@ -19,6 +18,8 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TreeTable;
@@ -91,7 +92,7 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 		
 		itemsTable.addContainerProperty( "name",		String.class, null );
 		itemsTable.addContainerProperty( "user", 		String.class, 	"" );
-		itemsTable.addContainerProperty( "status", 		String.class, 	"" );
+		itemsTable.addContainerProperty( "status", 		Label.class, 	"" );
 		itemsTable.addContainerProperty( "action", 		Button.class, 	"" );
 		
 		itemsTable.addContainerProperty( "data", 		ToolItem.class, null );
@@ -102,7 +103,7 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 				(( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.list.header.tool" ),
 				(( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.list.header.user" ),
 				(( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.list.header.status" ),
-				"To Do"
+				"Áctions"
 		});
 		
 		// New User has been selected. Send event to model
@@ -152,6 +153,8 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 				if ( repItem  != null ) {
 //					addOrUpdateItem( repItem );
 					addCategoryIfNecessary( repItem.getTool().getCategory());
+					
+					addToolItem( repItem );
 				}
 			}
 			
@@ -252,6 +255,36 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 		
 	}
 
+	private void setActionsContent( Item item, ToolItem toolItem ) {
+
+		try {
+			Button button = ( Button )item.getItemProperty( "action" ).getValue();
+			button.addClickListener( new ClickListener() {
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			});
+			
+			String nameStr;
+				nameStr = "<b>" 
+						+ toolItem.getTool().getFullName()
+						+ "</b><br>"
+						+ StringUtils.defaultString( toolItem.getTool().getDescription())
+						;
+	
+			toolLabel.setValue( nameStr );
+			
+		} catch ( Exception e ) {
+			logger.error( "Could not create Tool property because unknown reason. Tool Item: " + toolItem );
+			item.getItemProperty( "tool" ).setValue( new Label( "?" ));
+		}
+		
+	}
+	
 	private String getColorAttribute( ItemStatus status ) {
 		
 		switch( status ) {
@@ -396,6 +429,12 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 		
 		dataFromModel();
 		
+//		for itemsTable.getItemIds()
+		
+		
+		itemsTable.setCollapsed( topCategory, false );
+		itemsTable.setValue( topCategory );
+	
 	}
 
 	@Override
@@ -432,25 +471,27 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 		}
 
 		// Search if category was added earlier
-		Item item = itemsTable.getItem( addCategory );
+		Item categoryItem = itemsTable.getItem( addCategory );
 		
-		if ( item == null ) {
+		if ( categoryItem == null ) {
 			// Category was not added to table yet
 			// Will be added
 			
 			try {
 				// Add this category
-				item = itemsTable.addItem( addCategory );
+				categoryItem = itemsTable.addItem( addCategory );
 
 				// What shall be on the screen
-				item.getItemProperty( "name" ).setValue( addCategory.getName());
-//				item.getItemProperty( "data" ).setValue( addCategory );
+				categoryItem.getItemProperty( "name" ).setValue( addCategory.getName());
+//				categoryItem.getItemProperty( "data" ).setValue( addCategory );
 
 				// Set parent and allow childs (categories and ToolItems
 				itemsTable.setParent( addCategory, addCategory.getParent() != null 
 						? addCategory.getParent()
 						: topCategory );
 				itemsTable.setChildrenAllowed( addCategory, true );
+
+				itemsTable.setCollapsed( addCategory, false );
 				
 				ret = true;
 			} catch ( Exception e ) {
@@ -458,6 +499,51 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 			}
 			
 			
+		}
+		
+		return ret;
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean addToolItem( ToolItem toolItem ) {
+		
+		boolean ret = false;
+
+		if ( toolItem != null ) {
+		
+			// If category is not presented than add to Top Category
+			Category category = toolItem.getTool().getCategory();
+			
+			if ( itemsTable.getItem( category ) == null ) {
+				category = this.topCategory;
+			}
+			
+			try {
+				// Add this category
+				Item item = itemsTable.addItem( toolItem );
+
+				// What shall be on the screen
+				try { item.getItemProperty( "name" ).setValue( StringUtils.defaultString( toolItem.getTool().getFullName())); } catch ( Exception e ) {}
+				try { item.getItemProperty( "user" ).setValue( StringUtils.defaultString( toolItem.getCurrentUser().getLastAndFirstNames())); } catch ( Exception e ) {}
+				      item.getItemProperty( "status" ).setValue( new Label( "", ContentMode.HTML )); // actual value will be set below 
+				      item.getItemProperty( "action" ).setValue( new Button( "To Do" )); // actual value will be set below
+//				categoryItem.getItemProperty( "data" ).setValue( toolItem );
+
+				setStatusProperty( item, toolItem );
+				setActionsContent( item, toolItem );
+				
+				// Set category as parent and disallow childs for ToolItem
+				itemsTable.setParent( toolItem, category );
+				itemsTable.setChildrenAllowed( toolItem, false );
+				
+				ret = true;
+				
+			} catch ( Exception e ) {
+				logger.error( "Failed to add ToolItem: " + toolItem.getFullName() + "\n" + e );
+			}
+			
+		
+					
 		}
 		
 		return ret;

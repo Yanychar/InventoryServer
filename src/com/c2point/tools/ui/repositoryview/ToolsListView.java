@@ -1,6 +1,8 @@
 package com.c2point.tools.ui.repositoryview;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
@@ -13,6 +15,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
@@ -59,8 +62,20 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 		setMargin( true );
 		setSpacing( true );
 
-		itemsTable = new Table();
-//		itemsTable.setSizeFull();
+		itemsTable = new Table() {
+			
+			@Override
+			protected String formatPropertyValue( Object rowId, Object colId, Property property) {
+				// Format by property type
+				if (property.getType() == Date.class) {
+					SimpleDateFormat df =
+					new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+					return df.format((Date)property.getValue());
+				}
+				return super.formatPropertyValue(rowId, colId, property);
+			}
+		};//		itemsTable.setSizeFull();
+		
 		itemsTable.setHeight( "100%");
 		
 		
@@ -129,6 +144,7 @@ public class ToolsListView extends VerticalLayout implements CategoryModelListen
 				}
 				
 			}
+
 		});
 		
 	}
