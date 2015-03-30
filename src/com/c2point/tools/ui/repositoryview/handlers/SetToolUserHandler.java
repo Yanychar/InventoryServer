@@ -6,15 +6,14 @@ import org.apache.logging.log4j.Logger;
 import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.datalayer.MsgFacade;
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
-import com.c2point.tools.ui.repositoryview.ToolsListModel;
+import com.c2point.tools.ui.repositoryview.NewToolsListModel;
 
 public class SetToolUserHandler extends AbstractHandler {
 
 	private static Logger logger = LogManager.getLogger( SetToolUserHandler.class.getName());
 	
-	public SetToolUserHandler( ToolsListModel model ) {
+	public SetToolUserHandler( NewToolsListModel model ) {
 		super( model );
 	}
 	

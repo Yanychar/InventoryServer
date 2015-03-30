@@ -1,19 +1,19 @@
 package com.c2point.tools.ui.repositoryview.handlers;
 
-import com.c2point.tools.ui.repositoryview.ToolsListModel;
+import com.c2point.tools.ui.repositoryview.NewToolsListModel;
 
 public abstract class AbstractHandler implements CommandListener {
 
 	
-	private ToolsListModel	model;
+	private NewToolsListModel	model;
 	
-	public AbstractHandler( ToolsListModel model ) {
+	public AbstractHandler( NewToolsListModel model ) {
 		
 		setModel( model );
 		
 	}
 	
-	public void setModel( ToolsListModel model ) { this.model = model; }
-	public ToolsListModel getModel() { return model; }
+	public void setModel( NewToolsListModel model ) { this.model = model; }
+	public NewToolsListModel getModel() { return model; }
 	
 }

@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
+import com.c2point.tools.ui.repositoryview.NewToolsListModel;
 import com.c2point.tools.ui.repositoryview.StatusSelector;
 import com.c2point.tools.ui.repositoryview.ToolsListModel;
 import com.vaadin.server.Page;
@@ -16,7 +17,7 @@ public class ChangeStatusHandler extends AbstractHandler {
 
 	private static Logger logger = LogManager.getLogger( ChangeStatusHandler.class.getName());
 	
-	public ChangeStatusHandler( ToolsListModel model ) {
+	public ChangeStatusHandler( NewToolsListModel model ) {
 		super( model );
 	}
 	

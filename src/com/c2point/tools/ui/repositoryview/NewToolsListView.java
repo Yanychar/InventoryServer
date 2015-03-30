@@ -2,6 +2,7 @@ package com.c2point.tools.ui.repositoryview;
 
 import java.util.Collection;
 
+import com.c2point.tools.access.FunctionalityType;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
@@ -15,6 +16,8 @@ import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
@@ -93,22 +96,21 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 		itemsTable.addContainerProperty( "name",		String.class, null );
 		itemsTable.addContainerProperty( "user", 		String.class, 	"" );
 		itemsTable.addContainerProperty( "status", 		Label.class, 	"" );
-		itemsTable.addContainerProperty( "action", 		Button.class, 	"" );
+//		itemsTable.addContainerProperty( "action", 		Button.class, 	"" );
 		
-		itemsTable.addContainerProperty( "data", 		ToolItem.class, null );
+//		itemsTable.addContainerProperty( "data", 		ToolItem.class, null );
 
-		itemsTable.setVisibleColumns( new Object [] { "name", "user", "status", "action" } );
+		itemsTable.setVisibleColumns( new Object [] { "name", "user", "status" } ); //, "action" } );
 		
 		itemsTable.setColumnHeaders( new String[] {
 				(( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.list.header.tool" ),
 				(( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.list.header.user" ),
-				(( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.list.header.status" ),
-				"Áctions"
+				(( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.list.header.status" ) //,
+//				"Áctions"
 		});
 		
 		// New User has been selected. Send event to model
 		itemsTable.addValueChangeListener( new ValueChangeListener() {
-
 			private static final long serialVersionUID = 1L;
 
 			public void valueChange( ValueChangeEvent event) {
@@ -125,6 +127,70 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 			}
 		});
 		
+		
+		itemsTable.addItemClickListener( new ItemClickListener() {
+
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				
+				if ( toProcess( event ) && event.getItemId() instanceof ToolItem ) {
+					if ( logger.isDebugEnabled()) logger.debug( "Click shall be processed! Table item clicked: " + event.getItem().getItemProperty( "name" ).getValue());
+					
+					ToolItem item = ( ToolItem )event.getItemId();
+					
+					NewModifyItem editDlg = new NewModifyItem( model, item );
+					
+					UI.getCurrent().addWindow( editDlg );
+					
+					
+				} else {
+					if ( logger.isDebugEnabled()) logger.debug( "Click done. No processing" );
+				}
+				
+			}
+			
+			
+			
+		});
+		
+	}
+
+	private Object clickedId = null;
+	private int clickedCounter = 0;
+	
+	private boolean toProcess( ItemClickEvent event ) {
+
+		boolean bRes = false;
+		
+		if ( event.isDoubleClick()) {
+			// We pass doubleclick completely!
+			return bRes;
+		}
+		if ( clickedId != event.getItemId()) {
+
+			// New item clicked. Select it but do nothing
+			clickedCounter = 1;
+			clickedId = event.getItemId();
+			
+		} else {
+			// Item has been selected already
+
+			if ( clickedCounter < 1 ) {
+				clickedCounter = 1;
+			}
+			
+			if ( clickedCounter == 1 ) {
+				// Second click opens dialog or starts other actions
+				bRes = true;
+				
+			} else {
+				// This is more than 2nd click. Do nothing 
+			}
+			clickedCounter++;
+			
+		}
+		
+		return bRes;
 	}
 	
 	private void initFilterToolbar() {
@@ -132,7 +198,7 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 		filterBar = new FilterToolbar( this, model );
 		
 	}
-	
+
 	private void dataFromModel() {
 
 		itemsTable.removeAllItems();
@@ -256,7 +322,7 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 	}
 
 	private void setActionsContent( Item item, ToolItem toolItem ) {
-
+/*
 		try {
 			Button button = ( Button )item.getItemProperty( "action" ).getValue();
 			button.addClickListener( new ClickListener() {
@@ -282,7 +348,7 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 			logger.error( "Could not create Tool property because unknown reason. Tool Item: " + toolItem );
 			item.getItemProperty( "tool" ).setValue( new Label( "?" ));
 		}
-		
+*/		
 	}
 	
 	private String getColorAttribute( ItemStatus status ) {
@@ -526,11 +592,11 @@ public class NewToolsListView extends VerticalLayout implements ToolItemChangedL
 				try { item.getItemProperty( "name" ).setValue( StringUtils.defaultString( toolItem.getTool().getFullName())); } catch ( Exception e ) {}
 				try { item.getItemProperty( "user" ).setValue( StringUtils.defaultString( toolItem.getCurrentUser().getLastAndFirstNames())); } catch ( Exception e ) {}
 				      item.getItemProperty( "status" ).setValue( new Label( "", ContentMode.HTML )); // actual value will be set below 
-				      item.getItemProperty( "action" ).setValue( new Button( "To Do" )); // actual value will be set below
+//				      item.getItemProperty( "action" ).setValue( new Button( "To Do" )); // actual value will be set below
 //				categoryItem.getItemProperty( "data" ).setValue( toolItem );
 
 				setStatusProperty( item, toolItem );
-				setActionsContent( item, toolItem );
+//				setActionsContent( item, toolItem );
 				
 				// Set category as parent and disallow childs for ToolItem
 				itemsTable.setParent( toolItem, category );
