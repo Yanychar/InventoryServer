@@ -262,7 +262,7 @@ public class ItemsFacade extends DataFacade {
 	public ToolItem updateUser( OrgUser whoDid, ToolItem item, OrgUser newUser ) {
 		
 		item.setReservedBy( null );
-		item.setStatus( ItemStatus.INUSE );
+//		item.setStatus( ItemStatus.INUSE );
 		item.setCurrentUser( newUser ); 
 		
 		return update( whoDid, item );
