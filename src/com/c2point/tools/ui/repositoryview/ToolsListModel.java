@@ -17,7 +17,7 @@ import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.ui.AbstractModel;
-import com.c2point.tools.ui.category.CategoryModelListener;
+import com.c2point.tools.ui.listeners.CategoryChangedListener;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
 
 public class ToolsListModel extends AbstractModel {
@@ -47,9 +47,6 @@ public class ToolsListModel extends AbstractModel {
 		
 		// Initial model initialization here if necesary
 		
-		
-		fireCategoryListChanged();
-
 		fireListChanged();		
 		
 	}
@@ -63,16 +60,16 @@ public class ToolsListModel extends AbstractModel {
 		
 	}
 
-	public void addChangedListener( CategoryModelListener listener ) {
-		listenerList.add( CategoryModelListener.class, listener);
+	public void addChangedListener( CategoryChangedListener listener ) {
+		listenerList.add( CategoryChangedListener.class, listener);
 	}
 	
 	protected void fireCategoryListChanged() {
 		Object[] listeners = listenerList.getListenerList();
 
 	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == CategoryModelListener.class) {
-	    		(( CategoryModelListener )listeners[ i + 1 ] ).listWasChanged();
+	    	if ( listeners[ i ] == CategoryChangedListener.class) {
+	    		(( CategoryChangedListener )listeners[ i + 1 ] ).listWasChanged();
 	         }
 	     }
 	 }
@@ -81,8 +78,8 @@ public class ToolsListModel extends AbstractModel {
 		Object[] listeners = listenerList.getListenerList();
 
 	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == CategoryModelListener.class) {
-	    		(( CategoryModelListener )listeners[ i + 1 ] ).wasAdded( category );
+	    	if ( listeners[ i ] == CategoryChangedListener.class) {
+	    		(( CategoryChangedListener )listeners[ i + 1 ] ).wasAdded( category );
 	         }
 	     }
 	 }
@@ -91,8 +88,8 @@ public class ToolsListModel extends AbstractModel {
 		Object[] listeners = listenerList.getListenerList();
 
 	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == CategoryModelListener.class) {
-	    		(( CategoryModelListener )listeners[ i + 1 ] ).wasChanged( category );
+	    	if ( listeners[ i ] == CategoryChangedListener.class) {
+	    		(( CategoryChangedListener )listeners[ i + 1 ] ).wasChanged( category );
 	         }
 	     }
 	 }
@@ -101,8 +98,8 @@ public class ToolsListModel extends AbstractModel {
 		Object[] listeners = listenerList.getListenerList();
 
 	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == CategoryModelListener.class) {
-	    		(( CategoryModelListener )listeners[ i + 1 ] ).wasDeleted( category );
+	    	if ( listeners[ i ] == CategoryChangedListener.class) {
+	    		(( CategoryChangedListener )listeners[ i + 1 ] ).wasDeleted( category );
 	         }
 	     }
 	 }
@@ -111,8 +108,8 @@ public class ToolsListModel extends AbstractModel {
 		Object[] listeners = listenerList.getListenerList();
 
 	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == CategoryModelListener.class) {
-	    		(( CategoryModelListener )listeners[ i + 1 ] ).selected( category );
+	    	if ( listeners[ i ] == CategoryChangedListener.class) {
+	    		(( CategoryChangedListener )listeners[ i + 1 ] ).selected( category );
 	         }
 	     }
 	 }

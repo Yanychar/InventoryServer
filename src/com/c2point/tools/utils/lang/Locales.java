@@ -169,6 +169,7 @@ public static IndexedContainer getISO3166Container() {
 	return c;
 }
 
+@SuppressWarnings("unchecked")
 private static void fillIso3166Container(IndexedContainer container) {
 	
 	container.addContainerProperty( iso3166_PROPERTY_NAME, String.class, null);

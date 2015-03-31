@@ -1,9 +1,5 @@
 package com.c2point.tools.ui.msg;
 
-import com.c2point.tools.ui.category.HwCategoriesComponent;
-import com.c2point.tools.ui.repositoryview.ActionsListComponent;
-import com.c2point.tools.ui.repositoryview.ToolsListView;
-import com.c2point.tools.ui.repositoryview.ToolsListModel;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;

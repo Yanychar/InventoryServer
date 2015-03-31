@@ -6,6 +6,9 @@ import java.util.List;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 
 public class ChangesCollector {
 
@@ -55,6 +58,19 @@ public class ChangesCollector {
 			pair.field.removeValueChangeListener( pair.listener );
 		}
 
+	}
+	public void listenForChanges( Button ownership ) {
+		
+		new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				changed();
+				
+			}};
+		
 	}
 
 }

@@ -1,6 +1,6 @@
 package com.c2point.tools.ui.repositoryview;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
@@ -33,8 +33,6 @@ public class FilterToolbar extends HorizontalLayout {
 	private static Logger logger = LogManager.getLogger( FilterToolbar.class.getName());
 
 	private FilterListener		filterListener;
-	private AbstractModel		model; 
-	
 	private TextField			searchText;
 
 	private ComboBox			statusFilter;
@@ -42,7 +40,6 @@ public class FilterToolbar extends HorizontalLayout {
 	public FilterToolbar( FilterListener filterListener, AbstractModel model ) {
 		super();
 	
-		this.model = model;
 		this.filterListener = filterListener;
 		
 		initUI();
@@ -180,8 +177,8 @@ public class FilterToolbar extends HorizontalLayout {
 		
 		if ( filterStr != null && filterStr.trim().length() > 0 ) {
 			
-			strArray = new ArrayList<String>();
-			strArray.add( filterStr );
+			strArray = Arrays.asList( filterStr.trim().split( " " ));
+			
 		}
 
 		filterListener.filterWasChanged( strArray, ( ItemStatus )statusFilter.getValue() );

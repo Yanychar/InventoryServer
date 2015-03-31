@@ -1,123 +1,84 @@
 package com.c2point.tools.ui.repositoryview;
 
-import com.c2point.tools.ui.category.HwCategoriesComponent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class RepositoryManagementView extends HorizontalLayout {
+import com.c2point.tools.ui.AbstractMainView;
+import com.vaadin.ui.HorizontalSplitPanel;
+
+public class RepositoryManagementView extends AbstractMainView {
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = LogManager.getLogger( RepositoryManagementView.class.getName());
 
-	private ToolsListModel			model;
-
-	private HwCategoriesComponent	categoriesComponent;
-	private ToolsListView			toolsListComponent;
-	private ActionsListComponent	actionsListComponent;
-	private ToolItemView			toolItemView;
 	
+	private ToolsListModel	model;
 
-	public RepositoryManagementView( ToolsListModel model ) {
+	private ToolsListView	toolsList;
+	private ToolItemView		toolItemView;
+	
+	public RepositoryManagementView() {
 		super();
 
-		this.model = model;
-		
-		initUI();
 	}
 	
-	public void initUI() {
-	
-		setWidth( "100%" );
+	@Override
+	protected void initUI() {
+
 		this.setSizeFull();
 		this.setSpacing( true );
 
-		Component component;
-		Component component2;
+		this.model = new ToolsListModel();
 		
-		component = createCategoryComponent();
-		this.addComponent( component );
-		this.setExpandRatio( component, 0.2f );
+		initToolItemsListView();
+		initItemView();
 		
-		component = createToolsListComponent();
-		this.addComponent( component );
-		this.setExpandRatio( component, 1f );
+		HorizontalSplitPanel hzSplit = new HorizontalSplitPanel();
+		
 
-		component = createActionsComponent();
-//		this.addComponent( component );
-//		this.setExpandRatio( component, 0.2f );
-		
-		component2 = createToolItemViewComponent();
-		
-		VerticalLayout vl = new VerticalLayout();
-		
-		vl.addComponent( component );
-		vl.addComponent( component2 );
-		
-		this.addComponent( vl );
-		this.setExpandRatio( vl, 0.4f );
-				
-				
-		categoriesComponent.selectTopCategory();
-		model.init();
+		hzSplit.addComponent( toolsList );
+		hzSplit.addComponent( toolItemView );
 
-	}
-
-	private Component createCategoryComponent() {
+		hzSplit.setSplitPosition( 65, Unit.PERCENTAGE );
 		
-		categoriesComponent = new HwCategoriesComponent( this.model );
-
-		Panel panel = new Panel();
-		panel.setContent( categoriesComponent );
-		panel.setHeight( "75%");
-
-		return panel;
-	}
-
-	private Component createToolsListComponent() {
 /*		
-		toolsListComponent = new ToolsListView( this.model );
-
-		Panel panel = new Panel( "List of Tools" );
-		panel.setContent( toolsListComponent );
-//		panel.setSizeFull();
-// Eto tohno net!		panel.setHeight( "");
-// Net		panel.setSizeUndefined();
-		panel.setHeight( "100%");
+		vtSplit.addComponent( toolbar );
+		vtSplit.addComponent( hzSplit );
 		
-		return panel;
+		vtSplit.setHeight( "100%" );
+		vtSplit.setExpandRatio( hzSplit, 1f );
+*/		
+		this.addComponent( hzSplit );
 		
-*/
-		
-		toolsListComponent = new ToolsListView( this.model );
-		
-		return toolsListComponent;
+		this.model.init();
 		
 	}
 
-	private Component createActionsComponent() {
-		
-		actionsListComponent = new ActionsListComponent( this.model );
+	@Override
+	protected void initDataAtStart() {
 
-		Panel panel = new Panel( "Operations" );
-		panel.setContent( actionsListComponent );
 		
-		panel.setHeight( "100%" );
+	}
+
+	@Override
+	protected void initDataReturn() {
+
 		
-		return panel;
+	}
+
+	private void initToolItemsListView() {
+
+		if ( logger.isDebugEnabled()) logger.debug( "Data from model will be read!" );
+		
+		toolsList = new ToolsListView( this.model );
+		
+		
 	}
 	
-	private Component createToolItemViewComponent() {
-		
+	private void initItemView() {
+
 		toolItemView = new ToolItemView( this.model );
-
-		Panel panel = new Panel( "Tool Data" );
-		panel.setContent( toolItemView );
 		
-		panel.setHeight( "100%" );
 		
-		return panel;
 	}
-	
-	
 	
 }

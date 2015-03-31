@@ -1,10 +1,10 @@
-package com.c2point.tools.ui.category;
+package com.c2point.tools.ui.listeners;
 
 import java.util.EventListener;
 
 import com.c2point.tools.entity.tool.Category;
 
-public interface CategoryModelListener extends EventListener {
+public interface CategoryChangedListener extends EventListener {
 
 	public void wasAdded( Category category );
 	public void wasChanged( Category category );
