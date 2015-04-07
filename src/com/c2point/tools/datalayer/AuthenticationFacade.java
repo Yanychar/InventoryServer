@@ -1,5 +1,6 @@
 package com.c2point.tools.datalayer;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -12,6 +13,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.InventoryUI;
+import com.c2point.tools.entity.access.AccessRightsRecord;
+import com.c2point.tools.entity.access.FunctionalityType;
+import com.c2point.tools.entity.access.OwnershipType;
+import com.c2point.tools.entity.access.PermissionType;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.transactions.TransactionOperation;
@@ -365,6 +370,49 @@ public class AuthenticationFacade {
 		return retName;
 	}
 
+
+	public List<AccessRightsRecord> getAccessRights( OrgUser user ) {
 	
+		List<AccessRightsRecord> list = null;
+		
+		EntityManager em = DataFacade.getInstance().createEntityManager();
+		try {
+			// Fetched Account with specify UserName. Should be one account only!!!  
+			TypedQuery<AccessRightsRecord> q = em.createNamedQuery( "findAccessRecords", AccessRightsRecord.class )
+					.setParameter( "user", user );
+			list = q.getResultList();
+		} catch ( NoResultException e ) {
+			if ( logger.isDebugEnabled())
+				logger.debug( "No Access Records were found for user: '" + user.getFirstAndLastNames() + "'" );
+		} catch ( Exception e ) {
+			logger.error( e );
+		} finally {
+			em.close();
+		}
+		
+		return list;
+	}
+	
+	public AccessRightsRecord updateAccessRights( OrgUser  user, FunctionalityType func, OwnershipType type, PermissionType permission ) {
+
+		AccessRightsRecord record = new AccessRightsRecord( user, func, type, permission );
+		
+		try {
+			record = DataFacade.getInstance().insert( record );
+			
+			TransactionsFacade.getInstance().writeAccount( 
+					(( InventoryUI )UI.getCurrent()).getSessionOwner(), 
+					user, 
+					TransactionOperation.ADD );
+			
+		} catch ( Exception e) {
+			logger.error( "Cannot add account\n" + e );
+		}
+		
+		if ( logger.isDebugEnabled())
+				logger.debug( "New Account was added: " + account );
+		
+		return record;
+	}
 }
 
