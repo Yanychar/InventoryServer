@@ -1,14 +1,15 @@
 package com.c2point.tools.ui.repositoryview;
 
 import java.text.MessageFormat;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.InventoryUI;
-import com.c2point.tools.access.FunctionalityType;
 import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.datalayer.MsgFacade;
 import com.c2point.tools.datalayer.SettingsFacade;
+import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;

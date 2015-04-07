@@ -1,19 +1,23 @@
-package com.c2point.tools.access;
+package com.c2point.tools.entity.access;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
 
 public class SecurityContext {
-
-	
+	private static Logger logger = LogManager.getLogger( SecurityContext.class.getName()); 
 	
 	private OrgUser user;
 
 	// TODO. Temporal implementation. Must be changed
 	private Map<Long, PermissionType>	accessMap;
+	
+	private boolean initialized = false;
 
 	public SecurityContext( OrgUser user ) {
 
@@ -67,7 +71,18 @@ public class SecurityContext {
 	/*
 	 * Base method (detailed) to get all permissions for particular finction
 	 */
-	public PermissionsResp getPermission( FunctionalityType func ) {
+	private PermissionsResp getPermission( FunctionalityType func ) {
+
+		if ( !initialized) {
+			logger.debug( "Security Context was not initialized yet. Will be done!" );
+
+			initialized = fillContext();
+			
+			if ( !initialized) {
+				logger.error( "Failed to initialize Security Context. Default AccessRights will be used!" );
+			}
+
+		}
 		
 		PermissionsResp resp = new PermissionsResp(
 				accessMap.get( getKey( func, OwnershipType.OWN )),
@@ -87,7 +102,12 @@ public class SecurityContext {
 		
 	}
 
-	
+
+	private boolean fillContext() {
+		
+		
+	}
+
 	/*
 	 * Temporal implementation of security credentials storage
 	 */
@@ -112,7 +132,7 @@ public class SecurityContext {
 
 
 
-	public class PermissionsResp {
+	private class PermissionsResp {
 		
 		private Map<OwnershipType,PermissionType> perms = new HashMap<OwnershipType,PermissionType>();
 		

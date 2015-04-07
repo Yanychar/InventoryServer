@@ -4,8 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.InventoryUI;
-import com.c2point.tools.access.FunctionalityType;
-import com.c2point.tools.access.SecurityContext;
+import com.c2point.tools.entity.access.FunctionalityType;
+import com.c2point.tools.entity.access.SecurityContext;
 import com.c2point.tools.ui.orgmgmt.OrgManagementView;
 import com.c2point.tools.ui.personnelmgmt.StuffManagementView;
 import com.c2point.tools.ui.toolsmgmt.ToolsManagementView;

@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.access.SecurityContext;
+import com.c2point.tools.entity.access.SecurityContext;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 

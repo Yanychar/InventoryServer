@@ -1,11 +1,12 @@
 package com.c2point.tools.ui.orgmgmt;
 
 import java.text.MessageFormat;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.c2point.tools.access.FunctionalityType;
+import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;

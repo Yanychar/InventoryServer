@@ -1,4 +1,4 @@
-package com.c2point.tools.access;
+package com.c2point.tools.entity.access;
 
 public enum FunctionalityType {
 

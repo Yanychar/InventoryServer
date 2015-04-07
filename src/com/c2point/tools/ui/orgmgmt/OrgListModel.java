@@ -5,11 +5,11 @@ import java.util.Collection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.access.FunctionalityType;
 import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.OrganisationFacade;
 import com.c2point.tools.datalayer.PresenceFilterType;
 import com.c2point.tools.datalayer.UsersFacade;
+import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel;
