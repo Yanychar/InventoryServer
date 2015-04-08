@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 
+import com.c2point.tools.entity.access.AccessGroups;
 import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.Address;
@@ -304,6 +305,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 			if ( isSoSelector ) {
 				
 				this.shownOrg.setResponsible(( OrgUser )serviceOwner.getValue());
+				this.shownOrg.getResponsible().setAccessGroup( AccessGroups.BOSS );
 				
 			} else {
 
@@ -323,6 +325,8 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 				responsibleUser.setLastName( soLastName.getValue());
 				responsibleUser.setEmail( soEmail.getValue());
 				responsibleUser.setPhoneNumber( soPhone.getValue());
+				
+				responsibleUser.setAccessGroup( AccessGroups.BOSS );
 				
 			}
 			

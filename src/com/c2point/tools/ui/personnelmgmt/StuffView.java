@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.vaadin.dialogs.ConfirmDialog;
 
+import com.c2point.tools.entity.access.AccessGroups;
 import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel.EditModeType;
@@ -61,6 +62,8 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 	private TextField	email;
 	private TextField	mobile;
 
+	private ComboBox	accessGroup;
+	
 	private Label		noAccountMsg;
 	private TextField	usrname;
 	private TextField	password;
@@ -149,6 +152,19 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 		mobile.setNullRepresentation( "" );
 		mobile.setImmediate(true);
 
+		accessGroup = new ComboBox( "User Group:", Locales.getISO3166Container());
+
+		accessGroup.setFilteringMode( FilteringMode.OFF );
+		accessGroup.setInputPrompt( "No group selected" );
+		accessGroup.setInvalidAllowed( false );
+		accessGroup.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
+		accessGroup.setNullSelectionAllowed(false);
+		accessGroup.setNullSelectionAllowed( false );
+		accessGroup.setRequired( true );
+		accessGroup.setRequiredError(model.getApp().getResourceStr( "general.error.field.empty" ));
+		accessGroup.setValidationVisible( true );
+		accessGroup.setImmediate( true );
+		
 /////
 		
 		noAccountMsg = new Label ( "<B>No account. Shall be created</B>", ContentMode.HTML );
@@ -212,6 +228,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 		
 		FormLayout fl_1 = new FormLayout();
 		fl_1.setSpacing( true );
+		Label separator_4 = new Label( " " );
 		
 //		fl_1.addComponent( code );
 		fl_1.addComponent( firstName );
@@ -224,6 +241,9 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 		fl_1.addComponent( country );
 		fl_1.addComponent( email );
 		fl_1.addComponent( mobile );
+		fl_1.addComponent( separator_4 );
+		fl_1.addComponent( accessGroup );
+
 
 
 		FormLayout fl_2 = new FormLayout();
@@ -237,14 +257,17 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 		
 		Label separator_1 = new Label( "<hr/>", ContentMode.HTML );
 		separator_1.setWidth( "100%" );
-		Label separator2 = new Label( "<hr/>", ContentMode.HTML );
-		separator2.setWidth( "100%" );
+		Label separator_2 = new Label( "<hr/>", ContentMode.HTML );
+		separator_2.setWidth( "100%" );
+		Label separator_3 = new Label( "<hr/>", ContentMode.HTML );
+		separator_3.setWidth( null );
 		
 
 		addComponent( fl_1 );
 		addComponent( separator_1 );
 		addComponent( fl_2 );
-		addComponent( separator2 );
+		addComponent( separator_2 );
+		addComponent( separator_3 );
 		addComponent( getButtonsBar());
 
 		updateAccountFields();
@@ -272,7 +295,8 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 			index.setValue( this.shownUser.getAddress() != null ? this.shownUser.getAddress().getIndex() : null );
 			city.setValue( this.shownUser.getAddress() != null ? this.shownUser.getAddress().getCity() : null );
 			country.setValue( this.shownUser.getAddress() != null ? this.shownUser.getAddress().getCountryCode() : null );
-
+			accessGroup.setValue( this.shownUser.getAccessGroup() != null ? this.shownUser.getAccessGroup() : null );
+			
 			email.setValue( this.shownUser.getEmail());
 			mobile.setValue( this.shownUser.getPhoneNumber());
 
@@ -292,6 +316,8 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 				password.setValue( "" );
 			}
 */			
+			
+			initAccessGroupCombo( this.shownUser );
 			
 		}
 
@@ -315,6 +341,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 			this.shownUser.getAddress().setIndex( index.getValue());
 			this.shownUser.getAddress().setCity( city.getValue());
 			this.shownUser.getAddress().setCountryCode(( String )country.getValue());
+			this.shownUser.setAccessGroup(( AccessGroups )accessGroup.getValue());
 
 			this.shownUser.setEmail( email.getValue());
 			this.shownUser.setPhoneNumber( mobile.getValue());
@@ -512,6 +539,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 		index.setEnabled( enable );
 		city.setEnabled( enable );
 		country.setEnabled( enable );
+		accessGroup.setEnabled( enable );
 
 		email.setEnabled( enable );
 		mobile.setEnabled( enable );
@@ -543,6 +571,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 			changesCollector.listenForChanges( index );
 			changesCollector.listenForChanges( city );
 			changesCollector.listenForChanges( country );
+			changesCollector.listenForChanges( accessGroup );
 			changesCollector.listenForChanges( email );
 			changesCollector.listenForChanges( mobile );
 			changesCollector.listenForChanges( usrname );
@@ -674,5 +703,20 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 		return true;
 	}
 	
+	private  void initAccessGroupCombo( OrgUser selectedUser ) {
+
+		accessGroup.removeAllItems();
+		
+		for ( AccessGroups group : AccessGroups.values()) {
+				
+			accessGroup.addItem( group );
+			accessGroup.setItemCaption( group, "AAA: " + group.name());
+				
+		}
+
+		accessGroup.setValue( selectedUser.getAccessGroup());
+	
+	}
+
 	
 }
