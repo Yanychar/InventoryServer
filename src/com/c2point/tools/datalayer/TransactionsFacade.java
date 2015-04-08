@@ -109,6 +109,16 @@ public class TransactionsFacade extends DataFacade {
 		
 	}
 	
+	public boolean writeAccessRights( OrgUser whoDid, OrgUser whoisRights, TransactionOperation op ) {
+		
+		BaseTransaction trn = new BaseTransaction( whoDid, TransactionType.ACCESSRIGHTS, op );
+		
+		trn.setSourceUser( whoisRights );
+		
+		return write( trn ); 
+		
+	}
+	
 	public boolean writeCategory( OrgUser whoDid, TransactionOperation op ) {
 		
 		return write( new BaseTransaction( whoDid, TransactionType.CATEGORY, op )); 

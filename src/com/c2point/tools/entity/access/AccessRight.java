@@ -15,12 +15,12 @@ import com.c2point.tools.entity.person.OrgUser;
 @Entity
 @NamedQueries({
 	@NamedQuery(name = "findAccessRecords", query = 
-			"SELECT record FROM AccessRightsRecord record " +
+			"SELECT record FROM AccessRight record " +
 				"WHERE record.user = :user AND record.deleted = false ORDER BY record.function ASC"),
 })
-public class AccessRightsRecord extends SimplePojo {
+public class AccessRight extends SimplePojo {
 	@SuppressWarnings("unused")
-	private static Logger logger = LogManager.getLogger( AccessRightsRecord.class.getName()); 
+	private static Logger logger = LogManager.getLogger( AccessRight.class.getName()); 
 
 	private OrgUser				user;
 	
@@ -32,13 +32,17 @@ public class AccessRightsRecord extends SimplePojo {
 	private PermissionType		permission;
 	
 	
-	public AccessRightsRecord() {
+	public AccessRight() {
 		super();
 		
 	}
 
-	public AccessRightsRecord( OrgUser user, FunctionalityType function, OwnershipType type, PermissionType permission ) {
+	public AccessRight( OrgUser user, FunctionalityType func, OwnershipType ownership, PermissionType permission ) {
 		
+		setUser( user );
+		setFunction( func );
+		setType( ownership );
+		setPermission( permission );
 	}
 
 	public OrgUser getUser() { return user; }

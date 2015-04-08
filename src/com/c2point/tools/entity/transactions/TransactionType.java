@@ -13,7 +13,8 @@ public enum TransactionType {
 	ORGANISATION,
 	CATEGORY,
 	TOOL,
-	TOOLITEM;
+	TOOLITEM,
+	ACCESSRIGHTS;
 
 	private static Logger logger = LogManager.getLogger( TransactionType.class.getName());
 	
