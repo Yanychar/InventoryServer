@@ -1,6 +1,8 @@
 package com.c2point.tools.datalayer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -10,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.InventoryUI;
+import com.c2point.tools.entity.access.AccessGroups;
 import com.c2point.tools.entity.access.AccessRightsCollector;
 import com.c2point.tools.entity.access.AccessRight;
 import com.c2point.tools.entity.access.FunctionalityType;
@@ -20,6 +23,7 @@ import com.c2point.tools.entity.transactions.TransactionOperation;
 import com.vaadin.ui.UI;
 
 public class AccessRightsFacade {
+
 	private static Logger logger = LogManager.getLogger( AccessRightsFacade.class.getName()); 
 
 	private static int						MAX_INSTANCE_NUMBER = 4;
@@ -34,7 +38,8 @@ public class AccessRightsFacade {
 				instances[ i ] = new AccessRightsFacade();  
 			}
 			next_instance_number = 0;
-			
+
+			initDefMap();			
 		}
 		
 		AccessRightsFacade ret = instances[ next_instance_number ];
@@ -169,16 +174,105 @@ public class AccessRightsFacade {
 		PermissionType permission = PermissionType.NO;
 	
 		// First one for superuser from Uisko only
-		if ( user.isSuperUserFlag() && user.getOrganisation().isServiceOwner()) permission = PermissionType.RW;
-		
+		if ( user.isSuperUserFlag() && user.getOrganisation().isServiceOwner()) {
+			permission = PermissionType.RW;
+		} else {
+			
+			permission = getDefPermissionFromDefMap( user, func, ownership );		
+		}
+/*		
 		else if ( func == FunctionalityType.MESSAGING	&& ownership != OwnershipType.ANY ) permission = PermissionType.RW;
 		else if ( func == FunctionalityType.BORROW 		&& ownership == OwnershipType.OWN ) permission = PermissionType.R;
 		else if ( func == FunctionalityType.BORROW 		&& ownership == OwnershipType.COMPANY ) permission = PermissionType.RW;
 		else if ( func == FunctionalityType.CHANGESTATUS	&& ownership == OwnershipType.OWN ) permission = PermissionType.RW;
 		else if ( func == FunctionalityType.CHANGESTATUS	&& ownership == OwnershipType.COMPANY ) permission = PermissionType.R;
+*/	
+		
+//		permission = defaultMap.get( ) 
+		
 		
 		return permission;
 	}
 
+//	public List<AccessGroup> 
+	/*
+	 *   Below is a default table to set up access rights per Access Group
+	 *   
+	 *   Following fields are there:
+	 *   AccessGroup, Function, Own Rights, Company Rights, Service Wide Rights        
+	 * 
+	 */
+	private static String [][] defaultRightsArray = { 
+			{ "VIEWER", "BORROW",		"R",	"NO",	"NO" },
+			{ "VIEWER", "CHANGESTATUS",	"R",	"NO",	"NO" },
+			{ "VIEWER", "MESSAGING",	"R",	"NO",	"NO" },
+			{ "VIEWER", "USERS_MGMT",	"R",	"NO",	"NO" },
+			{ "VIEWER", "TOOLS_MGMT",	"R",	"NO",	"NO" },
+			{ "VIEWER", "ORGS_MGMT",	"R",	"NO",	"NO" },
+			
+			{ "USER", "BORROW",			"R",	"RW",	"NO" },
+			{ "USER", "CHANGESTATUS",	"RW",	"R",	"NO" },
+			{ "USER", "MESSAGING",		"RW",	"R",	"NO" },
+			{ "USER", "USERS_MGMT",		"RW",	"NO",	"NO" },
+			{ "USER", "TOOLS_MGMT",		"NO",	"NO",	"NO" },
+			{ "USER", "ORGS_MGMT",		"NO",	"NO",	"NO" },
+			
+			{ "FIREMAN", "BORROW",		"R",	"RW",	"NO" },
+			{ "FIREMAN", "CHANGESTATUS","RW",	"RW",	"NO" },
+			{ "FIREMAN", "MESSAGING",	"RW",	"RW",	"NO" },
+			{ "FIREMAN", "USERS_MGMT",	"RW",	"RW",	"NO" },
+			{ "FIREMAN", "TOOLS_MGMT",	"RW",	"RW",	"NO" },
+			{ "FIREMAN", "ORGS_MGMT",	"NO",	"NO",	"NO" },
+			
+			{ "BOSS", "BORROW",			"R",	"RW",	"NO" },
+			{ "BOSS", "CHANGESTATUS",	"RW",	"RW",	"NO" },
+			{ "BOSS", "MESSAGING",		"RW",	"RW",	"NO" },
+			{ "BOSS", "USERS_MGMT",		"RW",	"RW",	"NO" },
+			{ "BOSS", "TOOLS_MGMT",		"RW",	"RW",	"NO" },
+			{ "BOSS", "ORGS_MGMT",		"RW",	"RW",	"NO" },
+			
+			{ "ADMIN", "BORROW",		"R",	"R",	"NO" },
+			{ "ADMIN", "CHANGESTATUS",	"R",	"R",	"NO" },
+			{ "ADMIN", "MESSAGING",		"RW",	"RW",	"NO" },
+			{ "ADMIN", "USERS_MGMT",	"RW",	"RW",	"NO" },
+			{ "ADMIN", "TOOLS_MGMT",	"RW",	"RW",	"NO" },
+			{ "ADMIN", "ORGS_MGMT",		"RW",	"RW",	"NO" },
+			
+	};
+	
+	private static Map<Long, PermissionType> defaultMap = new HashMap<Long, PermissionType>(); 
+			
+			
+	private static void initDefMap() {
+		
+		for ( String [] row : defaultRightsArray ) {
+			
+			// Handle one row 
+			defaultMap.put( getDefMapKey( AccessGroups.valueOf( row[0] ), FunctionalityType.valueOf( row[1] ), OwnershipType.OWN ), PermissionType.valueOf( row[2] ));
+			defaultMap.put( getDefMapKey( AccessGroups.valueOf( row[0] ), FunctionalityType.valueOf( row[1] ), OwnershipType.COMPANY ), PermissionType.valueOf( row[3] ));
+			defaultMap.put( getDefMapKey( AccessGroups.valueOf( row[0] ), FunctionalityType.valueOf( row[1] ), OwnershipType.ANY ), PermissionType.valueOf( row[4] ));
+		}
+	}
+	
+	private static PermissionType getDefPermissionFromDefMap( OrgUser user, FunctionalityType func, OwnershipType ownership ) { 
+		
+		PermissionType permission = PermissionType.NO;
+
+		long key = getDefMapKey( user.getAccessGroup(), func, ownership );
+		if ( key >= 0 && defaultMap.containsKey(key)) {
+		
+			permission = defaultMap.get( key ); 
+		}
+		
+		return permission;
+	}
+	
+	private static long getDefMapKey( AccessGroups group, FunctionalityType func, OwnershipType ownership ) {
+		
+		return group.ordinal()*100 + +func.ordinal()*10 + ownership.ordinal();
+		
+	}
+	
+	
 }
 

@@ -2,10 +2,13 @@ package com.c2point.tools.entity.person;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
+import com.c2point.tools.entity.access.AccessGroups;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.organisation.Organisation;
 
@@ -50,11 +53,19 @@ public class OrgUser extends Person {
 //	@JoinColumn(name="CUST_ID", nullable=false)
 	private Account			account;
 	
+	@Enumerated( EnumType.ORDINAL )
+	private AccessGroups	accessGroup;
+	
 	public Organisation getOrganisation() { return organisation; }
 	public void setOrganisation( Organisation organisation ) { this.organisation = organisation; }
 	
 	public Account getAccount() { return account; }
 	public void setAccount( Account account ) { this.account = account; }
+
+	public AccessGroups getAccessGroup() { return this.accessGroup; }
+	public void setAccessGroup( AccessGroups accessGroup ) { this.accessGroup = accessGroup; }
+	
+	
 	
 	public String toString() {
 		
