@@ -187,6 +187,9 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 									
 								}
 						});
+				} else {
+					// Password field shall be hidden
+					updateAccountFields();
 				}
 				
 			}
