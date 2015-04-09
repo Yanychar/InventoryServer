@@ -1,10 +1,12 @@
 package com.c2point.tools.converter;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Iterator;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,8 +32,18 @@ public class ResourcesWriter {
 	
 		try {
 			
-			FileWriter fstream = new FileWriter( filename );
-			BufferedWriter out = new BufferedWriter( fstream );			
+/*
+ * 			FileWriter fstream = new FileWriter( filename );
+*			BufferedWriter out = new BufferedWriter( fstream );			
+*/			
+
+			
+//			new OutputStreamWriter( new FileOutputStream( filename ),"UTF-8");
+			BufferedWriter out = new BufferedWriter( 
+									new OutputStreamWriter( 
+											new FileOutputStream( filename ),
+									"UTF-8")
+			);
 			
 			Iterator<String> iter = allPacks.keys().iterator();
 			String key;
@@ -69,7 +81,7 @@ public class ResourcesWriter {
 			writeFooter( out, allPacks, lpd );
 			
 			out.close();
-			fstream.close();
+//			fstream.close();
 		} catch ( Exception e ) {
 			logger.error( "Error: " + e );
 		}
