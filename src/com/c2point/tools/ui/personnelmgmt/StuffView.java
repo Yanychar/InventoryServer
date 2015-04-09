@@ -710,7 +710,11 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 		for ( AccessGroups group : AccessGroups.values()) {
 				
 			accessGroup.addItem( group );
-			accessGroup.setItemCaption( group, "AAA: " + group.name());
+			accessGroup.setItemCaption( group, model.getApp().getResourceStr( "accessrights.group.name." + group.name().toLowerCase())); // group.name());
+			
+			if ( logger.isDebugEnabled()) {
+				logger.debug( "Resource name: '" + "accessrights.group.name." + group.name().toLowerCase() + "'" );
+			}
 				
 		}
 

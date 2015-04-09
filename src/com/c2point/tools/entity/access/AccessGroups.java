@@ -4,7 +4,7 @@ public enum AccessGroups {
 
 	VIEWER,
 	USER,
-	FIREMAN,
+	FOREMAN,
 	BOSS,
 	ADMIN;
 }

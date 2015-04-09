@@ -217,12 +217,12 @@ public class AccessRightsFacade {
 			{ "USER", "TOOLS_MGMT",		"NO",	"NO",	"NO" },
 			{ "USER", "ORGS_MGMT",		"NO",	"NO",	"NO" },
 			
-			{ "FIREMAN", "BORROW",		"R",	"RW",	"NO" },
-			{ "FIREMAN", "CHANGESTATUS","RW",	"RW",	"NO" },
-			{ "FIREMAN", "MESSAGING",	"RW",	"RW",	"NO" },
-			{ "FIREMAN", "USERS_MGMT",	"RW",	"RW",	"NO" },
-			{ "FIREMAN", "TOOLS_MGMT",	"RW",	"RW",	"NO" },
-			{ "FIREMAN", "ORGS_MGMT",	"NO",	"NO",	"NO" },
+			{ "FOREMAN", "BORROW",		"R",	"RW",	"NO" },
+			{ "FOREMAN", "CHANGESTATUS","RW",	"RW",	"NO" },
+			{ "FOREMAN", "MESSAGING",	"RW",	"RW",	"NO" },
+			{ "FOREMAN", "USERS_MGMT",	"RW",	"RW",	"NO" },
+			{ "FOREMAN", "TOOLS_MGMT",	"RW",	"RW",	"NO" },
+			{ "FOREMAN", "ORGS_MGMT",	"NO",	"NO",	"NO" },
 			
 			{ "BOSS", "BORROW",			"R",	"RW",	"NO" },
 			{ "BOSS", "CHANGESTATUS",	"RW",	"RW",	"NO" },
