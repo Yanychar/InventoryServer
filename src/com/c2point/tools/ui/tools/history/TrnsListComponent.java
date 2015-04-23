@@ -1,4 +1,4 @@
-package com.c2point.tools.ui.transactions;
+package com.c2point.tools.ui.tools.history;
 
 import java.util.Collection;
 
@@ -6,22 +6,26 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.format.DateTimeFormat;
 
+import com.c2point.tools.entity.person.OrgUser;
+import com.c2point.tools.entity.repository.ToolItem;
+import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.transactions.BaseTransaction;
+import com.c2point.tools.ui.tools.history.ToolsHistoryListModel.ViewMode;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
-public class TrnsListComponent extends VerticalLayout implements TransactionsModelListener {
+public class TrnsListComponent extends VerticalLayout implements ToolsHistoryModelListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( TrnsListComponent.class.getName());
 	
-	private TransactionsListModel		model;
+	private ToolsHistoryListModel		model;
 
 	private Table						trnsTable;
 	
-	public TrnsListComponent( TransactionsListModel model ) {
+	public TrnsListComponent( ToolsHistoryListModel model ) {
 		super();
 		
 		this.model = model;
@@ -104,10 +108,11 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 		
 		this.setExpandRatio( trnsTable, 1.0f );
 
+//		dataFromModel();
 		
 	}
 
-	private void dataFromModel( Collection<BaseTransaction>trnsList ) {
+	private void dataFromModel( ToolItem item ) {
 
 		if ( logger.isDebugEnabled()) logger.debug( "Data from model will be read!" );
 		
@@ -119,8 +124,9 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 		// remove old content
 		trnsTable.removeAllItems();
 
+		Collection<BaseTransaction> trnsList = model.getTransactions( item );
+		
 		if ( trnsList != null ) {
-			
 			for ( BaseTransaction trn : trnsList ) {
 				if ( trn != null ) {
 					addOrUpdateItem( trn );
@@ -221,12 +227,27 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 	}
 	
 	@Override
-	public void transactionSelected(BaseTransaction user) { }
+	public void toolItemSelected( ToolItem toolItem ) {
+
+		if ( logger.isDebugEnabled()) logger.debug( "toolsSelected events received. ToolsList will be updated!" );
+		
+		if ( toolItem != null ) {
+			dataFromModel( toolItem );
+		} else {
+			trnsTable.removeAllItems();
+		}
+		
+	}
 
 	@Override
-	public void listUpdated(Collection<BaseTransaction> list) {
-		
-		dataFromModel( list );		
-	}
+	public void viewTypeChanged(ViewMode mode) { }
+	@Override
+	public void modelWasRead() { }
+	@Override
+	public void userSelected(OrgUser user) { }
+	@Override
+	public void transactionSelected(BaseTransaction user) { }
+	@Override
+	public void toolSelected(Tool tool) { }
 
 }

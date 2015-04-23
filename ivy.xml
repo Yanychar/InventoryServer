@@ -65,6 +65,6 @@
 		
 		<!-- OpenCSV support -->
 		<dependency org="net.sf.opencsv" name="opencsv" rev="2.3"/>
-				
+
 	</dependencies>
 </ivy-module>

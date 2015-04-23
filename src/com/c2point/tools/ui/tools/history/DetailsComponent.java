@@ -1,32 +1,40 @@
-package com.c2point.tools.ui.transactions;
-
-import java.util.Collection;
+package com.c2point.tools.ui.tools.history;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.format.DateTimeFormat;
 
+import com.c2point.tools.entity.person.OrgUser;
+import com.c2point.tools.entity.repository.ToolItem;
+import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.transactions.BaseTransaction;
+import com.c2point.tools.entity.transactions.TransactionOperation;
+import com.c2point.tools.ui.tools.history.ToolsHistoryListModel.ViewMode;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
 
-public class DetailsComponent extends VerticalLayout implements TransactionsModelListener {
+public class DetailsComponent extends Panel implements ToolsHistoryModelListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( DetailsComponent.class.getName());
 	
-	private TransactionsListModel	model;
+	private ToolsHistoryListModel	model;
+	
+	private GridLayout 				content;
 	
 	private Label					date;
 	private Label					who;
 	private Label					type;
 	private Label					operation;
 
-	public DetailsComponent( TransactionsListModel model ) {
+	private Label					fieldName_1;
+	private Label					fieldValue_1;
+	private Label					fieldName_2;
+	private Label					fieldValue_2;
+	
+	public DetailsComponent( ToolsHistoryListModel model ) {
 		super();
 		
 		this.model = model;
@@ -39,40 +47,8 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 	
 	private void initUI() {
 
-		addComponent( getHeader());
-		addComponent( getSeparator());
-		addComponent( getUserDate());
-		addComponent( getSeparator());
-		addComponent( getTransactionType());
-		addComponent( getSeparator());
-	}		
-
-	private Component getHeader() { 
-	
-		Label header = new Label( model.getApp().getResourceStr( "trnsmgmt.view.header" ));
-		header.addStyleName( "h1" );
-		
-		
-		return header;
-	}
-	private Component getUserDate() { return new Label(); }
-	private Component getTransactionType() { return new Label(); }
-	private Label getSeparator() {
-		
-		Label separator = new Label( "<hr/>", ContentMode.HTML );
-		separator.setWidth( "100%" );
-		
-		return separator;
-	}
-	
-/*	
-	content.addComponent( separator, 0, 1, 4, 1 );
-		
-		
-		
-		GridLayout content = new GridLayout( 5, 4 );
-//		setContent( content );
-		
+		content = new GridLayout( 5, 4 );
+		setContent( content );
 		content.setWidth( "100%" );
 		content.setColumnExpandRatio( 0, 0.5f );
 		content.setColumnExpandRatio( 1, 1 );
@@ -145,20 +121,15 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 		clearContent();			
 		
 	}
-*/
-	private void showContent( boolean toShow ) {
 
-		date.setVisible( toShow ); //.setValue( "" );
-		who.setVisible( toShow );
-		type.setVisible( toShow );
-		operation.setVisible( toShow );
-
+	@Override
+	public void modelWasRead() {
+//		clearContent();			
 	}
 
 	@Override
-	public void listUpdated(Collection<BaseTransaction> list) {
-		// TODO Auto-generated method stub
-		
+	public void userSelected( OrgUser user ) {
+		clearContent();			
 	}
 
 	@Override
@@ -166,19 +137,64 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 
 		logger.debug( "DetailsComponent received transactionSelected event. Transaction: " 
 						+ ( trn != null ? trn.toStringShort() : "null" ));
-/*		
-		showContent( trn != null );
+		
+//		this.getContent().setVisible( trn != null );
 		
 		if ( trn != null ) {
-
 			date.setValue( "<b>" + DateTimeFormat.forPattern("dd.MM.yyyy HH:mm").print( trn.getDate()) + "</b>");
 			who.setValue( "<b>" + trn.getUser().getFirstAndLastNames() + "</b>");
 			type.setValue( "<b>" + trn.getTrnType().toString( model.getApp().getSessionData().getBundle()) + "</b>");
 			operation.setValue( "<b>" + trn.getTrnOperation().toString( model.getApp().getSessionData().getBundle()) + "</b>");
 			
+			if ( trn.getTrnOperation() == TransactionOperation.NEWSTATUS ) {
+
+				fieldName_1.setValue( model.getApp().getResourceStr( "trnsmgmt.label.status" ));
+				fieldValue_1.setValue( "<b>" + trn.getNewStatus().toString( model.getApp().getSessionData().getBundle()) + "</b>" );
+				
+				fieldName_2.setValue( "" );
+				fieldValue_2.setValue( "" );
+				
+			} else if ( trn.getTrnOperation() == TransactionOperation.USERCHANGED ) {
+				
+				fieldName_1.setValue( model.getApp().getResourceStr( "trnsmgmt.label.from" ));
+				fieldValue_1.setValue( "<b>" + trn.getSourceUser().getFirstAndLastNames() + "</b>" );
+				
+				fieldName_2.setValue( model.getApp().getResourceStr( "trnsmgmt.label.to" ));
+				fieldValue_2.setValue( "<b>" + trn.getDestUser().getFirstAndLastNames() + "</b>" );
+			
+			} else {
+			
+				fieldName_1.setValue( "" );
+				fieldValue_1.setValue( "" );
+				fieldName_2.setValue( "" );
+				fieldValue_2.setValue( "" );
+				
+			}
+		} else {
+			clearContent();			
 		}
-*/		
+		
 	}
 
+	@Override
+	public void viewTypeChanged(ViewMode mode) { }
+	@Override
+	public void toolSelected( Tool tool ) { }
+	@Override
+	public void toolItemSelected( ToolItem toolItem ) { }
+	
+	private void clearContent() {
+
+		date.setValue( "" );
+		who.setValue( "" );
+		type.setValue( "" );
+		operation.setValue( "" );
+
+		fieldName_1.setValue( "" );
+		fieldValue_1.setValue( "" );
+		fieldName_2.setValue( "" );
+		fieldValue_2.setValue( "" );
+		
+	}
 
 }

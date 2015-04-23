@@ -6,10 +6,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.Configuration;
+import com.c2point.tools.InventoryUI;
+import com.c2point.tools.entity.access.FunctionalityType;
+import com.c2point.tools.entity.access.SecurityContext;
 import com.c2point.tools.ui.msg.MessagesView;
+import com.c2point.tools.ui.orgmgmt.OrgManagementView;
+import com.c2point.tools.ui.personnelmgmt.StuffManagementView;
 import com.c2point.tools.ui.repositoryview.RepositoryManagementView;
 import com.c2point.tools.ui.settings.SettingsView;
-import com.c2point.tools.ui.transactions.TransactionsManagementView;
+import com.c2point.tools.ui.tools.history.ToolsHistoryManagementView;
+import com.c2point.tools.ui.toolsmgmt.ToolsManagementView;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractComponentContainer;
@@ -21,6 +27,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class MainView extends VerticalLayout { //implements Organisation.PropertyChangedListener {
@@ -93,20 +100,35 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 		homeButton 		= createMenuButton( "Home", 		"icons/64/home.png", layout );
 		inventoryButton	= createMenuButton( "Inventory", 	"icons/64/inventory.png", layout );
 		msgButton		= createMenuButton( "Messages", 	"icons/64/mailbox.png", layout );
-		transButton 		= createMenuButton( "Transactions", "icons/64/transactions.png", layout );
-		reportButton		= createMenuButton( "Reporting", 	"icons/64/reporting.png", layout );
+		transButton 	= createMenuButton( "Transactions", "icons/64/transactions.png", layout );
+		reportButton	= createMenuButton( "Reporting", 	"icons/64/reporting.png", layout );
 		setButton 		= createMenuButton( "Settings", 	"icons/64/settings.png", layout );
 		/* Inventory",
       "transactions", "reporting", "settings" }		
 */		
+		SecurityContext context = (( InventoryUI )UI.getCurrent()).getSessionData().getContext();
 		
 		
 		layout.addComponent( homeButton );
 		layout.addComponent( inventoryButton );
 		layout.addComponent( msgButton );
-		layout.addComponent( transButton );
+		if ( context.hasViewPermissionMgmt( FunctionalityType.TRN_MGMT )) {
+			layout.addComponent( transButton );
+		}
 		layout.addComponent( reportButton );
-		layout.addComponent( setButton );
+
+		if ( context.hasViewPermissionMgmt( FunctionalityType.ORGS_MGMT )
+			||
+			 context.hasViewPermissionMgmt( FunctionalityType.USERS_MGMT )
+			||
+			 context.hasViewPermissionMgmt( FunctionalityType.TOOLS_MGMT )
+			|| 
+			 context.hasViewPermissionMgmt( FunctionalityType.TRN_MGMT )) {
+			
+			layout.addComponent( setButton );
+			
+		}
+		
 
 		homeButton.addClickListener( new ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -325,7 +347,7 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 			
 		}
     	
-		mainSplit.setSecondComponent( new TransactionsManagementView());
+		mainSplit.setSecondComponent( new ToolsHistoryManagementView());
     	
     }
     private void settingsButtonPressed(){

@@ -1,4 +1,4 @@
-package com.c2point.tools.ui.transactions;
+package com.c2point.tools.ui.tools.history;
 
 import java.util.Collection;
 
@@ -10,21 +10,21 @@ import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.transactions.BaseTransaction;
 import com.c2point.tools.ui.ListWithSearchComponent;
-import com.c2point.tools.ui.transactions.TransactionsListModel.ViewMode;
+import com.c2point.tools.ui.tools.history.ToolsHistoryListModel.ViewMode;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.Table;
 
-public class UsersListComponent extends ListWithSearchComponent implements TransactionModelListener {
+public class UsersListComponent extends ListWithSearchComponent implements ToolsHistoryModelListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( UsersListComponent.class.getName());
 	
-	private TransactionsListModel		model;
+	private ToolsHistoryListModel		model;
 
 	private Table						usersTable;
 	
-	public UsersListComponent( TransactionsListModel model ) {
+	public UsersListComponent( ToolsHistoryListModel model ) {
 		super();
 		
 		this.model = model;

@@ -1,4 +1,4 @@
-package com.c2point.tools.ui.transactions;
+package com.c2point.tools.ui.tools.history;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -26,7 +26,7 @@ public class ViewSelectorComponent extends Panel {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( ViewSelectorComponent.class.getName());
 
-	private TransactionsListModel		model;
+	private ToolsHistoryListModel		model;
 	
 	private OptionGroup					viewSelector;
 	private ComboBox					itemSelection;
@@ -36,7 +36,7 @@ public class ViewSelectorComponent extends Panel {
 	
 //	private Button						searchButton;
 	
-	public ViewSelectorComponent( TransactionsListModel model ) {
+	public ViewSelectorComponent( ToolsHistoryListModel model ) {
 		super();
 		
 		this.model = model;
@@ -58,12 +58,12 @@ public class ViewSelectorComponent extends Panel {
 		viewSelector.setWidth( "100%" );
 		viewSelector.setImmediate(true); 
 		
-		viewSelector.addItem( TransactionsListModel.ViewMode.PERSONNEL );
-		viewSelector.setItemCaption( TransactionsListModel.ViewMode.PERSONNEL, 
+		viewSelector.addItem( ToolsHistoryListModel.ViewMode.PERSONNEL );
+		viewSelector.setItemCaption( ToolsHistoryListModel.ViewMode.PERSONNEL, 
 										model.getApp().getResourceStr( "trnsmgmt.label.personnel" ));
 		
-		viewSelector.addItem( TransactionsListModel.ViewMode.TOOLS );
-		viewSelector.setItemCaption( TransactionsListModel.ViewMode.TOOLS, 
+		viewSelector.addItem( ToolsHistoryListModel.ViewMode.TOOLS );
+		viewSelector.setItemCaption( ToolsHistoryListModel.ViewMode.TOOLS, 
 										model.getApp().getResourceStr( "trnsmgmt.label.tools" ));
 		
 		itemSelection = new ComboBox( "Select item: " );
@@ -91,20 +91,12 @@ public class ViewSelectorComponent extends Panel {
 		endDF.setImmediate(true);
 
 		HorizontalLayout dateLine = new HorizontalLayout();
-		dateLine.setMargin( true ); // we want a margin
 		dateLine.setSpacing( true ); // and spacing between components		
-		dateLine.setWidth( "100%" );
-		
-		Label glue = new Label( " " );
-		glue.setHeight("100%");
 
 		dateLine.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.from")));
 		dateLine.addComponent( startDF );
 		dateLine.addComponent( new Label( "  " + model.getApp().getResourceStr( "trnsmgmt.label.to")));
 		dateLine.addComponent( endDF );
-		dateLine.addComponent( glue );
-
-		dateLine .setExpandRatio( glue, 1.0f );
 		
 		content.addComponent( viewSelector );
 		content.addComponent( itemSelection );
@@ -119,7 +111,7 @@ public class ViewSelectorComponent extends Panel {
 			public void valueChange( ValueChangeEvent event ) {
 				
 				// View Type was changed. The whole TransactionManagementView will be updated
-				viewTypeWasChanged(( TransactionsListModel.ViewMode )event.getProperty().getValue());
+				viewTypeWasChanged(( ToolsHistoryListModel.ViewMode )event.getProperty().getValue());
 				
 			}
 			
@@ -131,9 +123,9 @@ public class ViewSelectorComponent extends Panel {
 			@Override
 			public void valueChange( ValueChangeEvent event ) {
 
-				if ( model.getViewMode() == TransactionsListModel.ViewMode.PERSONNEL ) {
+				if ( model.getViewMode() == ToolsHistoryListModel.ViewMode.PERSONNEL ) {
 					model.setSelectedUser( event.getProperty().getValue());
-				} else if ( model.getViewMode() == TransactionsListModel.ViewMode.TOOLS ) {
+				} else if ( model.getViewMode() == ToolsHistoryListModel.ViewMode.TOOLS ) {
 					model.setSelectedTool( event.getProperty().getValue());
 				}
 				
@@ -286,7 +278,7 @@ public class ViewSelectorComponent extends Panel {
 			
 	}
 
-	private void viewTypeWasChanged( TransactionsListModel.ViewMode mode ) {
+	private void viewTypeWasChanged( ToolsHistoryListModel.ViewMode mode ) {
 	
 		model.setViewMode( mode, false );
 
@@ -298,7 +290,7 @@ public class ViewSelectorComponent extends Panel {
 		
 	}
 
-	public void selectViewMode( TransactionsListModel.ViewMode mode ) {
+	public void selectViewMode( ToolsHistoryListModel.ViewMode mode ) {
 		
 		viewSelector.setValue( mode );
 	}

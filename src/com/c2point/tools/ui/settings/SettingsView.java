@@ -9,6 +9,7 @@ import com.c2point.tools.entity.access.SecurityContext;
 import com.c2point.tools.ui.orgmgmt.OrgManagementView;
 import com.c2point.tools.ui.personnelmgmt.StuffManagementView;
 import com.c2point.tools.ui.toolsmgmt.ToolsManagementView;
+import com.c2point.tools.ui.transactions.TransactionsManagementView;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
@@ -52,8 +53,17 @@ public class SettingsView extends HorizontalLayout {
 			tabsheet.addTab( new OrgManagementView(), app.getResourceStr( "settings.tabname.organisation" ));
 		}
 		
-		tabsheet.addTab( new StuffManagementView(), app.getResourceStr( "settings.tabname.personnel" ));
-		tabsheet.addTab( new ToolsManagementView(), app.getResourceStr( "settings.tabname.tools" ));
+		if ( context.hasViewPermissionMgmt( FunctionalityType.USERS_MGMT )) {
+			tabsheet.addTab( new StuffManagementView(), app.getResourceStr( "settings.tabname.personnel" ));
+		}
+		
+		if ( context.hasViewPermissionMgmt( FunctionalityType.TOOLS_MGMT )) {
+			tabsheet.addTab( new ToolsManagementView(), app.getResourceStr( "settings.tabname.tools", "Tools" ));
+		}
+		
+		if ( context.hasViewPermissionMgmt( FunctionalityType.TRN_MGMT )) {
+			tabsheet.addTab( new TransactionsManagementView(), app.getResourceStr( "settings.tabname.transactions", "Transactions" ));
+		}
 		
 				
 		this.addComponent( tabsheet );

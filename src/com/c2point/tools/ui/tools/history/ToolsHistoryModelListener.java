@@ -1,4 +1,4 @@
-package com.c2point.tools.ui.transactions;
+package com.c2point.tools.ui.tools.history;
 
 import java.util.EventListener;
 
@@ -7,9 +7,9 @@ import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.transactions.BaseTransaction;
 
-public interface TransactionModelListener extends EventListener {
+public interface ToolsHistoryModelListener extends EventListener {
 
-	public void viewTypeChanged( TransactionsListModel.ViewMode mode );
+	public void viewTypeChanged( ToolsHistoryListModel.ViewMode mode );
 	public void modelWasRead();
 	public void toolItemSelected( ToolItem toolItem );
 	public void toolSelected( Tool tool );

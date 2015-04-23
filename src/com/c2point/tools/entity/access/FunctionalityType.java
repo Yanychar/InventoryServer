@@ -7,7 +7,8 @@ public enum FunctionalityType {
 	MESSAGING( 3 ),
 	USERS_MGMT( 4 ),
 	TOOLS_MGMT( 5 ),
-	ORGS_MGMT( 6 );
+	ORGS_MGMT( 6 ),
+	TRN_MGMT( 7 );
 	
 	private int value = 0;
 	

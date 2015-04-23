@@ -174,12 +174,20 @@ public class InventoryUI extends UI implements LoginListener {
 
 	public String getResourceStr( String key ) {
 		
+		return getResourceStr( key, null );
+		
+	}
+	
+	public String getResourceStr( String key, String defStr ) {
+		
 		try {
 			return this.getSessionData().getBundle().getString( key );
 		} catch (Exception e) {
-			logger.error(  "Could not find string resource '" + key + "'" );
+			logger.error(  "Could not find string resource '" + key + "'. Default will be used" );
+			
 		}
-		return "";
+		return ( defStr != null ? defStr : "" ); 
+			
 	}
 
 	@Override

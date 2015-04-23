@@ -5,7 +5,7 @@
  * 
  * 
  */
-package com.c2point.tools.ui.transactions;
+package com.c2point.tools.ui.tools.history;
 
 import java.util.Collection;
 import java.util.HashMap;

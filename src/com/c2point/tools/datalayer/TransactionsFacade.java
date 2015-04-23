@@ -283,4 +283,51 @@ public class TransactionsFacade extends DataFacade {
 		return results;
 		
 	}
+
+	/*
+	 * Below methods to fetch all transactions for Transaction View
+	 */
+	public Collection<BaseTransaction> getTransactions( Organisation org, Date dateStart, Date dateEnd ) {
+		
+		if ( org == null ) {
+			throw new IllegalArgumentException( "Valid Organisation cannot be null!" );
+		}
+		if ( dateStart == null ) {
+			dateStart = new Date( new Date().getTime() - 1000 * 60*60*24 * 30 * 6 );
+		}
+		if ( dateEnd == null ) {
+			dateEnd = new Date( new Date().getTime() + 1000 * 60*60*24 );
+		}
+
+
+		Collection<BaseTransaction> results = null;
+		
+		EntityManager em = DataFacade.getInstance().createEntityManager();
+		TypedQuery<BaseTransaction> query = null;
+		String queryName = "listTransactionsForOrg";
+		
+		
+		try {
+			query = em.createNamedQuery( queryName, BaseTransaction.class )
+						.setParameter( "org", org )
+						.setParameter( "startDate", dateStart, TemporalType.DATE )
+						.setParameter( "endDate", dateEnd, TemporalType.DATE );
+			
+			results = query.getResultList();
+			if ( logger.isDebugEnabled()) logger.debug( "**** Fetched list of Transactions. Size = " + results.size());
+		} catch ( NoResultException e ) {
+			if ( logger.isDebugEnabled()) logger.debug( "No Transactions found!" );
+		} catch ( Exception e ) {
+			results = null;
+			logger.error( e );
+		} finally {
+			em.close();
+			releaseInstance();
+		}
+
+		return results;
+		
+	}
+
+
 }
