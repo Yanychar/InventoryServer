@@ -157,7 +157,6 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 
 	@Override
 	public void listUpdated(Collection<BaseTransaction> list) {
-		// TODO Auto-generated method stub
 		
 	}
 

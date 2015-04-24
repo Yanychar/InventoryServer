@@ -5,10 +5,13 @@ import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import com.c2point.tools.datalayer.TransactionsFacade;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.transactions.BaseTransaction;
 import com.c2point.tools.ui.AbstractModel;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 
 public class TransactionsListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( TransactionsListModel.class.getName());
@@ -136,8 +139,33 @@ public class TransactionsListModel extends AbstractModel {
 		}
 
 	}
-	
 
+	public void selectAllFilterFlags() {
 		
+		filter.selectAllFilterFlags();
+		// Fire model changed event
+		fireDataRead( null );
+		
+	}
+	
+	public void clearAllFilterFlags() {
+		
+		filter.clearAllFilterFlags();
+		// Fire model changed event
+		fireDataRead( null );
+		
+		
+	}
+
+	public void filterFlagChanged() {
+		
+		// Fire model changed event
+		fireDataRead( null );
+		
+	}
+	
+	
+	
+	public TrnsFilter getFilter() { return this.filter; }
 	
 }

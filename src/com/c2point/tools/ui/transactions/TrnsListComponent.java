@@ -7,7 +7,10 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.format.DateTimeFormat;
 
 import com.c2point.tools.entity.transactions.BaseTransaction;
+import com.vaadin.data.Container;
 import com.vaadin.data.Item;
+import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.Table;
@@ -116,10 +119,10 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 		Long newSelectedId = null;
 		boolean selected = ( selectedId != null );
 		
-		// remove old content
-		trnsTable.removeAllItems();
-
 		if ( trnsList != null ) {
+
+			// remove old content
+			trnsTable.removeAllItems();
 			
 			for ( BaseTransaction trn : trnsList ) {
 				if ( trn != null ) {
@@ -226,7 +229,32 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 	@Override
 	public void listUpdated(Collection<BaseTransaction> list) {
 		
-		dataFromModel( list );		
+		dataFromModel( list );
+		
+		applyFilter();
 	}
 
+	private void applyFilter() {
+
+		if ( trnsTable.getContainerDataSource() != null ) {
+			
+			(( Filterable )trnsTable.getContainerDataSource()).removeAllContainerFilters();
+		
+			Filter filter = model.getFilter();
+				
+			(( Filterable )trnsTable.getContainerDataSource()).addContainerFilter( filter );
+				
+			
+			if ( trnsTable != null && trnsTable.getContainerDataSource() instanceof Container.Ordered ) {
+				
+				trnsTable.setValue( 
+						trnsTable.getContainerDataSource().size() > 0 ? trnsTable.firstItemId() : null 
+				);
+			}
+			
+		}
+		
+	}
+
+	
 }

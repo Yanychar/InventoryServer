@@ -18,6 +18,8 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -39,6 +41,15 @@ public class FilterComponent extends Panel {
 	private ComboBox 				orgSelector;
 	private DateField 				startDF;
 	private DateField 				endDF;
+
+	private CheckBox 				loginCB;		// LOGIN
+	private CheckBox				userCB;		// ACCOUNT, USER
+	private CheckBox				adminCB;	// ORGANISATION, ACCESSRIGHTS
+	private CheckBox				toolCB;		// CATEGORY, TOOL, TOOLITEM
+	private CheckBox				otherCB;		// Unknown yet events
+
+	Button allBT = new Button( "Select All" );
+	Button noneBT = new Button( "Clear All" );
 	
 	public FilterComponent( TransactionsListModel model ) {
 
@@ -63,10 +74,11 @@ public class FilterComponent extends Panel {
 			content.addComponent( orgSelector );
 		}
 		
-		content.addComponent( getDeteSelector());
+		content.addComponent( getDateSelector());
 
 		content.addComponent( getTrnsSelector());
 
+		dateToView();
 		
 		orgSelector.addValueChangeListener( new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -99,6 +111,52 @@ public class FilterComponent extends Panel {
 			}
 		});
 
+		allBT.addClickListener( new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				model.selectAllFilterFlags();
+				
+				flagsToView();
+			}
+			
+		});
+		
+		noneBT.addClickListener( new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				model.clearAllFilterFlags();
+
+				flagsToView();
+				
+			}
+			
+		});
+
+		ValueChangeListener forCheckButtons = new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+
+				viewToFlags();
+				model.filterFlagChanged();
+				
+			}
+			
+		};
+		
+		loginCB.addValueChangeListener( forCheckButtons );
+		userCB.addValueChangeListener( forCheckButtons );
+		adminCB.addValueChangeListener( forCheckButtons );
+		toolCB.addValueChangeListener( forCheckButtons );
+		otherCB.addValueChangeListener( forCheckButtons );
+		
 	}
 
 	/*
@@ -147,7 +205,7 @@ public class FilterComponent extends Panel {
 		
 	}
 
-	private Component getDeteSelector() {
+	private Component getDateSelector() {
 		
 		SimpleDateFormat dFormat = new SimpleDateFormat( "dd.MM.yyyy" );
 		
@@ -171,10 +229,6 @@ public class FilterComponent extends Panel {
 		dateLine.addComponent( new Label( "  " + model.getApp().getResourceStr( "trnsmgmt.label.to")));
 		dateLine.addComponent( endDF );
 	
-		// Set dates
-		startDF.setValue( model.getDateStart());
-		endDF.setValue( model.getDateEnd());
-		
 		return dateLine; 
 	}
 
@@ -182,37 +236,57 @@ public class FilterComponent extends Panel {
 
 		
 		GridLayout layout = new GridLayout( 4, 3 );
+		layout.setMargin( true );
+		layout.setSpacing( true );
 		
+		loginCB = new CheckBox( "Authentication");		// LOGIN
+		userCB = new CheckBox( "User Management");		// ACCOUNT, USER
+		adminCB = new CheckBox( "Administration" );	// ORGANISATION, ACCESSRIGHTS
+		toolCB = new CheckBox( "Tools Management" );		// CATEGORY, TOOL, TOOLITEM
+		otherCB = new CheckBox( "All other" );		// Unknown yet events
 		
-		CheckBox loginCB = new CheckBox( "Authentication");		// LOGIN
-		CheckBox userCB = new CheckBox( "User Management");		// ACCOUNT, USER
-		CheckBox adminCB = new CheckBox( "Administration" );	// ORGANISATION, ACCESSRIGHTS
-		CheckBox toolCB = new CheckBox( "Administration" );		// CATEGORY, TOOL, TOOLITEM
-		CheckBox otherCB = new CheckBox( "All other" );		// Unknown yet events
-		
-/*		
-		LOGIN,
-		ACCOUNT,
-		USER,
-		ORGANISATION,
-		CATEGORY,
-		TOOL,
-		TOOLITEM,
-		ACCESSRIGHTS;
-*/		
 		layout.addComponent( loginCB,  0,  0 );
 		layout.addComponent( userCB,   1,  0 );
 		layout.addComponent( adminCB,  2,  0 );
 		layout.addComponent( toolCB,   0,  1 );
 		layout.addComponent( otherCB,  1,  1 );
 		
-		Button allBT = new Button( "Select All" );
-		Button noneBT = new Button( "Clear All" );
+		allBT = new Button( "Select All" );
+		noneBT = new Button( "Clear All" );
 		
 		layout.addComponent( allBT,    3,  0 );
 		layout.addComponent( noneBT,  3,  1 );
 		
 		return layout; 
 	}
+
+	private void dateToView() {
+
+		// Set dates
+		startDF.setValue( model.getDateStart());
+		endDF.setValue( model.getDateEnd());
 		
+		flagsToView();
+	}
+
+	private void flagsToView() {
+		
+		loginCB.setValue( model.getFilter().isLoginFlag());
+		userCB.setValue( model.getFilter().isUserFlag());
+		adminCB.setValue( model.getFilter().isAdminFlag());
+		toolCB.setValue( model.getFilter().isToolFlag());
+		otherCB.setValue( model.getFilter().isOtherFlag());
+
+	}
+	
+	private void viewToFlags() {
+		
+		model.getFilter().setLoginFlag( loginCB.getValue());
+		model.getFilter().setUserFlag( userCB.getValue());
+		model.getFilter().setAdminFlag( adminCB.getValue());
+		model.getFilter().setToolFlag( adminCB.getValue());
+		model.getFilter().setOtherFlag( otherCB.getValue());
+
+	}
+	
 }
