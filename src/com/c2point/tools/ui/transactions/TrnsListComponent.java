@@ -163,7 +163,7 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 			if ( logger.isDebugEnabled()) logger.debug( "Transaction exists already. Will be modified: " + trn );
 		}
 
-		item.getItemProperty( "date" ).setValue( DateTimeFormat.forPattern("dd.MM.yyyy").print( trn.getDate()));
+		item.getItemProperty( "date" ).setValue( DateTimeFormat.forPattern("dd.MM.yyyy HH:MM").print( trn.getDate()));
 		item.getItemProperty( "content" ).setValue( createTextContent( trn ));
 		item.getItemProperty( "user" ).setValue( trn.getUser().getFirstAndLastNames());
 		item.getItemProperty( "data" ).setValue( trn );
