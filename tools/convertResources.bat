@@ -1,10 +1,8 @@
-@echo off
+REM @echo off
 
 
-set source=C:\Users\sevastia\workspace_tms
 
-
-set jdk_home="C:\Program Files\Java\jdk1.8.0_31"
+set jdk_home="C:\Program Files\Java\jdk1.8.0_45"
 set source="D:\Development\Inventory Development\workspace_InventoryServer\InventoryServer"
 set dest="D:\Development\Inventory Development\workspace_InventoryServer\InventoryServer\src\com\c2point\tools\ui\resources"
 

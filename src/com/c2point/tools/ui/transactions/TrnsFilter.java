@@ -8,13 +8,14 @@ import org.joda.time.LocalDate;
 
 import com.c2point.tools.datalayer.SettingsFacade;
 import com.c2point.tools.entity.organisation.Organisation;
-import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.transactions.BaseTransaction;
 import com.c2point.tools.entity.transactions.TransactionType;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 
 public class TrnsFilter implements Container.Filter {
+	private static final long serialVersionUID = 1L;
+
 	private static Logger logger = LogManager.getLogger( TrnsFilter.class.getName());
 
 	private Date		dateStart;

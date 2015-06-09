@@ -173,7 +173,22 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 	
 	private String createTextContent( BaseTransaction trn ) {
 		
-		String str;
+//		return getTextTrnType( trn ) + getTextTrnOperation( trn );
+		
+		if ( trn != null ) {
+
+			return trn.getTrnType().toString( model.getApp().getSessionData().getBundle()) 
+					+ ". "
+					+ trn.getTrnOperation().toString( model.getApp().getSessionData().getBundle());
+					
+		}
+		
+		return "???";
+		
+	}
+	
+/*	
+	private String getTextTrnOperation( BaseTransaction trn ) {
 		
 		switch ( trn.getTrnOperation()) {
 			case ADD:
@@ -222,7 +237,7 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 		
 		return str;
 	}
-	
+*/	
 	@Override
 	public void transactionSelected(BaseTransaction user) { }
 

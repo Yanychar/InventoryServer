@@ -10,16 +10,12 @@ import com.c2point.tools.datalayer.TransactionsFacade;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.transactions.BaseTransaction;
 import com.c2point.tools.ui.AbstractModel;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 
 public class TransactionsListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( TransactionsListModel.class.getName());
 
 	private Organisation 	org;
 	
-	private BaseTransaction		selectedTransaction;
-
 	private TrnsFilter		filter;
 	
 	public TransactionsListModel() {

@@ -11,6 +11,7 @@ import com.vaadin.ui.HorizontalSplitPanel;
 
 public class TransactionsManagementView extends AbstractMainView implements TransactionsModelListener {
 	private static final long serialVersionUID = 1L;
+	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( TransactionsManagementView.class.getName());
 
 	private TransactionsListModel	model;

@@ -11,8 +11,6 @@ import com.c2point.tools.datalayer.OrganisationFacade;
 import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.access.SecurityContext;
 import com.c2point.tools.entity.organisation.Organisation;
-import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.ui.tools.history.ToolsHistoryListModel;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.shared.ui.combobox.FilteringMode;
@@ -28,12 +26,12 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 
 public class FilterComponent extends Panel {
 	private static final long serialVersionUID = 1L;
+	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( FilterComponent.class.getName());
 
 	private TransactionsListModel	model;
@@ -48,8 +46,8 @@ public class FilterComponent extends Panel {
 	private CheckBox				toolCB;		// CATEGORY, TOOL, TOOLITEM
 	private CheckBox				otherCB;		// Unknown yet events
 
-	Button allBT = new Button( "Select All" );
-	Button noneBT = new Button( "Clear All" );
+	private Button 					allBT;
+	private Button 					noneBT;
 	
 	public FilterComponent( TransactionsListModel model ) {
 
@@ -110,16 +108,22 @@ public class FilterComponent extends Panel {
 				
 			}
 		});
-
+		
 		allBT.addClickListener( new ClickListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				model.selectAllFilterFlags();
+//				model.selectAllFilterFlags();
 				
-				flagsToView();
+//				flagsToView();
+				
+				checkAllCheckBoxes();
+
+				viewToFlags();
+				model.filterFlagChanged();
+				
 			}
 			
 		});
@@ -130,9 +134,14 @@ public class FilterComponent extends Panel {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				model.clearAllFilterFlags();
+//				model.clearAllFilterFlags();
 
-				flagsToView();
+//				flagsToView();
+				
+				clearAllCheckBoxes();
+
+				viewToFlags();
+				model.filterFlagChanged();
 				
 			}
 			
@@ -144,8 +153,10 @@ public class FilterComponent extends Panel {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 
-				viewToFlags();
-				model.filterFlagChanged();
+				if ( !postponeUpdate ) {
+					viewToFlags();
+					model.filterFlagChanged();
+				}
 				
 			}
 			
@@ -159,6 +170,8 @@ public class FilterComponent extends Panel {
 		
 	}
 
+boolean postponeUpdate;	
+	
 	/*
 	 * Set content of Organisations List ComboBox
 	 */
@@ -287,6 +300,34 @@ public class FilterComponent extends Panel {
 		model.getFilter().setToolFlag( adminCB.getValue());
 		model.getFilter().setOtherFlag( otherCB.getValue());
 
+	}
+
+	private void clearAllCheckBoxes() {
+		
+		postponeUpdate = true;
+	
+		loginCB.setValue( false );
+		userCB.setValue( false );
+		adminCB.setValue( false );
+		toolCB.setValue( false );
+		otherCB.setValue( false );
+		
+		postponeUpdate = false;
+		
+	}
+	
+	private void checkAllCheckBoxes() {
+		
+		postponeUpdate = true;
+	
+		loginCB.setValue( true );
+		userCB.setValue( true );
+		adminCB.setValue( true );
+		toolCB.setValue( true );
+		otherCB.setValue( true );
+		
+		postponeUpdate = false;
+		
 	}
 	
 }
