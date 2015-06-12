@@ -39,7 +39,12 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 	
 	private void initUI() {
 
+		setMargin( true );
+		setSpacing( true );
+		
 		addComponent( getHeader());
+		
+		addComponent( getDateComponent());
 		addComponent( getSeparator());
 		addComponent( getUserDate());
 		addComponent( getSeparator());
@@ -55,6 +60,17 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 		
 		return header;
 	}
+	
+	private Component getDateComponent() {
+		
+		if ( date == null ) {
+			
+			date = new Label( "", ContentMode.HTML );
+		}
+		
+		return date;
+	}
+	
 	private Component getUserDate() { return new Label(); }
 	private Component getTransactionType() { return new Label(); }
 	private Label getSeparator() {
@@ -165,9 +181,9 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 
 		logger.debug( "DetailsComponent received transactionSelected event. Transaction: " 
 						+ ( trn != null ? trn.toStringShort() : "null" ));
-/*		
-		showContent( trn != null );
+		showContent( trn );
 		
+/*		
 		if ( trn != null ) {
 
 			date.setValue( "<b>" + DateTimeFormat.forPattern("dd.MM.yyyy HH:mm").print( trn.getDate()) + "</b>");
@@ -180,4 +196,27 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 	}
 
 
+	private void showContent( BaseTransaction trn ) {
+
+		if ( trn != null ) {
+			this.setVisible( true );
+			
+			// Show date
+			if ( date != null && trn.getDate() != null ) {
+
+				date.setValue( 
+					"Date: " 
+					+ "<b>"+ DateTimeFormat.forPattern( "dd.MM.yyyy").print( trn.getDate()) + "</b>" 
+					+ "&emsp;&emsp;Time: "
+					+ "<b>"+ DateTimeFormat.forPattern( "HH:mm:ss").print( trn.getDate()) + "</b>"
+				);
+			}
+
+			
+		} else {
+			this.setVisible( false );
+		}
+		
+	}
+	
 }

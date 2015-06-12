@@ -62,7 +62,7 @@ public class TransactionsListModel extends AbstractModel {
 	public void setOrg( Organisation org ) { this.org = org; }
 	
 	public void	selectTransaction( BaseTransaction trn ) {
-		if ( logger.isDebugEnabled()) logger.debug( "Fire transactionSelected with trn = " + trn );
+		if ( logger.isDebugEnabled()) logger.debug( "Fire transactionSelected with trn = " + trn.toStringShort());
 		fireTransactionSelected( trn );
 	}
 

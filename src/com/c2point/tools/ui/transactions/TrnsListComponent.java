@@ -87,6 +87,11 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 					if ( id != null && trnsTable.getItem( id ) != null ) {
 						if ( logger.isDebugEnabled()) logger.debug( "Transaction has been selected and found!" );
 
+Object obj;
+obj = trnsTable.getItem( id );
+obj = trnsTable.getItem( id ).getItemProperty( "data" );
+obj = trnsTable.getItem( id ).getItemProperty( "data" ).getValue();
+
 						model.selectTransaction(  
 								( BaseTransaction ) trnsTable.getItem( id ).getItemProperty( "data" ).getValue());
 						
