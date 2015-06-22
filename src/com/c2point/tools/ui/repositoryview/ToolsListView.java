@@ -114,7 +114,9 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 
 				try {
 					Item item = itemsTable.getItem( itemsTable.getValue());
-					model.setSelectedItem(( ToolItem ) item.getItemProperty( "data" ).getValue());
+					Object itemId = itemsTable.getValue();
+//					model.setSelectedItem(( ToolItem ) item.getItemProperty( "data" ).getValue());
+					model.setSelectedItem(( ToolItem ) itemId );
 				} catch ( Exception e ) {
 					logger.debug( "No selection. Tool Item cannot be fetched from itemsList " );
 					model.setSelectedItem( null );
@@ -346,7 +348,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			
 			if ( category == null && toolItem == null ) return false;
 
-			if ( this.status != null && toolItem.getStatus() != this.status ) return false;
+			if ( toolItem != null && this.status != null && toolItem.getStatus() != this.status ) return false;
 
 			if (( strArray == null || strArray.size() == 0 )) return true;
 			

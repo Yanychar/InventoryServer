@@ -184,6 +184,8 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 		
 		try {
 			if ( this.shownItem != null ) {
+
+				this.setVisible( true );
 				
 				if ( this.shownItem.getTool() != null ) {
 					
@@ -217,8 +219,13 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 				
 				serialNumber.setValue( shownItem.getSerialNumber());
 				barcode.setValue( shownItem.getBarcode());
-	
+
+			} else {
+				// No ToolItem selected and/or Category selected
+
+				this.setVisible( false );
 			}
+			
 		} catch ( Exception e ) {
 			logger.error( "Cannot update view: " + e.getMessage());
 		}
