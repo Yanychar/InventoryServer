@@ -9,7 +9,6 @@ import org.joda.time.LocalDate;
 import com.c2point.tools.datalayer.SettingsFacade;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.transactions.BaseTransaction;
-import com.c2point.tools.entity.transactions.TransactionType;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 
@@ -115,6 +114,8 @@ public class TrnsFilter implements Container.Filter {
 	public boolean passesFilter(Object itemId, Item item)
 			throws UnsupportedOperationException {
 		
+		boolean res = false; 
+		
 		BaseTransaction trn;
 		try {
 			trn = ( BaseTransaction ) item.getItemProperty( "data" ).getValue();
@@ -124,29 +125,29 @@ public class TrnsFilter implements Container.Filter {
 		
 		if ( trn == null ) return false;
 		
-		if ( !isLoginFlag() && trn.getTrnType() == TransactionType.LOGIN ) return false;
+		switch ( trn.getTrnType()) {
+			case ACCESSRIGHTS:
+			case ORGANISATION:
+				res = isAdminFlag(); 
+				break;
+			case LOGIN:
+				res = isLoginFlag(); 
+				break;
+			case CATEGORY:
+			case TOOL:
+			case TOOLITEM:
+				res = isToolFlag(); 
+				break;
+			case ACCOUNT:
+			case USER:
+				res = isUserFlag(); 
+				break;
+			default:
+				res = isOtherFlag();
+			
+		}
 
-		if ( !isUserFlag() && ( 
-				trn.getTrnType() == TransactionType.ACCOUNT
-				||
-				trn.getTrnType() == TransactionType.USER
-		)) return false;
-
-		if ( !isAdminFlag() && ( 
-				trn.getTrnType() == TransactionType.ORGANISATION
-				||
-				trn.getTrnType() == TransactionType.ACCESSRIGHTS
-		)) return false;
-
-		if ( !isToolFlag() && ( 
-				trn.getTrnType() == TransactionType.CATEGORY
-				||
-				trn.getTrnType() == TransactionType.TOOL
-				||
-				trn.getTrnType() == TransactionType.TOOLITEM
-		)) return false;
-		
-		return true;
+		return res;
 	}
 
 	@Override

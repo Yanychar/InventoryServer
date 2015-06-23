@@ -297,7 +297,7 @@ boolean postponeUpdate;
 		model.getFilter().setLoginFlag( loginCB.getValue());
 		model.getFilter().setUserFlag( userCB.getValue());
 		model.getFilter().setAdminFlag( adminCB.getValue());
-		model.getFilter().setToolFlag( adminCB.getValue());
+		model.getFilter().setToolFlag( toolCB.getValue());
 		model.getFilter().setOtherFlag( otherCB.getValue());
 
 	}
