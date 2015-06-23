@@ -101,8 +101,10 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 		barcode.setNullRepresentation( "" );
 		barcode.setImmediate( true );
 
-		Label separator = new Label( "<hr/>", ContentMode.HTML );
-		separator.setWidth( "100%" );
+		Label separator1 = new Label( "<hr/>", ContentMode.HTML );
+		separator1.setWidth( "100%" );
+		Label separator2 = new Label( "<hr/>", ContentMode.HTML );
+		separator2.setWidth( "100%" );
 		
 		
 		addComponent( toolText );
@@ -111,8 +113,9 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 		addComponent( code );
 		addComponent( description );
 		addComponent( category );
-		addComponent( separator );
+		addComponent( separator1 );
 		addComponent( personalFlag );
+		addComponent( separator2 );
 		addComponent( currentUser );
 		addComponent( status );
 		addComponent( reservedBy );
