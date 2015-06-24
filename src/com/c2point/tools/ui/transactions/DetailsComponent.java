@@ -7,12 +7,11 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.format.DateTimeFormat;
 
 import com.c2point.tools.entity.transactions.BaseTransaction;
+import com.c2point.tools.entity.transactions.TransactionOperation;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 public class DetailsComponent extends VerticalLayout implements TransactionsModelListener {
@@ -21,10 +20,7 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 	
 	private TransactionsListModel	model;
 	
-	private Label					date;
-	private Label					who;
-	private Label					type;
-	private Label					operation;
+	private GridLayout				gl;
 
 	public DetailsComponent( TransactionsListModel model ) {
 		super();
@@ -44,12 +40,12 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 		
 		addComponent( getHeader());
 		
-		addComponent( getDateComponent());
-		addComponent( getSeparator());
-		addComponent( getUserDate());
-		addComponent( getSeparator());
-		addComponent( getTransactionType());
-		addComponent( getSeparator());
+		gl = new GridLayout( 2, 10 );
+		gl.setSpacing( true );
+		gl.setMargin( true );
+		
+		addComponent( gl );
+
 	}		
 
 	private Component getHeader() { 
@@ -61,116 +57,6 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 		return header;
 	}
 	
-	private Component getDateComponent() {
-		
-		if ( date == null ) {
-			
-			date = new Label( "", ContentMode.HTML );
-		}
-		
-		return date;
-	}
-	
-	private Component getUserDate() { return new Label(); }
-	private Component getTransactionType() { return new Label(); }
-	private Label getSeparator() {
-		
-		Label separator = new Label( "<hr/>", ContentMode.HTML );
-		separator.setWidth( "100%" );
-		
-		return separator;
-	}
-	
-/*	
-	content.addComponent( separator, 0, 1, 4, 1 );
-		
-		
-		
-		GridLayout content = new GridLayout( 5, 4 );
-//		setContent( content );
-		
-		content.setWidth( "100%" );
-		content.setColumnExpandRatio( 0, 0.5f );
-		content.setColumnExpandRatio( 1, 1 );
-		content.setColumnExpandRatio( 2, 0.5f );
-		content.setColumnExpandRatio( 3, 1 );
-		content.setColumnExpandRatio( 4, 5 );
-		
-		content.setWidth( "100%" );
-		content.setSpacing( true );
-		content.setMargin( true );
-		
-		content.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.date" )), 0, 0 );
-		content.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.who" )), 2, 0 );
-		
-		Label separator = new Label( "<hr/>", ContentMode.HTML );
-		separator.setWidth( "100%" );
-		content.addComponent( separator, 0, 1, 4, 1 );
-		
-		content.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.type" )), 0, 2 );
-		content.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.operation" )), 0, 3 );
-
-		// Now fields with variable content will be added
-		date = new Label( "", ContentMode.HTML );
-		date.setImmediate( true );
-		
-		who = new Label( "", ContentMode.HTML );
-		who.setImmediate( true );
-		
-		content.addComponent( date, 		1, 0 );		
-		content.addComponent( who, 			3, 0 );		
-		
-		type = new Label( "", ContentMode.HTML );
-		type.setImmediate( true );
-		
-		operation = new Label( "", ContentMode.HTML );
-		operation.setImmediate( true );
-		
-		content.addComponent( type, 		1, 2 );		
-		content.addComponent( operation, 	1, 3 );
-		
-		fieldName_1 = new Label( "" );
-		fieldName_1.setImmediate( true );
-		fieldValue_1 = new Label( "", ContentMode.HTML );
-		fieldValue_1.setImmediate( true );
-		
-		fieldName_2 = new Label( "" );
-		fieldName_2.setImmediate( true );
-		fieldValue_2 = new Label( "", ContentMode.HTML );
-		fieldValue_2.setImmediate( true );
-		
-		content.addComponent( fieldName_1, 		2, 2 );		
-		content.addComponent( fieldValue_1, 	3, 2 );
-		content.addComponent( fieldName_2, 		2, 3 );		
-		content.addComponent( fieldValue_2, 	3, 3 );
-
-		content.setComponentAlignment( content.getComponent( 0, 0 ), Alignment.MIDDLE_LEFT );
-		content.setComponentAlignment( content.getComponent( 1, 0 ), Alignment.MIDDLE_LEFT );
-		content.setComponentAlignment( content.getComponent( 2, 0 ), Alignment.MIDDLE_LEFT );
-		content.setComponentAlignment( content.getComponent( 3, 0 ), Alignment.MIDDLE_LEFT );
-		content.setComponentAlignment( content.getComponent( 0, 2 ), Alignment.MIDDLE_LEFT );
-		content.setComponentAlignment( content.getComponent( 1, 2 ), Alignment.MIDDLE_LEFT );
-		content.setComponentAlignment( content.getComponent( 2, 2 ), Alignment.MIDDLE_LEFT );
-		content.setComponentAlignment( content.getComponent( 3, 2 ), Alignment.MIDDLE_LEFT );
-		content.setComponentAlignment( content.getComponent( 0, 3 ), Alignment.MIDDLE_LEFT );
-		content.setComponentAlignment( content.getComponent( 1, 3 ), Alignment.MIDDLE_LEFT );
-		content.setComponentAlignment( content.getComponent( 2, 3 ), Alignment.MIDDLE_LEFT );
-		content.setComponentAlignment( content.getComponent( 3, 3 ), Alignment.MIDDLE_LEFT );
-		
-//		this.getContent().setVisible( false );
-		clearContent();			
-		
-	}
-*/
-	private void showContent( boolean toShow ) {
-
-		date.setVisible( toShow ); //.setValue( "" );
-		who.setVisible( toShow );
-		type.setVisible( toShow );
-		operation.setVisible( toShow );
-
-	}
-
 	@Override
 	public void listUpdated(Collection<BaseTransaction> list) {
 		
@@ -183,40 +69,320 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 						+ ( trn != null ? trn.toStringShort() : "null" ));
 		showContent( trn );
 		
-/*		
-		if ( trn != null ) {
-
-			date.setValue( "<b>" + DateTimeFormat.forPattern("dd.MM.yyyy HH:mm").print( trn.getDate()) + "</b>");
-			who.setValue( "<b>" + trn.getUser().getFirstAndLastNames() + "</b>");
-			type.setValue( "<b>" + trn.getTrnType().toString( model.getApp().getSessionData().getBundle()) + "</b>");
-			operation.setValue( "<b>" + trn.getTrnOperation().toString( model.getApp().getSessionData().getBundle()) + "</b>");
-			
-		}
-*/		
 	}
 
 
 	private void showContent( BaseTransaction trn ) {
 
-		if ( trn != null ) {
-			this.setVisible( true );
+		boolean trnValid = ( trn != null );
+		
+		this.setVisible( trnValid );
+
+		if ( trnValid ) {
+
+			// Show Transaction type&operation
+			addTrnComponent( trn );
 			
 			// Show date
-			if ( date != null && trn.getDate() != null ) {
+			addDateComponent( trn );
 
-				date.setValue( 
-					"Date: " 
-					+ "<b>"+ DateTimeFormat.forPattern( "dd.MM.yyyy").print( trn.getDate()) + "</b>" 
-					+ "&emsp;&emsp;Time: "
-					+ "<b>"+ DateTimeFormat.forPattern( "HH:mm:ss").print( trn.getDate()) + "</b>"
-				);
+			// Show who did transaction
+			addInitiatorComponent( trn );
+			
+			addSeparator( 3 );
+			
+			// Show transaction description
+			switch ( trn.getTrnType()) {
+				case ACCESSRIGHTS:
+					addARDescr( trn );
+					break;
+				case ACCOUNT:
+					addACDescr( trn );
+					break;
+				case CATEGORY:
+					addCATDescr( trn );
+					break;
+				case LOGIN:
+					addLOGDescr( trn );
+					break;
+				case ORGANISATION:
+					addORGDescr( trn );
+					break;
+				case TOOL:
+					addTOOLDescr( trn );
+					break;
+				case TOOLITEM:
+					addITEMDescr( trn );
+					break;
+				case USER:
+					addUSERDescr( trn );
+					break;
+				default:
+					clearAdditionalFields();
+					break;
+				
 			}
 
-			
-		} else {
-			this.setVisible( false );
 		}
 		
 	}
+	
+	private void addTrnComponent( BaseTransaction trn ) {
+
+		Label com = getLabelFromGrid( 0 );
+		
+		com.setValue( 
+			"<b>" + trn.toItemDetails( model.getApp().getSessionData().getBundle()) + "</b>"
+		);
+		
+	}
+	
+	private void addDateComponent( BaseTransaction trn ) {
+
+		Label com = getLabelFromGrid( 1 );
+		
+		if ( trn.getDate() != null ) {
+
+			com.setValue( 
+				"" 
+				+ "<b>"+ DateTimeFormat.forPattern( "dd.MM.yyyy  HH:mm:ss").print( trn.getDate()) + "</b>"
+			);
+		} else {
+			com.setValue( "" );
+		}
+		
+	}
+	
+	private void addInitiatorComponent( BaseTransaction trn ) {
+	
+		Label com = getLabelFromGrid( 2 );
+
+		if ( trn.getUser() != null ) {
+	
+			com.setValue( 
+				"Who did: " 
+					+ "<b>"+ trn.getUser().getFirstAndLastNames() + "</b>" 
+				);
+
+		} else {
+			com.setValue( "" );
+		}
+	}
+
+	private void addSeparator( int row ) {
+		
+		Label com = getLabelFromGrid( "<hr/>", row );
+		com.setWidth( "100%" );
+//		com.setHeight( "2px" );
+			
+		
+	}
+	
+	
+	private void addARDescr( BaseTransaction trn ) {
+		clearAdditionalFields();
+
+		getLabelFromGrid( "For user:", 0, 4 );
+		getLabelFromGrid( "<b>" + trn.getSourceUser().getFirstAndLastNames() + "</b>", 1, 4 );
+		
+	}
+	private void addACDescr( BaseTransaction trn ) {
+		clearAdditionalFields();
+		
+		getLabelFromGrid( "For user:", 0, 4 );
+		getLabelFromGrid( "<b>" + trn.getSourceUser().getFirstAndLastNames() + "</b>", 1, 4 );
+		
+	}
+	private void addCATDescr( BaseTransaction trn ) {
+		clearAdditionalFields();
+		
+	}
+	private void addLOGDescr( BaseTransaction trn ) {
+		clearAdditionalFields();
+		
+	}
+	private void addORGDescr( BaseTransaction trn ) {
+		clearAdditionalFields();
+
+		getLabelFromGrid( "Company:", 0, 4 );
+		getLabelFromGrid( "<b>" + trn.getOrg().getName() + "</b>", 1, 4 );
+
+		
+	}
+	private void addUSERDescr( BaseTransaction trn ) {
+		clearAdditionalFields();
+
+		getLabelFromGrid( "User:", 0, 4 );
+		getLabelFromGrid( "<b>" + trn.getSourceUser().getFirstAndLastNames() + "</b>", 1, 4 );
+		
+	}
+	
+	private void addTOOLDescr( BaseTransaction trn ) {
+/*		
+		String content =
+				  "Type: " + "<b>" + trn.getTrnType().toString( model.getApp().getSessionData().getBundle()) + "</b>" + "</br>"
+				+ "Operation: " + "<b>" + trn.getTrnOperation().toString( model.getApp().getSessionData().getBundle()) + "</b>" + "</br>"
+				+ "Tool: " + "<b>" + trn.getTool().getFullName() + "</b>"
+				;
+		
+		return content;
+*/
+		addITEMDescr( trn );
+		
+	}
+
+	private void addITEMDescr( BaseTransaction trn ) {
+
+		
+		getLabelFromGrid( "Tool:", 0, 4 );
+		getLabelFromGrid( "Code:", 0, 5 );
+		getLabelFromGrid( "SN:", 0, 6 );
+		getLabelFromGrid( "Barcode:", 0, 7 );
+		
+		Component s = getLabelFromGrid( "<hr/>", 8 );
+		s.setWidth( "100%" );
+//		s.setHeight( "2px" );
+		
+
+		
+		gl.removeComponent( 0, 9 );
+		gl.removeComponent( 1, 9 );
+		if ( trn.getTrnOperation() == TransactionOperation.NEWSTATUS ) {
+			
+			getLabelFromGrid( "New Status:", 0, 9 );
+			getLabelFromGrid( 
+					"<b>" + trn.getNewStatus().toString( model.getApp().getSessionData().getBundle()) + "</b>"
+					, 1, 9 );
+			
+		} else if ( trn.getTrnOperation() == TransactionOperation.USERCHANGED ) {
+
+			getLabelFromGrid( 
+					"<b>" + trn.getSourceUser().getFirstAndLastNames()
+					+ "&emsp;>>>>&emsp; "
+					+ trn.getDestUser().getFirstAndLastNames()
+					+ "</b>"
+					, 9);
+			
+		}
+		
+/*		
+		if ( com == null ) {
+			
+			com = new Label( "", ContentMode.HTML );
+			gl.addComponent( com, 0, 0, 1, 0 );
+		}
+		
+		
+				+ "Tool: " + "<b>" + trn.getTool().getFullName() + "</b>"
+				;
+				
+				if ( trn.getToolItem() != null ) {
+					content = content.concat(
+						  "Code: " + "<b>" + trn.getToolItem().getTool().getCode() + "</b>"
+						+ "SN: " + "<b>" + trn.getToolItem().getSerialNumber() + "</b>"
+						+ "Barcode: " + "<b>" + trn.getToolItem().getBarcode() + "</b>"
+					
+							
+					);
+				}
+		
+				if ( trn.getTrnOperation() == TransactionOperation.NEWSTATUS ) {
+
+					content = content.concat(
+						  "<hr>"
+						+ "New Status: " + "<b>" + trn.getNewStatus().toString( model.getApp().getSessionData().getBundle()) + "</b>"
+							
+					);
+				
+				} else if ( trn.getTrnOperation() == TransactionOperation.USERCHANGED ) {
+					
+					content = content.concat(
+						  "<hr>"
+						+ "<b>" + trn.getSourceUser().getFirstAndLastNames()
+						+ "&emsp;>>>>&emsp; "
+						+ trn.getDestUser().getFirstAndLastNames()
+						+ "</b>"
+					);
+					
+				} else {
+					
+				}
+		
+		
+		return content;
+		
+*/		
+	}
+
+	private void clearAdditionalFields() {
+
+		getLabelFromGrid( 0, 4 );
+		getLabelFromGrid( 0, 5 );
+		getLabelFromGrid( 0, 6 );
+		getLabelFromGrid( 0, 7 );
+		getLabelFromGrid( 8 );
+		getLabelFromGrid( 0, 9 );
+
+		getLabelFromGrid( 1, 4 );
+		getLabelFromGrid( 1, 5 );
+		getLabelFromGrid( 1, 6 );
+		getLabelFromGrid( 1, 7 );
+		getLabelFromGrid( 1, 9 );
+		
+	}
+	
+	
+	private Label getLabelFromGrid( int row ) {
+		
+		return getLabelFromGrid( 0, row, true );
+	}
+
+	private Label getLabelFromGrid( int col, int row ) {
+		
+		return getLabelFromGrid( col, row, false );
+		
+	}
+	
+	private Label getLabelFromGrid( int col, int row, boolean wholeWidth ) {
+		
+		return getLabelFromGrid( "", col, row, wholeWidth ); 
+		
+	}
+	
+	private Label getLabelFromGrid( String content, int row ) {
+		
+		return getLabelFromGrid( content, 0, row, true ); 
+		
+	}
+	
+	private Label getLabelFromGrid( String content, int col, int row ) {
+		
+		return getLabelFromGrid( content, col, row, false ); 
+		
+	}
+	
+	private Label getLabelFromGrid( String content, int col, int row, boolean wholeWidth ) { 
+	
+		Label com = ( Label )gl.getComponent( col, row );
+		
+		if ( com == null ) {
+		
+			com = new Label( "", ContentMode.HTML );
+			
+			if ( wholeWidth )
+				gl.addComponent( com, 0, row, gl.getColumns() - 1, row );
+			
+			else
+				gl.addComponent( com, col, row, col, row );
+			
+		}
+		
+		com.setValue( content );
+		
+		return com;
+	}
+	
+
+		
 	
 }

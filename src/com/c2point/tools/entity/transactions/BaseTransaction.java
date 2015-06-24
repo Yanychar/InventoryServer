@@ -1,6 +1,7 @@
 package com.c2point.tools.entity.transactions;
 
 import java.util.Date;
+import java.util.ResourceBundle;
 
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
@@ -56,7 +57,6 @@ import com.c2point.tools.entity.tool.Tool;
 })
 
 public class BaseTransaction extends SimplePojo {
-	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( BaseTransaction.class.getName()); 
 
 	/*
@@ -228,5 +228,29 @@ public class BaseTransaction extends SimplePojo {
 				+ "Date:" + getDate() + ", " + " user: '" + (user != null ? user.getFirstAndLastNames() + "'" : "NULL" ) + " ]";
 	}
 	
+	
+	
+	public String toTableItem( ResourceBundle bundle ) {
+
+    	try {
+    		return bundle.getString( TransactionToResourceEncoder.getStringFromTypeAndOperation( this, true ));
+    	} catch ( Exception e ) {
+    		logger.error( "Resource string for '" + getTrnType() + "." + getTrnOperation() + "' was not found");
+    	}
+    	
+    	return getTrnType() + "  " + getTrnOperation();
+    }
+
+	public String toItemDetails( ResourceBundle bundle ) {
+    	
+    	try {
+    		return bundle.getString( TransactionToResourceEncoder.getStringFromTypeAndOperation( this, false ));
+    	} catch ( Exception e ) {
+    		logger.error( "Resource string for '" + getTrnType() + "." + getTrnOperation() + "' was not found");
+    	}
+    	
+    	return getTrnType() + "  " + getTrnOperation();
+    }
+
 	
 }

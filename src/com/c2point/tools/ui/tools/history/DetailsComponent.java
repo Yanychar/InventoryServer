@@ -143,8 +143,8 @@ public class DetailsComponent extends Panel implements ToolsHistoryModelListener
 		if ( trn != null ) {
 			date.setValue( "<b>" + DateTimeFormat.forPattern("dd.MM.yyyy HH:mm").print( trn.getDate()) + "</b>");
 			who.setValue( "<b>" + trn.getUser().getFirstAndLastNames() + "</b>");
-			type.setValue( "<b>" + trn.getTrnType().toString( model.getApp().getSessionData().getBundle()) + "</b>");
-			operation.setValue( "<b>" + trn.getTrnOperation().toString( model.getApp().getSessionData().getBundle()) + "</b>");
+			type.setValue( "<b>" + trn.toItemDetails( model.getApp().getSessionData().getBundle()) + "</b>");
+//			operation.setValue( "<b>" + trn.getTrnOperation().toString( model.getApp().getSessionData().getBundle()) + "</b>");
 			
 			if ( trn.getTrnOperation() == TransactionOperation.NEWSTATUS ) {
 

@@ -87,11 +87,6 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 					if ( id != null && trnsTable.getItem( id ) != null ) {
 						if ( logger.isDebugEnabled()) logger.debug( "Transaction has been selected and found!" );
 
-Object obj;
-obj = trnsTable.getItem( id );
-obj = trnsTable.getItem( id ).getItemProperty( "data" );
-obj = trnsTable.getItem( id ).getItemProperty( "data" ).getValue();
-
 						model.selectTransaction(  
 								( BaseTransaction ) trnsTable.getItem( id ).getItemProperty( "data" ).getValue());
 						
@@ -169,80 +164,13 @@ obj = trnsTable.getItem( id ).getItemProperty( "data" ).getValue();
 		}
 
 		item.getItemProperty( "date" ).setValue( DateTimeFormat.forPattern("dd.MM.yyyy HH:MM").print( trn.getDate()));
-		item.getItemProperty( "content" ).setValue( createTextContent( trn ));
+		item.getItemProperty( "content" ).setValue( trn.toTableItem( model.getApp().getSessionData().getBundle()));
 		item.getItemProperty( "user" ).setValue( trn.getUser().getFirstAndLastNames());
 		item.getItemProperty( "data" ).setValue( trn );
 		
 		
 	}
 	
-	private String createTextContent( BaseTransaction trn ) {
-		
-//		return getTextTrnType( trn ) + getTextTrnOperation( trn );
-		
-		if ( trn != null ) {
-
-			return trn.getTrnType().toString( model.getApp().getSessionData().getBundle()) 
-					+ ". "
-					+ trn.getTrnOperation().toString( model.getApp().getSessionData().getBundle());
-					
-		}
-		
-		return "???";
-		
-	}
-	
-/*	
-	private String getTextTrnOperation( BaseTransaction trn ) {
-		
-		switch ( trn.getTrnOperation()) {
-			case ADD:
-//				str = "Added by "
-//						+ trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.add" );
-				break;
-			case DELETE:
-//				str = "Deleted by "
-//						+ trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.delete" );
-				break;
-			case EDIT:
-//				str = "Edited by "
-//						+ trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.edit" );
-				break;
-			case NEWSTATUS:
-//				str = "New status: " 
-//					+ trn.getNewStatus().toString( model.getApp().getSessionData().getBundle())
-//					+ " was given by "
-//					+ trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.newstatus" ) + ": "
-						+ trn.getNewStatus().toString( model.getApp().getSessionData().getBundle());
-				break;
-			case USERCHANGED:
-//				str = "Transferred from " 
-//					+ trn.getSourceUser().getFirstAndLastNames() 
-//					+ " to "
-//					+ trn.getDestUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.userchanged" );
-				break;
-			case OFF:
-//				str = "Wrong operation made by " + trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.wrong" );
-				break;
-			case ON:
-//				str = "Wrong operation made by " + trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.wrong" );
-				break;
-			default:
-//				str = "Unknown operation made by " + trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.unknown" );
-				break;
-		}
-		
-		return str;
-	}
-*/	
 	@Override
 	public void transactionSelected(BaseTransaction user) { }
 
