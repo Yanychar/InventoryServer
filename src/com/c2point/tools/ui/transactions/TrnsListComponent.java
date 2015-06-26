@@ -9,19 +9,32 @@ import org.joda.time.format.DateTimeFormat;
 import com.c2point.tools.entity.transactions.BaseTransaction;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.BaseTheme;
 
 public class TrnsListComponent extends VerticalLayout implements TransactionsModelListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( TrnsListComponent.class.getName());
+
+	protected HorizontalLayout			toolBarLayout;
+	private TextField					searchText;
 	
 	private TransactionsListModel		model;
-
 	private Table						trnsTable;
 	
 	public TrnsListComponent( TransactionsListModel model ) {
@@ -29,12 +42,12 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 		
 		this.model = model;
 		
-		initUI();
+		initView();
 
 		model.addChangedListener( this );
 	}
 	
-	private void initUI() {
+	private void initView() {
 
 		setSizeFull();
 
@@ -103,6 +116,7 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 			}
 		});
 
+		this.addComponent( getToolbar());
 		this.addComponent( trnsTable );
 		
 		this.setExpandRatio( trnsTable, 1.0f );
@@ -170,7 +184,79 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 		
 		
 	}
+
+	protected Component getToolbar() {
+		
+		// Add search field
+		if ( toolBarLayout == null ) {
+
+			toolBarLayout = new HorizontalLayout();
+			
+			toolBarLayout.setWidth( "100%");
+			toolBarLayout.setMargin( new MarginInfo( false, true, false, true ));
 	
+			Label searchIcon = new Label();
+			searchIcon.setIcon(new ThemeResource("icons/16/search.png"));
+			searchIcon.setWidth( "2em" );
+	
+			Button deleteIcon = new Button();
+			deleteIcon.setStyleName( BaseTheme.BUTTON_LINK );
+			deleteIcon.setIcon( new ThemeResource("icons/16/reject.png"));
+			
+			deleteIcon.addClickListener( new ClickListener() {
+	
+				private static final long serialVersionUID = 1L;
+	
+				@Override
+				public void buttonClick( ClickEvent event) {
+	
+					if ( logger.isDebugEnabled()) logger.debug( "DeleteIcon image had been pressed" );
+					
+					if ( searchText != null && searchText.getValue() != null && searchText.getValue().length() > 0 ) {
+	
+						if ( logger.isDebugEnabled()) logger.debug( "Search text shall be set to empty string" );
+						
+						searchText.setValue( "" );
+						applyFilter( null );
+						
+					}
+					
+				}
+				
+			});
+			
+			searchText = new TextField();
+			searchText.setWidth("30ex");
+			searchText.setNullSettingAllowed(true);
+			searchText.setInputPrompt( "Search ...");
+			searchText.setImmediate( true );
+			
+			searchText.addTextChangeListener( new TextChangeListener() {
+	
+				private static final long serialVersionUID = 1L;
+	
+				@Override
+				public void textChange( TextChangeEvent event ) {
+					
+					applyFilter( event.getText());
+					
+				}
+				
+			});
+			
+			
+			toolBarLayout.addComponent( searchIcon );
+			toolBarLayout.addComponent( searchText );
+			toolBarLayout.addComponent( deleteIcon );
+			Label glue = new Label( "" );
+			toolBarLayout.addComponent( glue );
+			toolBarLayout.setExpandRatio( glue,  1.0f );
+
+		}
+		
+		return toolBarLayout;
+	}
+
 	@Override
 	public void transactionSelected(BaseTransaction user) { }
 
@@ -179,16 +265,19 @@ public class TrnsListComponent extends VerticalLayout implements TransactionsMod
 		
 		dataFromModel( list );
 		
-		applyFilter();
+		applyFilter( searchText.getValue() );
 	}
 
-	private void applyFilter() {
+//	private void applyFilter() { applyFilter( null ); }
+	
+	private void applyFilter( String searchString ) { 
 
 		if ( trnsTable.getContainerDataSource() != null ) {
 			
 			(( Filterable )trnsTable.getContainerDataSource()).removeAllContainerFilters();
 		
-			Filter filter = model.getFilter();
+			TrnsFilter filter = model.getFilter();
+			filter.setSearchString( searchString );
 				
 			(( Filterable )trnsTable.getContainerDataSource()).addContainerFilter( filter );
 				

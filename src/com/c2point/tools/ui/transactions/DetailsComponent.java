@@ -2,6 +2,7 @@ package com.c2point.tools.ui.transactions;
 
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.format.DateTimeFormat;
@@ -239,6 +240,12 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 		getLabelFromGrid( "SN:", 0, 6 );
 		getLabelFromGrid( "Barcode:", 0, 7 );
 		
+		
+		getLabelFromGrid( "<b>" + StringUtils.defaultString( trn.getTool().getFullName()) + "</b>", 	  1, 4 );
+		getLabelFromGrid( "<b>" + StringUtils.defaultString( trn.getToolItem().getTool().getCode()) + "</b>",	  1, 5 );
+		getLabelFromGrid( "<b>" + StringUtils.defaultString( trn.getToolItem().getSerialNumber()) + "</b>", 	  1, 6 );
+		getLabelFromGrid( "<b>" + StringUtils.defaultString( trn.getToolItem().getBarcode()) + "</b>", 1, 7 );
+		
 		Component s = getLabelFromGrid( "<hr/>", 8 );
 		s.setWidth( "100%" );
 //		s.setHeight( "2px" );
@@ -257,61 +264,14 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 		} else if ( trn.getTrnOperation() == TransactionOperation.USERCHANGED ) {
 
 			getLabelFromGrid( 
-					"<b>" + trn.getSourceUser().getFirstAndLastNames()
+					"<b>" + StringUtils.defaultString( trn.getSourceUser().getFirstAndLastNames())
 					+ "&emsp;>>>>&emsp; "
-					+ trn.getDestUser().getFirstAndLastNames()
+					+ StringUtils.defaultString( trn.getDestUser().getFirstAndLastNames())
 					+ "</b>"
 					, 9);
 			
 		}
 		
-/*		
-		if ( com == null ) {
-			
-			com = new Label( "", ContentMode.HTML );
-			gl.addComponent( com, 0, 0, 1, 0 );
-		}
-		
-		
-				+ "Tool: " + "<b>" + trn.getTool().getFullName() + "</b>"
-				;
-				
-				if ( trn.getToolItem() != null ) {
-					content = content.concat(
-						  "Code: " + "<b>" + trn.getToolItem().getTool().getCode() + "</b>"
-						+ "SN: " + "<b>" + trn.getToolItem().getSerialNumber() + "</b>"
-						+ "Barcode: " + "<b>" + trn.getToolItem().getBarcode() + "</b>"
-					
-							
-					);
-				}
-		
-				if ( trn.getTrnOperation() == TransactionOperation.NEWSTATUS ) {
-
-					content = content.concat(
-						  "<hr>"
-						+ "New Status: " + "<b>" + trn.getNewStatus().toString( model.getApp().getSessionData().getBundle()) + "</b>"
-							
-					);
-				
-				} else if ( trn.getTrnOperation() == TransactionOperation.USERCHANGED ) {
-					
-					content = content.concat(
-						  "<hr>"
-						+ "<b>" + trn.getSourceUser().getFirstAndLastNames()
-						+ "&emsp;>>>>&emsp; "
-						+ trn.getDestUser().getFirstAndLastNames()
-						+ "</b>"
-					);
-					
-				} else {
-					
-				}
-		
-		
-		return content;
-		
-*/		
 	}
 
 	private void clearAdditionalFields() {
@@ -381,8 +341,5 @@ public class DetailsComponent extends VerticalLayout implements TransactionsMode
 		
 		return com;
 	}
-	
-
-		
 	
 }

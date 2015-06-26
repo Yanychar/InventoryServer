@@ -1,5 +1,6 @@
 package com.c2point.tools.ui.toolsmgmt;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
@@ -568,19 +569,32 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 	class ToolsViewFilter implements Container.Filter {
 
 		private static final long serialVersionUID = 1L;
-		private String searchString;
+
+		private Collection<String>	searchStringArray;
 		
 		public ToolsViewFilter( String searchString ) {
 		
-			this.searchString  = searchString; 
+			setSearchString( searchString );
 		}
+		
+		public void setSearchString( String searchString ) {
+
+			if ( searchString != null && searchString.trim().length() > 0 ) {
+				
+					searchStringArray = Arrays.asList( searchString.trim().split( " " ));
+					
+			} else {
+				this.searchStringArray = null;
+			}
+		}
+
 		
 		@Override
 		public boolean passesFilter(Object itemId, Item item)
 				throws UnsupportedOperationException {
 			
-			if ( searchString == null || searchString.length() == 0 ) return true;
-						
+			boolean bRes = true;
+
 			ToolItem toolItem;
 			try {
 				toolItem = ( ToolItem ) item.getItemProperty( "data" ).getValue();
@@ -590,38 +604,29 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			
 			if ( toolItem == null ) return false;
 			
-			try {
+			if ( this.searchStringArray != null && this.searchStringArray.size() > 0 ) {
+
 				Tool tool = toolItem.getTool();
 				
-				if ( tool.getName() != null &&
-					 tool.getName().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
-				
-				if ( tool.getDescription() != null &&
-					 tool.getDescription().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
+				for ( String searchString : this.searchStringArray ) {
+							
+					
+					try {
 
-				try {
-					if ( tool.getManufacturer().getName().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
-				} catch ( Exception e ) {}
-				
-				
-				if ( tool.getModel() != null &&
-						 tool.getModel().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
-				
-				if ( toolItem.getBarcode() != null &&
-					 toolItem.getBarcode().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
-				
-				if ( toolItem.getSerialNumber() != null &&
-					 toolItem.getSerialNumber().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
-				
-				if ( toolItem.getCurrentUser() != null &&
-					 toolItem.getCurrentUser().getFirstAndLastNames().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
-				
-			} catch ( Exception e ) {
-				return false;
+						bRes = bRes
+								&& 
+							  ( checkToolName( tool, searchString ) || checkToolItem( toolItem, searchString ));
+								
+					} catch ( Exception e ) {
+					}
+					
+					if ( !bRes )
+						break;
+					
+				}
 			}
 			
-			
-			return false;
+			return bRes;
 		}
 
 		@Override
@@ -631,6 +636,50 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			
 		}
 
+		private boolean checkToolName( Tool tool, String searchString ) {
+			
+			if ( tool == null ) return false;
+
+			try {
+				if ( tool.getName() != null &&
+					 tool.getName().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
+				
+				if ( tool.getDescription() != null &&
+					 tool.getDescription().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
+
+				if ( tool.getManufacturer() != null && tool.getManufacturer().getName() != null 
+						&& tool.getManufacturer().getName().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
+					
+				if ( tool.getModel() != null &&
+						 tool.getModel().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
+
+			} catch ( Exception e ) {
+			}
+			
+			return false;
+		}
+		
+		private boolean checkToolItem( ToolItem toolItem, String searchString ) {
+			
+			if ( toolItem == null ) return false;
+			
+			try {
+				
+				if ( toolItem.getBarcode() != null &&
+					 toolItem.getBarcode().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
+				
+				if ( toolItem.getSerialNumber() != null &&
+					 toolItem.getSerialNumber().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
+
+				if ( toolItem.getCurrentUser() != null &&
+						 toolItem.getCurrentUser().getFirstAndLastNames().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
+				
+			} catch ( Exception e ) {
+			}
+			
+			return false;
+		}
+		
 	}	
 
 	private void addButtonPressed() {
