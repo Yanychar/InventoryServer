@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.InventoryUI;
+import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.access.SecurityContext;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
@@ -19,10 +20,14 @@ public class AbstractModel  {
 	
 	protected EventListenerList	listenerList; 
 	
-	
 	public enum EditModeType { VIEW, EDIT, ADD };
 	
 	private EditModeType	editMode;
+	
+	// Allows particular features according to the access rights
+	private boolean		allowOtherCompanies = false; 
+	private boolean		allowEdit = false; 
+	
 
 	public AbstractModel() {
 		
@@ -45,6 +50,8 @@ public class AbstractModel  {
 	}
 	
 	public OrgUser getSessionOwner() { return app.getSessionData().getOrgUser(); }
+
+/*	
 	public Organisation getOrg() { 
 	
 		if ( app.getSessionData().getOrg() != null ) {
@@ -55,6 +62,7 @@ public class AbstractModel  {
 		return getSessionOwner().getOrganisation();
 		
 	}
+*/	
 	public SecurityContext getSecurityContext() { return app.getSessionData().getContext(); }
 
 	public EditModeType getEditMode() { return this.editMode; }
@@ -63,4 +71,19 @@ public class AbstractModel  {
 	public void setEditMode() { setEditMode( EditModeType.EDIT ); }
 	public void clearEditMode() { setEditMode( EditModeType.VIEW ); }
 
+	public void setupAccess( FunctionalityType fType, Organisation org ) {
+
+		this.allowOtherCompanies = getApp().getSessionData().getContext().hasViewPermissionAll( fType );
+		this.allowEdit = getApp().getSessionData().getContext().hasEditPermission( 
+								FunctionalityType.TOOLS_MGMT, app.getSessionOwner(), org );
+		
+	}
+	
+	public boolean allowsOtherCompanies() { return this.allowOtherCompanies; }
+	public boolean allowsToEdit() { return this.allowEdit; }
+	
+
+	
+	
+	
 }

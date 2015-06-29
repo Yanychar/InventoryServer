@@ -27,7 +27,6 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.datalayer.SettingsFacade;
 import com.c2point.tools.datalayer.ToolsFacade;
 import com.c2point.tools.datalayer.UsersFacade;
@@ -134,7 +133,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		// 4. Specific validation if necessary
 		
 		// 4.1 Categories validation
-		if ( catHolder == null ) catHolder = new CategoriesHolder( model.getOrg());
+		if ( catHolder == null ) catHolder = new CategoriesHolder( model.getSelectedOrg());
 		
 		if ( nextLine[ 0 ] == null || nextLine[ 0 ].length() == 0 ) {
 
@@ -220,7 +219,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 	
 			resTool.setCategory( category );
 			
-			resTool.setOrg( model.getOrg());
+			resTool.setOrg( model.getSelectedOrg());
 	
 			logger.debug( "Created " + resTool );
 
@@ -231,7 +230,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 
 	private Tool findExistingTool( Tool tool ) {
 	
-		Tool resTool = ToolsFacade.getInstance().getTool( model.getOrg(), tool );
+		Tool resTool = ToolsFacade.getInstance().getTool( model.getSelectedOrg(), tool );
 		
 		return resTool;
 	}
@@ -296,7 +295,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		) {
 			
 			// Find User (org, firstName, lastName)
-			List< OrgUser > userList = UsersFacade.getInstance().listByFIO( model.getOrg(), nextLine[ 13 ], nextLine[ 14 ] );
+			List< OrgUser > userList = UsersFacade.getInstance().listByFIO( model.getSelectedOrg(), nextLine[ 13 ], nextLine[ 14 ] );
 			// If user found set it as current user
 			if ( userList != null ) {
 				item.setCurrentUser( userList.get( 0 ));
@@ -346,27 +345,27 @@ public class ToolItemsImportProcessor extends FileProcessor {
 				
 				try {
 					lastUniqueCode = Long.parseLong( 
-							SettingsFacade.getInstance().getProperty( model.getOrg(), "lastToolCode" ));
+							SettingsFacade.getInstance().getProperty( model.getSelectedOrg(), "lastToolCode" ));
 				} catch ( NumberFormatException e ) {
 					
 					logger.error( "Wrong value for lastToolCode was written in properties: " + 
-							SettingsFacade.getInstance().getProperty( model.getOrg(), "lastToolCode" ));	
+							SettingsFacade.getInstance().getProperty( model.getSelectedOrg(), "lastToolCode" ));	
 				}
 				
 				if ( lastUniqueCode == 0 ) {
 					
-					lastUniqueCode = ToolsFacade.getInstance().count( model.getOrg());
+					lastUniqueCode = ToolsFacade.getInstance().count( model.getSelectedOrg());
 
 				}
 
 				int codeLength = 6;
 				try {
 					codeLength = Integer.parseInt( 
-							SettingsFacade.getInstance().getProperty( model.getOrg(), "toolCodeLength", "4" ));
+							SettingsFacade.getInstance().getProperty( model.getSelectedOrg(), "toolCodeLength", "4" ));
 				} catch ( NumberFormatException e ) {
 					
 					logger.error( "Wrong value for length of ToolCode was written in properties: " + 
-							SettingsFacade.getInstance().getProperty( model.getOrg(), "toolCodeLength" ));	
+							SettingsFacade.getInstance().getProperty( model.getSelectedOrg(), "toolCodeLength" ));	
 				}
 				
 				lastUniqueCode++;
@@ -378,7 +377,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 				);
 
 				// Store new lastUniqueCode
-				SettingsFacade.getInstance().setProperty( model.getOrg(), 
+				SettingsFacade.getInstance().setProperty( model.getSelectedOrg(), 
 														  "lastToolCode", 
 														  Long.toString( lastUniqueCode ));
 				// set up User code

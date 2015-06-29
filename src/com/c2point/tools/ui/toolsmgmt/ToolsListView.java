@@ -237,6 +237,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			itemsTable.setValue( itemsTable.firstItemId());
 		}
 		
+		addButton.setEnabled( model.allowsToEdit());
 		
 	}
 	
@@ -507,41 +508,42 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
         HorizontalLayout buttonsSet = new HorizontalLayout();
 
         buttonsSet.setSpacing( true );
+
+		if ( model.allowsToEdit()) {
         
-		final NativeButton copyButton = 	createButton( "icons/16/copy.png", "toolsmgmt.copy.tooltip", item ); 
-		final NativeButton editButton = 	createButton( "icons/16/edit.png", "toolsmgmt.edit.tooltip", item );
-		final NativeButton deleteButton = createButton( "icons/16/delete.png", "toolsmgmt.delete.tooltip", item );
-        
-        copyButton.addClickListener( new ClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void buttonClick( ClickEvent event ) {
-				// Button data is Item. Item's data property is ToolItem
-				copyButtonPressed( (ToolItem) ((Item) copyButton.getData()).getItemProperty( "data" ).getValue());
-			}
-        });
-        editButton.addClickListener( new ClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void buttonClick( ClickEvent event ) {
-				// Button data is Item. Item's data property is ToolItem
-				editButtonPressed( (ToolItem) ((Item) copyButton.getData()).getItemProperty( "data" ).getValue());
-			}
-        });
-        deleteButton.addClickListener( new ClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void buttonClick( ClickEvent event ) {
-				// Button data is Item. Item's data property is ToolItem
-				deleteButtonPressed( (ToolItem) ((Item) copyButton.getData()).getItemProperty( "data" ).getValue());
-			}
-        });
-        
-        
-        
-        buttonsSet.addComponent( copyButton );
-        buttonsSet.addComponent( editButton );
-        buttonsSet.addComponent( deleteButton );
+			final NativeButton copyButton = 	createButton( "icons/16/copy.png", "toolsmgmt.copy.tooltip", item ); 
+			final NativeButton editButton = 	createButton( "icons/16/edit.png", "toolsmgmt.edit.tooltip", item );
+			final NativeButton deleteButton = createButton( "icons/16/delete.png", "toolsmgmt.delete.tooltip", item );
+	        
+	        copyButton.addClickListener( new ClickListener() {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void buttonClick( ClickEvent event ) {
+					// Button data is Item. Item's data property is ToolItem
+					copyButtonPressed( (ToolItem) ((Item) copyButton.getData()).getItemProperty( "data" ).getValue());
+				}
+	        });
+	        editButton.addClickListener( new ClickListener() {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void buttonClick( ClickEvent event ) {
+					// Button data is Item. Item's data property is ToolItem
+					editButtonPressed( (ToolItem) ((Item) copyButton.getData()).getItemProperty( "data" ).getValue());
+				}
+	        });
+	        deleteButton.addClickListener( new ClickListener() {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void buttonClick( ClickEvent event ) {
+					// Button data is Item. Item's data property is ToolItem
+					deleteButtonPressed( (ToolItem) ((Item) copyButton.getData()).getItemProperty( "data" ).getValue());
+				}
+	        });
+	        
+	        buttonsSet.addComponent( copyButton );
+	        buttonsSet.addComponent( editButton );
+	        buttonsSet.addComponent( deleteButton );
+		}
     	
     	return buttonsSet;
     }
@@ -690,7 +692,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		//	Set code, category, org
 		model.setToolCode( newTool );
 		newTool.setCategory( model.getSelectedCategory());
-		newTool.setOrg( model.getOrg());
+		newTool.setOrg( model.getSelectedOrg());
 
 		ToolItem newItem = new ToolItem( newTool, model.getSessionOwner(), model.getSessionOwner());
 		// Set tool, user as session owner, status, personal flag

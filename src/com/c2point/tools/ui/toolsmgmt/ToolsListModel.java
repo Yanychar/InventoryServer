@@ -9,6 +9,7 @@ import com.c2point.tools.datalayer.CategoriesFacade;
 import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.datalayer.ToolsFacade;
 import com.c2point.tools.datalayer.UsersFacade;
+import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
@@ -26,7 +27,7 @@ public class ToolsListModel extends AbstractModel {
 	private EditMode			mode;
 	
 	
-	private Organisation 		org;
+	private Organisation 		selectedOrg;
 	private ToolItem 			selectedItem;
 	private Category 			selectedCategory = null;	
 
@@ -39,8 +40,10 @@ public class ToolsListModel extends AbstractModel {
 	public ToolsListModel( Organisation org ) {
 		super();
 		
-		setOrg( org != null ? org : getApp().getSessionData().getOrg());
+		this.selectedOrg = ( org != null ? org : getApp().getSessionData().getOrg());
 		setViewMode();
+
+		setupAccess( FunctionalityType.TOOLS_MGMT, this.selectedOrg );
 		
 	}
 	
@@ -117,8 +120,7 @@ public class ToolsListModel extends AbstractModel {
 		fireSelected( selectedItem );
 	}
 
-	public Organisation getOrg() { return org; }
-	public void setOrg( Organisation org ) { this.org = org; }
+	public Organisation getSelectedOrg() { return selectedOrg; }
 	
 	public void setMode( EditMode mode ) { this.mode = mode; }
 	public void setViewMode() { setMode( EditMode.VIEW ); }
@@ -127,6 +129,18 @@ public class ToolsListModel extends AbstractModel {
 	public void setCopyMode() { setMode( EditMode.COPY ); }
 	public EditMode getMode() { return this.mode; }
 	
+	public void setSelectedOrg( Organisation selectedOrg ) {
+		
+		if ( getSelectedOrg() != selectedOrg ) {
+			
+			this.selectedOrg = selectedOrg;
+
+			setupAccess( FunctionalityType.TOOLS_MGMT, this.selectedOrg );
+			
+			fireListChanged();
+		}
+	}
+	
 
 	public Collection<ToolItem> getItems() {
 
@@ -134,13 +148,13 @@ public class ToolsListModel extends AbstractModel {
 			
 			if ( logger.isDebugEnabled()) logger.debug( "Read all ToolItems has been call!" );
 			
-			return ItemsFacade.getInstance().getItems( org );
+			return ItemsFacade.getInstance().getItems( getSelectedOrg());
 			
 		}
 		
 		if ( logger.isDebugEnabled()) logger.debug( "Read Category related ToolItems has been call!" );
 
-		return ItemsFacade.getInstance().getItems( selectedCategory, org );
+		return ItemsFacade.getInstance().getItems( selectedCategory, getSelectedOrg());
 		
 	}
 
@@ -152,7 +166,7 @@ public class ToolsListModel extends AbstractModel {
 
 	public Collection<Category> getCategories() {
 		
-		return CategoriesFacade.getInstance().listTop( org );
+		return CategoriesFacade.getInstance().listTop( getSelectedOrg());
 	}
 
 	private Category topCat = null; 
@@ -186,23 +200,23 @@ public class ToolsListModel extends AbstractModel {
 
 	public Collection<OrgUser> getUsers() {
 		
-		return UsersFacade.getInstance().list( org );
+		return UsersFacade.getInstance().list( getSelectedOrg());
 	}
 
 	public Collection<Tool> getTools() {
 		
 		if ( this.selectedCategory != null ) {
 
-			return ToolsFacade.getInstance().getTools( org, this.selectedCategory );
+			return ToolsFacade.getInstance().getTools( getSelectedOrg(), this.selectedCategory );
 		}
 		
 				
-		return ToolsFacade.getInstance().getTools( org );
+		return ToolsFacade.getInstance().getTools( getSelectedOrg());
 	}
 
 	public void setToolCode( Tool tool ) {
 
-		ToolsFacade.getInstance().setUniqueCode( tool, org );
+		ToolsFacade.getInstance().setUniqueCode( tool, getSelectedOrg());
 		
 	}
 

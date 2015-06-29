@@ -69,6 +69,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		
 		setModel( model );
 		
+		
 		initView();
 		
 		model.addChangedListener(( ToolItemChangedListener ) this );
@@ -218,7 +219,6 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 			}
 		});
 
-		
 		toolBarLayout.addComponent( editcloseButton);
 		toolBarLayout.addComponent( deleteButton);
 		
@@ -227,6 +227,9 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 
 	private void updateButtons() {
 
+		editcloseButton.setEnabled( model.allowsToEdit());
+		deleteButton.setEnabled( model.allowsToEdit());
+			
 		switch ( model.getMode()) {
 			case ADD:
 			case COPY:
@@ -579,7 +582,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 			status.addItem( ItemStatus.UNKNOWN );
 			
 			boolean freeAllowed = Boolean.parseBoolean(
-					SettingsFacade.getInstance().getProperty( model.getOrg(), "FreeStatusAllowed", "false" ));
+					SettingsFacade.getInstance().getProperty( model.getSelectedOrg(), "FreeStatusAllowed", "false" ));
 			if ( freeAllowed ) {
 				status.addItem( ItemStatus.FREE );
 			}

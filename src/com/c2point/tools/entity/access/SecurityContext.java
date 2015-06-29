@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.AccessRightsFacade;
+import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
 
@@ -56,6 +57,22 @@ public class SecurityContext {
 	}
 
 	public boolean hasEditPermissionAll( FunctionalityType func ) { return getPermission( func, OwnershipType.ANY ) == PermissionType.RW; 	}
+
+	
+	public boolean hasEditPermission( FunctionalityType func, OrgUser user, Organisation org ) {
+		
+		if ( user.getOrganisation().getId() == org.getId()) {
+			
+			return getPermission( func, OwnershipType.COMPANY ) == PermissionType.RW;
+			
+		} else {
+
+			return getPermission( func, OwnershipType.ANY ) == PermissionType.RW;
+			
+		}
+		
+	}
+	
 	
 	// Can current user change item? It depends does he own item or not
 	public boolean canChangeToolItem( FunctionalityType func, ToolItem item ) {
