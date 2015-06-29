@@ -161,7 +161,6 @@ public class ToolsManagementView extends AbstractMainView {
 		importButton.addProgressListener( importComponent );
 
 		exportButton = new Button( this.model.getApp().getResourceStr( "toolsmgmt.button.export" ));
-		exportButton.setEnabled( false );
 		
 		Label glue = new Label( " " );
 		glue.setHeight("100%");
@@ -179,6 +178,8 @@ public class ToolsManagementView extends AbstractMainView {
 		
 		toolbar .setExpandRatio( glue, 1.0f );
 		
+		importButton.setEnabled( model.allowsToEdit());
+		exportButton.setEnabled( model.allowsToEdit());
 		
 	}
 	
