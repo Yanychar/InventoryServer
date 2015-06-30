@@ -78,17 +78,19 @@ public class FilterComponent extends Panel {
 
 		dateToView();
 		
-		orgSelector.addValueChangeListener( new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void valueChange( ValueChangeEvent event ) {
-
-				model.setSelectedOrg(( Organisation ) event.getProperty().getValue());
+		if ( model.allowsOtherCompanies()) {
+			orgSelector.addValueChangeListener( new ValueChangeListener() {
+				private static final long serialVersionUID = 1L;
+	
+				@Override
+				public void valueChange( ValueChangeEvent event ) {
+	
+					model.setSelectedOrg(( Organisation ) event.getProperty().getValue());
+					
+				}
 				
-			}
-			
-		});
+			});
+		}
 		
 		startDF.addValueChangeListener( new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -179,39 +181,42 @@ boolean postponeUpdate;
 		
 		boolean bRet = false;
 
-		orgSelector = new ComboBox( model.getApp().getResourceStr( "trnsmgmt.label.select.org", "Select Company" ) + ": " );
+		if ( model.allowsOtherCompanies()) {
 		
-		// Read Organisations list or just own Org
-		SecurityContext context = model.getApp().getSessionData().getContext();
-
-		if ( context.hasViewPermissionAll( FunctionalityType.TRN_MGMT )) {
-			// User can see Transactions for all companies
+			orgSelector = new ComboBox( model.getApp().getResourceStr( "trnsmgmt.label.select.org", "Select Company" ) + ": " );
 			
-			orgSelector.setWidth( "40ex" );
-			orgSelector.setFilteringMode( FilteringMode.CONTAINS );
-			orgSelector.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
-			orgSelector.setNullSelectionAllowed( false );
-			orgSelector.setInvalidAllowed( false );
-			orgSelector.setImmediate( true );
-
-			Collection<Organisation> orgsList = 
-					OrganisationFacade.getInstance().getOrganisations();
-			
-			if ( orgsList != null && orgsList.size() > 0 ) {
-
-				for ( Organisation org : orgsList ) {
-					if ( org != null ) {
-
-						orgSelector.addItem( org );
-						orgSelector.setItemCaption( org, org.getName());
-					}
-				}
-				orgSelector.select( model.getOrg());
+			// Read Organisations list or just own Org
+			SecurityContext context = model.getApp().getSessionData().getContext();
+	
+			if ( context.hasViewPermissionAll( FunctionalityType.TRN_MGMT )) {
+				// User can see Transactions for all companies
 				
-				bRet = true;
+				orgSelector.setWidth( "40ex" );
+				orgSelector.setFilteringMode( FilteringMode.CONTAINS );
+				orgSelector.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
+				orgSelector.setNullSelectionAllowed( false );
+				orgSelector.setInvalidAllowed( false );
+				orgSelector.setImmediate( true );
+	
+				Collection<Organisation> orgsList = 
+						OrganisationFacade.getInstance().getOrganisations();
+				
+				if ( orgsList != null && orgsList.size() > 0 ) {
+	
+					for ( Organisation org : orgsList ) {
+						if ( org != null ) {
+	
+							orgSelector.addItem( org );
+							orgSelector.setItemCaption( org, org.getName());
+						}
+					}
+					orgSelector.select( model.getSelectedOrg());
+					
+					bRet = true;
+					
+				}
 				
 			}
-			
 		}
 		
 		return bRet;

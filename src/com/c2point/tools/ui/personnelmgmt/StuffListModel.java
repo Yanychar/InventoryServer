@@ -1,6 +1,5 @@
 package com.c2point.tools.ui.personnelmgmt;
 
-import java.text.MessageFormat;
 import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,18 +8,18 @@ import org.apache.logging.log4j.Logger;
 import com.c2point.tools.datalayer.AuthenticationFacade;
 import com.c2point.tools.datalayer.PresenceFilterType;
 import com.c2point.tools.datalayer.UsersFacade;
+import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel;
-import com.vaadin.ui.Notification;
 
 public class StuffListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( StuffListModel.class.getName());
 
 	private PresenceFilterType	presenceFilter = PresenceFilterType.CURRENT;
 	
-	private Organisation 		org;
+	private Organisation 		selectedOrg;
 	private OrgUser 			selectedUser;
 	
 
@@ -33,12 +32,10 @@ public class StuffListModel extends AbstractModel {
 	public StuffListModel( Organisation org ) {
 		super();
 		
-		setOrg( 
-				org != null ? 
-					org 
-				: 
-					getApp().getSessionData().getOrg()
-		);
+		this.selectedOrg = ( org != null ? org : getApp().getSessionData().getOrg());
+		
+		setupAccess( FunctionalityType.USERS_MGMT, this.selectedOrg );
+		
 	}
 	
 	public void initModel() {
@@ -113,12 +110,23 @@ public class StuffListModel extends AbstractModel {
 		fireSelected( selectedUser );
 	}
 
-	public Organisation getOrg() { return org; }
-	public void setOrg( Organisation org ) { this.org = org; }
+	public Organisation getSelectedOrg() { return selectedOrg; }
+	public void setSelectedOrg( Organisation selectedOrg ) {
+		
+		if ( getSelectedOrg() != selectedOrg ) {
+			
+			this.selectedOrg = selectedOrg;
+
+			setupAccess( FunctionalityType.TOOLS_MGMT, this.selectedOrg );
+			
+			fireListChanged();
+		}
+	}
+	
 
 	public Collection<OrgUser> getUsers() {
 	
-		return UsersFacade.getInstance().list( getOrg(), getPresenceFilter());
+		return UsersFacade.getInstance().list( getSelectedOrg(), getPresenceFilter());
 		
 	}
 

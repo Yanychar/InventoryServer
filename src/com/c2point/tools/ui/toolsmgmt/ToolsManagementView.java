@@ -19,7 +19,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 
 public class ToolsManagementView extends AbstractMainView {
@@ -32,7 +32,7 @@ public class ToolsManagementView extends AbstractMainView {
 
 	private ComboBox			orgSelector;
 	
-	private HorizontalLayout	toolbar;
+	private Panel				toolbar;
 	private UploadComponent		importButton;
 	private Button				exportButton;
 	
@@ -49,6 +49,7 @@ public class ToolsManagementView extends AbstractMainView {
 		
 		this.setSizeFull();
 		this.setSpacing( true );
+		this.setWidth( "100%" );
 
 		this.model = new ToolsListModel();
 
@@ -56,27 +57,18 @@ public class ToolsManagementView extends AbstractMainView {
 		initToolItemsListView();
 		initItemView();
 		
-		VerticalLayout vtSplit = new VerticalLayout();
-		vtSplit.setWidth( "100%" );
-		vtSplit.setSpacing( true );
-		vtSplit.setMargin( true );
-		
-		
 		HorizontalSplitPanel hzSplit = new HorizontalSplitPanel();
-		
-
+		hzSplit.setSplitPosition( 65, Unit.PERCENTAGE );
+		hzSplit.setSizeFull();
+		hzSplit.setLocked( false );
+	
 		hzSplit.addComponent( toolsList );
 		hzSplit.addComponent( toolItemView );
 
-		hzSplit.setSplitPosition( 65, Unit.PERCENTAGE );
+		this.addComponent( toolbar );
+		this.addComponent( hzSplit );
 		
-		vtSplit.addComponent( toolbar );
-		vtSplit.addComponent( hzSplit );
-		
-		vtSplit.setHeight( "100%" );
-		vtSplit.setExpandRatio( hzSplit, 1f );
-		
-		this.addComponent( vtSplit );
+		this.setExpandRatio( hzSplit, 1f );
 		
 		if ( model.allowsOtherCompanies()) { 
 			orgSelector.addValueChangeListener( new ValueChangeListener() {
@@ -112,10 +104,14 @@ public class ToolsManagementView extends AbstractMainView {
 
 	private void initToolbar() {
 
-		toolbar = new HorizontalLayout();
-		toolbar.setWidth( "100%" );
-		toolbar.setSpacing( true );
-		toolbar.setMargin( true );
+		toolbar = new Panel();
+		
+		HorizontalLayout content = new HorizontalLayout();
+		toolbar.setContent( content );
+		
+		content.setWidth( "100%" );
+		content.setSpacing( true );
+		content.setMargin( true );
 
 		if ( model.allowsOtherCompanies()) {
 		
@@ -149,7 +145,6 @@ public class ToolsManagementView extends AbstractMainView {
 				
 		}
 		
-		
 		importButton = new UploadComponent( this.model.getApp().getResourceStr( "toolsmgmt.button.import" ));
 		ToolItemsImportProcessor processor = new ToolItemsImportProcessor( model, importButton.getUploadFile());
 		
@@ -165,18 +160,17 @@ public class ToolsManagementView extends AbstractMainView {
 		Label glue = new Label( " " );
 		glue.setHeight("100%");
 
-		
 		// Add Organisation Selector if necessary
 		if ( model.allowsOtherCompanies()) {
-			toolbar.addComponent( orgSelector );
+			content.addComponent( orgSelector );
 		}
 
-		toolbar.addComponent( glue );
+		content.addComponent( glue );
 	
-		toolbar.addComponent( importButton );
-		toolbar.addComponent( exportButton );
+		content.addComponent( importButton );
+		content.addComponent( exportButton );
 		
-		toolbar .setExpandRatio( glue, 1.0f );
+		content .setExpandRatio( glue, 1.0f );
 		
 		importButton.setEnabled( model.allowsToEdit());
 		exportButton.setEnabled( model.allowsToEdit());

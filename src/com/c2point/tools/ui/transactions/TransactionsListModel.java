@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.TransactionsFacade;
+import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.transactions.BaseTransaction;
 import com.c2point.tools.ui.AbstractModel;
@@ -14,7 +15,7 @@ import com.c2point.tools.ui.AbstractModel;
 public class TransactionsListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( TransactionsListModel.class.getName());
 
-	private Organisation 	org;
+	private Organisation 	selectedOrg;
 	
 	private TrnsFilter		filter;
 	
@@ -26,10 +27,12 @@ public class TransactionsListModel extends AbstractModel {
 	public TransactionsListModel( Organisation org ) {
 		super();
 		
-		setOrg( org != null ? org : getApp().getSessionData().getOrg());
+		this.selectedOrg = ( org != null ? org : getApp().getSessionData().getOrg());
 		
 		filter = new TrnsFilter( org );
-	
+
+		setupAccess( FunctionalityType.TRN_MGMT, this.selectedOrg );
+		
 	}
 	
 	public void addChangedListener( TransactionsModelListener listener ) {
@@ -57,25 +60,24 @@ public class TransactionsListModel extends AbstractModel {
 	    }
 	}
 
-	
-	public Organisation getOrg() { return org; }
-	public void setOrg( Organisation org ) { this.org = org; }
+	public Organisation getSelectedOrg() { return selectedOrg; }
+	public void setSelectedOrg( Organisation selectedOrg ) {
+		
+		if ( getSelectedOrg() != selectedOrg ) {
+			
+			this.selectedOrg = selectedOrg;
+
+			setupAccess( FunctionalityType.TRN_MGMT, this.selectedOrg );
+			
+			readData();			
+		}
+	}
 	
 	public void	selectTransaction( BaseTransaction trn ) {
 		if ( logger.isDebugEnabled()) logger.debug( "Fire transactionSelected with trn = " + trn.toStringShort());
 		fireTransactionSelected( trn );
 	}
 
-	public void setSelectedOrg( Organisation org ) {
-		
-		if ( getOrg() != org ) {
-			
-			setOrg( org );
-			
-			readData();			
-		}
-	}
-	
 	
 	/*
 	 * Read data from DB to (re-)initialize the model
@@ -88,7 +90,7 @@ public class TransactionsListModel extends AbstractModel {
 		TransactionsFacade tf = TransactionsFacade.getInstance();
 
 		Collection<BaseTransaction> trnsList = tf
-					.getTransactions( org, filter.getDateStart(), new Date( filter.getDateEnd().getTime() + 1000 * 60*60*24 ));
+					.getTransactions( selectedOrg, filter.getDateStart(), new Date( filter.getDateEnd().getTime() + 1000 * 60*60*24 ));
 		
 		if ( trnsList != null && trnsList.size() > 0 ) {
 			// Create the set of ToolItems and related Transactions from read above

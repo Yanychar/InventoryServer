@@ -23,10 +23,6 @@ import com.c2point.tools.ui.listeners.ToolItemChangedListener;
 public class ToolsListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( ToolsListModel.class.getName());
 
-	public enum EditMode { VIEW, EDIT, ADD, COPY, ALLOWED_ALL };
-	private EditMode			mode;
-	
-	
 	private Organisation 		selectedOrg;
 	private ToolItem 			selectedItem;
 	private Category 			selectedCategory = null;	
@@ -121,14 +117,6 @@ public class ToolsListModel extends AbstractModel {
 	}
 
 	public Organisation getSelectedOrg() { return selectedOrg; }
-	
-	public void setMode( EditMode mode ) { this.mode = mode; }
-	public void setViewMode() { setMode( EditMode.VIEW ); }
-	public void setEditMode() { setMode( EditMode.EDIT ); }
-	public void setAddMode() { setMode( EditMode.ADD ); }
-	public void setCopyMode() { setMode( EditMode.COPY ); }
-	public EditMode getMode() { return this.mode; }
-	
 	public void setSelectedOrg( Organisation selectedOrg ) {
 		
 		if ( getSelectedOrg() != selectedOrg ) {

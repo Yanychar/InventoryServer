@@ -14,7 +14,6 @@ import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.ui.listeners.EditInitiationListener;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
-import com.c2point.tools.ui.toolsmgmt.ToolsListModel.EditMode;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
@@ -230,7 +229,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		editcloseButton.setEnabled( model.allowsToEdit());
 		deleteButton.setEnabled( model.allowsToEdit());
 			
-		switch ( model.getMode()) {
+		switch ( model.getEditMode()) {
 			case ADD:
 			case COPY:
 			case EDIT:
@@ -253,11 +252,11 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 			
 	}
 	private void updateFields() {
-		updateFields( model.getMode());
+		updateFields( false );
 	}
-	private void updateFields( ToolsListModel.EditMode mode ) {
+	private void updateFields( boolean allowUpdateAll ) {
 		
-		if ( mode == EditMode.ALLOWED_ALL ) {
+		if ( allowUpdateAll ) {
 			toolText.setReadOnly( false );
 			code.setReadOnly( false );
 			description.setReadOnly( false );
@@ -273,19 +272,19 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 			barcode.setReadOnly( false );
 			
 		} else {
-			toolText.setReadOnly( mode != EditMode.ADD );
-			code.setReadOnly( mode != EditMode.ADD ); // ( mode == EditMode.COPY || mode == EditMode.VIEW );
-			description.setReadOnly( mode != EditMode.ADD ); //( mode == EditMode.COPY || mode == EditMode.VIEW );
-			category.setReadOnly( mode != EditMode.ADD ); 
-			manufacturer.setReadOnly( mode != EditMode.ADD);
-			toolModel.setReadOnly( mode != EditMode.ADD );
+			toolText.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD );
+			code.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD ); // ( mode == EditMode.COPY || mode == EditMode.VIEW );
+			description.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD ); //( mode == EditMode.COPY || mode == EditMode.VIEW );
+			category.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD ); 
+			manufacturer.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD);
+			toolModel.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD );
 
-			personalFlag.setReadOnly( mode == EditMode.VIEW );
-			currentUser.setReadOnly( mode == EditMode.VIEW );
-			status.setReadOnly( mode == EditMode.VIEW );
-			reservedBy.setReadOnly( mode == EditMode.VIEW );
-			serialNumber.setReadOnly( mode == EditMode.VIEW );
-			barcode.setReadOnly( mode == EditMode.VIEW );
+			personalFlag.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
+			currentUser.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
+			status.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
+			reservedBy.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
+			serialNumber.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
+			barcode.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
 		
 		}
 		
@@ -322,7 +321,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		
 		dataToView();
 
-		switch ( model.getMode()) {
+		switch ( model.getEditMode()) {
 			case ADD:
 			case COPY:
 			case EDIT:
@@ -339,7 +338,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 
 	private void dataToView() {
 
-		updateFields( EditMode.ALLOWED_ALL );
+		updateFields( true );
 		
 		
 		if ( this.shownItem != null ) {
@@ -415,7 +414,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 
 		if ( this.shownItem != null ) {
 			
-			if ( model.getMode() == EditMode.ADD ) {
+			if ( model.getEditMode() == ToolsListModel.EditModeType.ADD ) {
 				
 				shownItem.getTool().setName( toolText.getValue());
 				shownItem.getTool().setCode( code.getValue());
@@ -425,7 +424,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 				shownItem.getTool().setModel( toolModel.getValue());
 				
 				
-			} else if ( model.getMode() == EditMode.EDIT ) {
+			} else if ( model.getEditMode() == ToolsListModel.EditModeType.EDIT ) {
 				
 				shownItem.getTool().setCode( code.getValue());
 				shownItem.getTool().setDescription( description.getValue());
@@ -654,7 +653,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 	@Override
 	public void initiateAdd() {
 
-		updateFields( EditMode.ALLOWED_ALL );
+		updateFields( true );
 
 		initCategoryComboBox( model.getSelectedCategory());
 		initManufacturerComboBox( null );
@@ -671,7 +670,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 	@Override
 	public void initiateCopy() {
 
-		updateFields( EditMode.ALLOWED_ALL );
+		updateFields( true );
 
 		initUserComboBox( this.shownItem.getCurrentUser());
 		initStatusComboBox( this.shownItem.getStatus());
@@ -686,7 +685,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 	@Override
 	public void initiateEdit() {
 
-		updateFields( EditMode.ALLOWED_ALL );
+		updateFields( true );
 
 //		initCategoryComboBox( model.getSelectedCategory());
 		
@@ -703,7 +702,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 
 	private void editSavePressed() {
 
-		switch ( model.getMode()) {
+		switch ( model.getEditMode()) {
 			case ADD:
 
 				viewToData();
@@ -737,7 +736,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 				break;
 			case VIEW:
 
-				updateFields( EditMode.ALLOWED_ALL );
+				updateFields( true );
 				
 //				initCategoryComboBox( model.getSelectedCategory());
 				
@@ -767,7 +766,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 
 	private void deleteCancelPressed() {
 
-		switch ( model.getMode()) {
+		switch ( model.getEditMode()) {
 			case ADD:
 			case COPY:
 			case EDIT:

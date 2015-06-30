@@ -56,6 +56,9 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 
 		usersTable.setVisibleColumns( new Object [] { "code", "name" } );
 		
+		usersTable.setColumnWidth( "code", -1 );
+		usersTable.setColumnExpandRatio( "name", 2f );
+		
 		usersTable.setColumnHeaders( new String[] { 
 				model.getApp().getResourceStr( "general.table.header.code" ), 
 				model.getApp().getResourceStr( "general.table.header.employee" ), 

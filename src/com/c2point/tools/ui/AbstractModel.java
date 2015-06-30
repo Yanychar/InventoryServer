@@ -20,7 +20,7 @@ public class AbstractModel  {
 	
 	protected EventListenerList	listenerList; 
 	
-	public enum EditModeType { VIEW, EDIT, ADD };
+	public enum EditModeType { VIEW, EDIT, ADD, COPY };
 	
 	private EditModeType	editMode;
 	
@@ -68,7 +68,10 @@ public class AbstractModel  {
 	public EditModeType getEditMode() { return this.editMode; }
 	public boolean isEditMode() { return ( this.editMode != EditModeType.VIEW ); }
 	public void setEditMode( EditModeType editMode ) { this.editMode = editMode; }
+	public void setAddMode() { setEditMode( EditModeType.ADD ); }
 	public void setEditMode() { setEditMode( EditModeType.EDIT ); }
+	public void setViewMode() { setEditMode( EditModeType.VIEW ); }
+	public void setCopyMode() { setEditMode( EditModeType.COPY ); }
 	public void clearEditMode() { setEditMode( EditModeType.VIEW ); }
 
 	public void setupAccess( FunctionalityType fType, Organisation org ) {

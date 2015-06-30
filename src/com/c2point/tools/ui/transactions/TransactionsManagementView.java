@@ -20,8 +20,6 @@ public class TransactionsManagementView extends AbstractMainView implements Tran
 	private TrnsListComponent		trnsListComp ;
 	private DetailsComponent		detailsComp;
 	
-	private HorizontalSplitPanel	trnsSplit;
-	
 	public TransactionsManagementView() {
 		super();
 	}
@@ -40,8 +38,7 @@ public class TransactionsManagementView extends AbstractMainView implements Tran
 		
 		trnsListComp = new TrnsListComponent( this.model );
 
-		
-		trnsSplit  = new HorizontalSplitPanel();
+		HorizontalSplitPanel trnsSplit  = new HorizontalSplitPanel();
 		trnsSplit.setSplitPosition( 60, Unit.PERCENTAGE );
 		trnsSplit.setSizeFull();
 		trnsSplit.setLocked( false );

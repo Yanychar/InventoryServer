@@ -113,7 +113,7 @@ public class PersonnelImportProcessor extends FileProcessor {
 		// 4. Specific validation if necessary
 		// Check does exist user with the same first+ last name
 
-		if ( UsersFacade.getInstance().listByFIO( model.getOrg(), nextLine[ 1 ], nextLine[ 2 ] ) != null ) {
+		if ( UsersFacade.getInstance().listByFIO( model.getSelectedOrg(), nextLine[ 1 ], nextLine[ 2 ] ) != null ) {
 			
 			return ProcessedStatus.EXIST;
 		}
@@ -131,7 +131,7 @@ public class PersonnelImportProcessor extends FileProcessor {
 		
 		OrgUser user = new OrgUser();
 		
-		user.setOrganisation( model.getOrg());
+		user.setOrganisation( model.getSelectedOrg());
 		
 		user.setCode( 			nextLine[ 0 ] );
 		user.setFirstName( 		nextLine[ 1 ] );
