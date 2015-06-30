@@ -523,42 +523,44 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 		boolean ret = false;
 		
-		// Firstly add parent Category if necessary
-		if ( addCategory.getParent() != null ) {
-			
-			addCategoryIfNecessary( addCategory.getParent());
-			
-		}
-
-		// Search if category was added earlier
-		Item categoryItem = itemsTable.getItem( addCategory );
-		
-		if ( categoryItem == null ) {
-			// Category was not added to table yet
-			// Will be added
-			
-			try {
-				// Add this category
-				categoryItem = itemsTable.addItem( addCategory );
-
-				// What shall be on the screen
-				categoryItem.getItemProperty( "name" ).setValue( addCategory.getName());
-//				categoryItem.getItemProperty( "data" ).setValue( addCategory );
-
-				// Set parent and allow childs (categories and ToolItems
-				itemsTable.setParent( addCategory, addCategory.getParent() != null 
-						? addCategory.getParent()
-						: topCategory );
-				itemsTable.setChildrenAllowed( addCategory, true );
-
-				itemsTable.setCollapsed( addCategory, false );
+		if ( addCategory != null ) {
+			// Firstly add parent Category if necessary
+			if ( addCategory.getParent() != null ) {
 				
-				ret = true;
-			} catch ( Exception e ) {
-				logger.error( "Failed to add Category: " + addCategory + "\n" + e );
+				addCategoryIfNecessary( addCategory.getParent());
+				
 			}
+	
+			// Search if category was added earlier
+			Item categoryItem = itemsTable.getItem( addCategory );
 			
-			
+			if ( categoryItem == null ) {
+				// Category was not added to table yet
+				// Will be added
+				
+				try {
+					// Add this category
+					categoryItem = itemsTable.addItem( addCategory );
+	
+					// What shall be on the screen
+					categoryItem.getItemProperty( "name" ).setValue( addCategory.getName());
+	//				categoryItem.getItemProperty( "data" ).setValue( addCategory );
+	
+					// Set parent and allow childs (categories and ToolItems
+					itemsTable.setParent( addCategory, addCategory.getParent() != null 
+							? addCategory.getParent()
+							: topCategory );
+					itemsTable.setChildrenAllowed( addCategory, true );
+	
+					itemsTable.setCollapsed( addCategory, false );
+					
+					ret = true;
+				} catch ( Exception e ) {
+					logger.error( "Failed to add Category: " + addCategory + "\n" + e );
+				}
+				
+				
+			}
 		}
 		
 		return ret;
