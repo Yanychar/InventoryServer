@@ -50,11 +50,11 @@ public class ToolsListModel extends AbstractModel {
 		fireListChanged();
 	}
 	
-	public void addChangedListener( ToolItemChangedListener listener ) {
+	public void addListener( ToolItemChangedListener listener ) {
 		listenerList.add( ToolItemChangedListener.class, listener);
 	}
 	
-	public void addChangedListener( EditInitiationListener listener ) {
+	public void addListener( EditInitiationListener listener ) {
 		listenerList.add( EditInitiationListener.class, listener);
 	}
 	

@@ -58,7 +58,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 
 		initView();
 
-		model.addChangedListener( this );
+		model.addListener( this );
 		
 	}
 
@@ -248,7 +248,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 		if ( item == null ) {
 
-//			if ( logger.isDebugEnabled()) logger.debug( "Tool Item will be added: " + toolItem );
+			if ( logger.isDebugEnabled()) logger.debug( "Tool Item will be added: " + toolItem );
 			item = itemsTable.addItem( toolItem.getId());
 
 	        item.getItemProperty( "buttons" ).setValue( getButtonSet( item ));
@@ -528,7 +528,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 				@Override
 				public void buttonClick( ClickEvent event ) {
 					// Button data is Item. Item's data property is ToolItem
-					editButtonPressed( (ToolItem) ((Item) copyButton.getData()).getItemProperty( "data" ).getValue());
+					editButtonPressed( (ToolItem) ((Item) editButton.getData()).getItemProperty( "data" ).getValue());
 				}
 	        });
 	        deleteButton.addClickListener( new ClickListener() {
@@ -536,7 +536,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 				@Override
 				public void buttonClick( ClickEvent event ) {
 					// Button data is Item. Item's data property is ToolItem
-					deleteButtonPressed( (ToolItem) ((Item) copyButton.getData()).getItemProperty( "data" ).getValue());
+					deleteButtonPressed( (ToolItem) ((Item) deleteButton.getData()).getItemProperty( "data" ).getValue());
 				}
 	        });
 	        
@@ -566,7 +566,6 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		return button;
 		
 	}
-	
 	
 	class ToolsViewFilter implements Container.Filter {
 

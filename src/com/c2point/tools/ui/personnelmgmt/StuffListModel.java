@@ -13,6 +13,7 @@ import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel;
+import com.c2point.tools.ui.listeners.EditInitiationListener;
 
 public class StuffListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( StuffListModel.class.getName());
@@ -45,9 +46,14 @@ public class StuffListModel extends AbstractModel {
 		fireListChanged();
 	}
 	
-	public void addChangedListener( StuffChangedListener listener ) {
+	public void addListener( StuffChangedListener listener ) {
 		listenerList.add( StuffChangedListener.class, listener);
 	}
+
+	public void addListener( EditInitiationListener listener ) {
+		listenerList.add( EditInitiationListener.class, listener);
+	}
+	
 	
 	protected void fireAdded( OrgUser user ) {
 		Object[] listeners = listenerList.getListenerList();
@@ -312,5 +318,30 @@ public class StuffListModel extends AbstractModel {
 		logger.debug( "newPwd was checked. Result: " + bRes );
 		return bRes;
 	}
-*/	
+*/
+	
+	public void initiateEdit() {
+		
+		Object[] listeners = listenerList.getListenerList();
+
+	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
+	    	if ( listeners[ i ] == EditInitiationListener.class) {
+	    		(( EditInitiationListener )listeners[ i + 1 ] ).initiateEdit();
+	         }
+	     }
+		
+	}
+
+	public void initiateDelete() {
+		
+		Object[] listeners = listenerList.getListenerList();
+
+	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
+	    	if ( listeners[ i ] == EditInitiationListener.class) {
+	    		(( EditInitiationListener )listeners[ i + 1 ] ).initiateDelete();
+	         }
+	     }
+		
+	}
+	
 }

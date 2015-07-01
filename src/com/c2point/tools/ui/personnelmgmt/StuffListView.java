@@ -10,12 +10,21 @@ import com.c2point.tools.ui.ListWithSearchComponent;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.BaseTheme;
 
 public class StuffListView extends ListWithSearchComponent implements StuffChangedListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( StuffListView.class.getName());
 
+	private static int BUTTON_WIDTH = 25;
+	
 	private StuffListModel	model;
 
 	private Table			usersTable;
@@ -26,7 +35,7 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 
 		initView();
 
-		model.addChangedListener( this );
+		model.addListener( this );
 		
 	}
 
@@ -52,20 +61,22 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 		
 		usersTable.addContainerProperty( "code", String.class, null );
 		usersTable.addContainerProperty( "name", String.class, null );
+		usersTable.addContainerProperty( "buttons", HorizontalLayout.class, null );
 		usersTable.addContainerProperty( "data", OrgUser.class, null );
 
-		usersTable.setVisibleColumns( new Object [] { "code", "name" } );
+		usersTable.setVisibleColumns( new Object [] { "code", "name", "buttons" } );
 		
-		usersTable.setColumnWidth( "code", -1 );
-		usersTable.setColumnExpandRatio( "name", 2f );
+//		usersTable.setColumnWidth( "code", -1 );
+//		usersTable.setColumnExpandRatio( "name", 2f );
 		
 		usersTable.setColumnHeaders( new String[] { 
 				model.getApp().getResourceStr( "general.table.header.code" ), 
 				model.getApp().getResourceStr( "general.table.header.employee" ), 
-		
+				""
 		});
 
-	
+		usersTable.setColumnWidth( "buttons", BUTTON_WIDTH * 3 );
+
 		// New User has been selected. Send event to model
 		usersTable.addValueChangeListener( new  ValueChangeListener() {
 
@@ -203,9 +214,11 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 			usersTable.setValue( usersTable.firstItemId());
 		}
 		
+		addButton.setEnabled( model.allowsToEdit());
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void addOrUpdateItem( OrgUser user ) {
 		
 		Item item = usersTable.getItem( user.getId());
@@ -214,6 +227,8 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 
 			if ( logger.isDebugEnabled()) logger.debug( "Item will be added: " + user );
 			item = usersTable.addItem( user.getId());
+			
+	        item.getItemProperty( "buttons" ).setValue( getButtonSet( item ));
 			
 		} else {
 			if ( logger.isDebugEnabled()) logger.debug( "Item exists already. Will be modified: " + user );
@@ -234,6 +249,78 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 		newUser.setOrganisation( model.getSessionOwner().getOrganisation());
 
 		model.setSelectedUser( newUser );
+		
+	}
+	
+    private Component getButtonSet( Item item ) {
+    	
+        HorizontalLayout buttonsSet = new HorizontalLayout();
+
+        buttonsSet.setSpacing( true );
+
+		if ( model.allowsToEdit()) {
+        
+			final NativeButton editButton = 	createButton( "icons/16/edit.png", "toolsmgmt.edit.tooltip", item );
+			final NativeButton deleteButton = createButton( "icons/16/delete.png", "toolsmgmt.delete.tooltip", item );
+	        
+	        editButton.addClickListener( new ClickListener() {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void buttonClick( ClickEvent event ) {
+					// Button data is Item. Item's data property is ToolItem
+					editButtonPressed(( OrgUser ) ((Item) editButton.getData()).getItemProperty( "data" ).getValue());
+				}
+	        });
+	        deleteButton.addClickListener( new ClickListener() {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void buttonClick( ClickEvent event ) {
+					// Button data is Item. Item's data property is ToolItem
+					deleteButtonPressed(( OrgUser ) ((Item) deleteButton.getData()).getItemProperty( "data" ).getValue());
+				}
+	        });
+	        
+	        buttonsSet.addComponent( editButton );
+	        buttonsSet.addComponent( deleteButton );
+		}
+    	
+    	return buttonsSet;
+    }
+
+	private NativeButton createButton( String iconPath, String tooltipKey, Item item ) {
+		
+		NativeButton button = new NativeButton(); 
+		
+		button.setIcon( new ThemeResource( iconPath ));
+		button.setDescription( model.getApp().getResourceStr( tooltipKey ));
+
+		button.setHeight( Integer.toString( BUTTON_WIDTH ) + "px" );
+//		button.setStyleName( "v-nativebutton-deleteButton" );
+//		button.addStyleName( "v-nativebutton-link" );
+		button.setStyleName( BaseTheme.BUTTON_LINK );
+
+		button.setData( item );
+		button.setImmediate( true );
+		
+		return button;
+		
+	}
+	
+	private void editButtonPressed( final OrgUser user ) {
+		logger.debug( "Edit button was pressed to add new User: " + user.getFirstAndLastNames());
+
+		usersTable.setValue( user.getId());
+		
+		model.initiateEdit();
+		
+	}
+	
+	private void deleteButtonPressed( final OrgUser user ) {
+		logger.debug( "Delete button was pressed to delete existing User: " + user.getFirstAndLastNames());
+
+		usersTable.setValue( user.getId());
+		
+		model.initiateDelete();
 		
 	}
 	

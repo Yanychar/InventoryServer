@@ -60,7 +60,6 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 	private Button		editcloseButton;
 	private Button		deleteButton;
 	
-	private boolean		editedFlag;
 	private ToolItem	shownItem;
 
 	public ToolItemView( ToolsListModel model ) {
@@ -71,8 +70,8 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		
 		initView();
 		
-		model.addChangedListener(( ToolItemChangedListener ) this );
-		model.addChangedListener(( EditInitiationListener ) this );
+		model.addListener(( ToolItemChangedListener ) this );
+		model.addListener(( EditInitiationListener ) this );
 		
 	}
 
@@ -178,10 +177,6 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 	public ToolsListModel getModel() { return model; }
 	public void setModel( ToolsListModel model ) { this.model = model; }
 
-		
-	public boolean isEditedFlag() { return editedFlag;}
-	public void setEditedFlag(boolean editedFlag) {this.editedFlag = editedFlag; }
-	
 	public Component getButtonsBar() {
 		
 		HorizontalLayout toolBarLayout = new HorizontalLayout();

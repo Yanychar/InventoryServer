@@ -14,6 +14,7 @@ import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel.EditModeType;
 import com.c2point.tools.ui.ChangesCollector;
 import com.c2point.tools.ui.accountmgmt.AccountView;
+import com.c2point.tools.ui.listeners.EditInitiationListener;
 import com.c2point.tools.utils.lang.Locales;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -40,7 +41,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
-public class StuffView extends VerticalLayout implements StuffChangedListener {
+public class StuffView extends VerticalLayout implements StuffChangedListener, EditInitiationListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( StuffView.class.getName());
 
@@ -73,7 +74,6 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 	private Button		editcloseButton;
 	private Button		deleteButton;
 
-	private boolean		editedFlag;
 	private OrgUser		shownUser;
 
 	public StuffView( StuffListModel model ) {
@@ -83,7 +83,8 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 
 		initView();
 
-		model.addChangedListener( this );
+		model.addListener(( StuffChangedListener ) this );
+		model.addListener(( EditInitiationListener ) this );
 
 		model.clearEditMode();
 	}
@@ -272,7 +273,9 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 
 		updateAccountFields();
 		updateButtons();
-		enableFields();
+		updateFields();
+		
+		
 	}
 
 
@@ -366,7 +369,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 			model.clearEditMode();
 			
 			updateButtons();
-			enableFields();
+			updateFields();
 		}
 
 		showPassword.setValue( false );
@@ -423,7 +426,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 			public void buttonClick( ClickEvent event) {
 				if ( !model.isEditMode() && StuffView.this.shownUser != null ) {
 
-					deletePerson();
+					deleteCancelPressed();
 				}
 			}
 		});
@@ -435,10 +438,11 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 		return toolBarLayout;
 	}
 
-	private void deletePerson() {
+	private void deleteUser( final OrgUser user ) {
+
 		// Confirm removal
 		String template = model.getApp().getResourceStr( "confirm.personnel.delete" );
-		Object[] params = { this.shownUser.getFirstAndLastNames() };
+		Object[] params = { user.getFirstAndLastNames() };
 		template = MessageFormat.format( template, params );
 
 		ConfirmDialog.show( model.getApp(),
@@ -453,7 +457,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 					public void onClose( ConfirmDialog dialog ) {
 						if ( dialog.isConfirmed()) {
 
-							OrgUser deletedUser = model.delete( StuffView.this.shownUser );
+							OrgUser deletedUser = model.delete( user );
 							if ( deletedUser != null) {
 
 								String template = model.getApp().getResourceStr( "notify.personnel.delete" );
@@ -462,8 +466,15 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 
 								Notification.show( template );
 
-//								currentWasSet( null );
+							} else {
+								// Failed to delete
+								// Failed to update
+								String template = model.getApp().getResourceStr( "personnel.errors.item.delete" );
+								Object[] params = { user.getFirstAndLastNames() };
+								template = MessageFormat.format( template, params );
 
+								Notification.show( template, Notification.Type.ERROR_MESSAGE );
+								
 							}
 
 						}
@@ -525,7 +536,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 
 	}
 
-	private void enableFields() {
+	private void updateFields() {
 
 		boolean enable = model.isEditMode();
 		
@@ -631,7 +642,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 
 		updateAccountFields();
 		updateButtons();
-		enableFields();
+		updateFields();
 	}
 
 	// This method call AccountView dialog
@@ -722,5 +733,54 @@ public class StuffView extends VerticalLayout implements StuffChangedListener {
 	
 	}
 
+	@Override
+	public void initiateAdd() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void initiateCopy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void initiateEdit() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void initiateDelete() {
+
+		model.setViewMode();
+		deleteCancelPressed();
+		
+	}
+
+	private void deleteCancelPressed() {
+
+		switch ( model.getEditMode()) {
+			case ADD:
+			case COPY:
+			case EDIT:
+				model.setViewMode();
+				dataToView();
+				break;
+			case VIEW:
+
+				deleteUser( shownUser );
+				
+				break;
+			default:
+				break;
+		}
+
+		updateButtons();
+		updateFields();
+		
+	}
+		
 	
 }
