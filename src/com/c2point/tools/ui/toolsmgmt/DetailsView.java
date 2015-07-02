@@ -34,9 +34,9 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-public class ToolItemView extends FormLayout implements ToolItemChangedListener, EditInitiationListener {
+public class DetailsView extends FormLayout implements ToolItemChangedListener, EditInitiationListener {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LogManager.getLogger( ToolItemView.class.getName());
+	private static Logger logger = LogManager.getLogger( DetailsView.class.getName());
 
 	private ToolsListModel	model;
 	
@@ -62,7 +62,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 	
 	private ToolItem	shownItem;
 
-	public ToolItemView( ToolsListModel model ) {
+	public DetailsView( ToolsListModel model ) {
 		super();
 		
 		setModel( model );
@@ -73,6 +73,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 		model.addListener(( ToolItemChangedListener ) this );
 		model.addListener(( EditInitiationListener ) this );
 		
+		model.clearEditMode();
 	}
 
 	private void initView() {
@@ -206,7 +207,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 
 			@Override
 			public void buttonClick( ClickEvent event) {
-				if ( ToolItemView.this.shownItem != null ) {
+				if ( DetailsView.this.shownItem != null ) {
 					
 					deleteCancelPressed();
 				}
@@ -702,7 +703,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 
 				viewToData();
 				
-				if ( addToolAndItem( ToolItemView.this.shownItem ) != null ) {
+				if ( addToolAndItem( DetailsView.this.shownItem ) != null ) {
 
 					model.setViewMode();
 				}
@@ -711,7 +712,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 			case COPY:
 				viewToData();
 				
-				if ( addToolItem( ToolItemView.this.shownItem ) != null ) {
+				if ( addToolItem( DetailsView.this.shownItem ) != null ) {
 
 					model.setViewMode();
 				}
@@ -721,7 +722,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 				
 				viewToData();
 				
-				if ( updateToolItem( ToolItemView.this.shownItem ) != null ) {
+				if ( updateToolItem( DetailsView.this.shownItem ) != null ) {
 
 					model.setViewMode();
 				}
@@ -770,7 +771,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener,
 				break;
 			case VIEW:
 
-				deleteToolItem( ToolItemView.this.shownItem );
+				deleteToolItem( DetailsView.this.shownItem );
 				
 				break;
 			default:

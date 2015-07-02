@@ -15,15 +15,15 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-public class DetailsComponent extends VerticalLayout implements TransactionsModelListener {
+public class DetailsView extends VerticalLayout implements TransactionsModelListener {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LogManager.getLogger( DetailsComponent.class.getName());
+	private static Logger logger = LogManager.getLogger( DetailsView.class.getName());
 	
 	private TransactionsListModel	model;
 	
 	private GridLayout				gl;
 
-	public DetailsComponent( TransactionsListModel model ) {
+	public DetailsView( TransactionsListModel model ) {
 		super();
 		
 		this.model = model;

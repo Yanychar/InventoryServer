@@ -41,9 +41,9 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
-public class StuffView extends VerticalLayout implements StuffChangedListener, EditInitiationListener {
+public class DetailsView extends VerticalLayout implements StuffChangedListener, EditInitiationListener {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LogManager.getLogger( StuffView.class.getName());
+	private static Logger logger = LogManager.getLogger( DetailsView.class.getName());
 
 
 	private StuffListModel	model;
@@ -71,12 +71,12 @@ public class StuffView extends VerticalLayout implements StuffChangedListener, E
 	private CheckBox	showPassword;
 	private Button		editcreateButton;
 	
-	private Button		editcloseButton;
+	private Button		editCloseButton;
 	private Button		deleteButton;
 
 	private OrgUser		shownUser;
 
-	public StuffView( StuffListModel model ) {
+	public DetailsView( StuffListModel model ) {
 		super();
 
 		setModel( model );
@@ -92,8 +92,8 @@ public class StuffView extends VerticalLayout implements StuffChangedListener, E
 	private void initView() {
 
 		setSpacing( true );
-		this.setMargin( true );
-		setSizeUndefined();
+		setMargin( true );
+//		setSizeUndefined();
 
 //		code = new TextField( model.getApp().getResourceStr( "general.caption.code" ) + ":" );
 //		code.setRequired(true);
@@ -269,9 +269,11 @@ public class StuffView extends VerticalLayout implements StuffChangedListener, E
 		addComponent( fl_2 );
 		addComponent( separator_2 );
 		addComponent( separator_3 );
+	
 		addComponent( getButtonsBar());
 
 		updateAccountFields();
+		
 		updateButtons();
 		updateFields();
 		
@@ -379,7 +381,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener, E
 
 			logger.debug( "New OrgUser created. Need to be edited and saved!" );
 
-			editClose();
+			editSavePressed();
 
 		}
 
@@ -402,21 +404,21 @@ public class StuffView extends VerticalLayout implements StuffChangedListener, E
 		toolBarLayout.setWidth( "100%");
 		toolBarLayout.setMargin( new MarginInfo( false, true, false, true ));
 
-		editcloseButton = new Button();
+		editCloseButton = new Button();
 
-		editcloseButton.addClickListener( new ClickListener() {
+		editCloseButton.addClickListener( new ClickListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick( ClickEvent event) {
 
-				editClose();
+				editSavePressed();
 
 			}
 		});
 
 
-		deleteButton = new Button( "Delete" );
+		deleteButton = new Button();
 		deleteButton.setIcon( new ThemeResource("icons/16/reject.png"));
 
 		deleteButton.addClickListener( new ClickListener() {
@@ -424,7 +426,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener, E
 
 			@Override
 			public void buttonClick( ClickEvent event) {
-				if ( !model.isEditMode() && StuffView.this.shownUser != null ) {
+				if ( !model.isEditMode() && DetailsView.this.shownUser != null ) {
 
 					deleteCancelPressed();
 				}
@@ -432,7 +434,7 @@ public class StuffView extends VerticalLayout implements StuffChangedListener, E
 		});
 
 
-		toolBarLayout.addComponent( editcloseButton);
+		toolBarLayout.addComponent( editCloseButton);
 		toolBarLayout.addComponent( deleteButton);
 
 		return toolBarLayout;
@@ -520,15 +522,15 @@ public class StuffView extends VerticalLayout implements StuffChangedListener, E
 
 		if ( model.isEditMode() ) {
 
-			editcloseButton.setCaption( model.getApp().getResourceStr( "general.button.close" ) );
-			editcloseButton.setIcon( new ThemeResource("icons/16/approve.png"));
+			editCloseButton.setCaption( model.getApp().getResourceStr( "general.button.close" ) );
+			editCloseButton.setIcon( new ThemeResource("icons/16/approve.png"));
 
 			deleteButton.setVisible( false );
 			
 		} else {
 
-			editcloseButton.setCaption( model.getApp().getResourceStr( "general.button.edit" ));
-			editcloseButton.setIcon( new ThemeResource("icons/16/edit.png"));
+			editCloseButton.setCaption( model.getApp().getResourceStr( "general.button.edit" ));
+			editCloseButton.setIcon( new ThemeResource("icons/16/edit.png"));
 
 			deleteButton.setVisible( true );
 
@@ -564,29 +566,61 @@ public class StuffView extends VerticalLayout implements StuffChangedListener, E
 
 	}
 
-	private void editClose() {
+	private void editSavePressed() {
 
 		logger.debug( "EditClose button has been pressed!" );
 
+		switch ( model.getEditMode()) {
+		case ADD:
 
+			viewToData();
+			
+			if ( addToolAndItem( DetailsView.this.shownItem ) != null ) {
+
+				model.setViewMode();
+			}
+			
+			break;
+
+		case EDIT:
+			
+			viewToData();
+			
+			if ( updateUser( DetailsView.this.shownUser ) != null ) {
+
+				model.setViewMode();
+			}
+
+			model.setViewMode();
+			
+			break;
+		case VIEW:
+
+			changesCollector.resume();
+			model.setEditMode( this.shownUser.getId() > 0 ? EditModeType.EDIT : EditModeType.ADD );
+			
+			
+			updateFields();
+			
+//			initCategoryComboBox( model.getSelectedCategory());
+			
+			initUserComboBox( this.shownItem.getCurrentUser());
+			initStatusComboBox( this.shownItem.getStatus());
+			initReservedComboBox( this.shownItem.getReservedBy());
+
+			model.setEditMode();
+			break;
+		default:
+			break;
+	}
+
+		
+		
+		
+		
 		if ( !model.isEditMode()) {
 
 			changesCollector.clearChanges();
-
-//			listenForChanges( code );
-			changesCollector.listenForChanges( firstName );
-			changesCollector.listenForChanges( lastName );
-			changesCollector.listenForChanges( birthday );
-			changesCollector.listenForChanges( street );
-			changesCollector.listenForChanges( pobox );
-			changesCollector.listenForChanges( index );
-			changesCollector.listenForChanges( city );
-			changesCollector.listenForChanges( country );
-			changesCollector.listenForChanges( accessGroup );
-			changesCollector.listenForChanges( email );
-			changesCollector.listenForChanges( mobile );
-			changesCollector.listenForChanges( usrname );
-			changesCollector.listenForChanges( password );
 
 			model.setEditMode( this.shownUser.getId() > 0 ? EditModeType.EDIT : EditModeType.ADD );
 

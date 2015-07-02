@@ -18,7 +18,7 @@ public class TransactionsManagementView extends AbstractMainView implements Tran
 	
 	private FilterComponent			filterComp;
 	private TrnsListComponent		trnsListComp ;
-	private DetailsComponent		detailsComp;
+	private DetailsView		detailsComp;
 	
 	public TransactionsManagementView() {
 		super();
@@ -34,7 +34,7 @@ public class TransactionsManagementView extends AbstractMainView implements Tran
 		this.model = new TransactionsListModel();
 
 		filterComp = new FilterComponent( this.model ); 
-		detailsComp = new DetailsComponent( this.model );
+		detailsComp = new DetailsView( this.model );
 		
 		trnsListComp = new TrnsListComponent( this.model );
 

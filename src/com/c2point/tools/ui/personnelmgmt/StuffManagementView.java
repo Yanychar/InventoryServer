@@ -38,7 +38,7 @@ public class StuffManagementView extends AbstractMainView {
 	private Button				exportButton;
 
 	private StuffListView 		stuffList;
-	private StuffView			stuffView;
+	private DetailsView			stuffView;
 
 	public StuffManagementView() {
 		super();
@@ -190,7 +190,7 @@ public class StuffManagementView extends AbstractMainView {
 
 	private void initStuffView() {
 
-		stuffView = new StuffView( this.model );
+		stuffView = new DetailsView( this.model );
 
 
 	}
