@@ -246,7 +246,7 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 		logger.debug( "add button was pressed to add new Personnel" );
 		
 		OrgUser newUser = new OrgUser();
-		newUser.setOrganisation( model.getSessionOwner().getOrganisation());
+		newUser.setOrganisation( model.getSelectedOrg());
 
 		model.setSelectedUser( newUser );
 		

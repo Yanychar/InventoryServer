@@ -27,15 +27,19 @@ public class ChangesCollector {
 	private boolean 	wasChangedFlag;
 	
 	private boolean 	suspendedToListen = false;
+
+	
 	
 	public boolean wasItChanged() { return this.wasChangedFlag;}
-	public void clearChanges() { changed( false ); }
+	public void clearChanges() { this.wasChangedFlag = false; }
 	
-	private void changed() { changed( true ); }
-	private void changed( boolean wasChangedFlag ) { if ( !suspendedToListen ) this.wasChangedFlag = wasChangedFlag; }
-
-	public void suspend() { this.suspendedToListen = true; }
-	public void resume() { this.suspendedToListen = false; }
+	public void stopToListen() { 
+		this.suspendedToListen = true; 
+	}
+	public void startToListen() { 
+		this.suspendedToListen = false;
+		clearChanges();		
+	}
 	
 	@SuppressWarnings("rawtypes")
 	public void listenForChanges( final AbstractField field ) {
@@ -56,15 +60,7 @@ public class ChangesCollector {
 		listenersList.add( new Pair( field, listener ));
 
 	}
-/*	
-	public void stopListeningForChanges() {
 
-		for( Pair pair : listenersList ) {
-			pair.field.removeValueChangeListener( pair.listener );
-		}
-
-	}
-*/	
 	public void listenForChanges( Button ownership ) {
 		
 		new ClickListener() {
@@ -79,4 +75,8 @@ public class ChangesCollector {
 		
 	}
 
+	private void changed() { changed( true ); }
+	private void changed( boolean wasChangedFlag ) { if ( !suspendedToListen ) this.wasChangedFlag = wasChangedFlag; }
+
+	
 }

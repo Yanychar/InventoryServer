@@ -69,7 +69,7 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 	private TextField	usrname;
 	private TextField	password;
 	private CheckBox	showPassword;
-	private Button		editcreateButton;
+	private Button		accountButton;
 	
 	private Button		editCloseButton;
 	private Button		deleteButton;
@@ -213,9 +213,9 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 		});
 
 		
-		editcreateButton = new Button( "EditCreate" );
+		accountButton = new Button( "Change to 'Open Account'" );
 
-		editcreateButton.addClickListener( new ClickListener() {
+		accountButton.addClickListener( new ClickListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -254,7 +254,7 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 		fl_2.addComponent( usrname );
 		fl_2.addComponent( password );
 		fl_2.addComponent( showPassword );
-		fl_2.addComponent( editcreateButton );
+		fl_2.addComponent( accountButton );
 		
 		Label separator_1 = new Label( "<hr/>", ContentMode.HTML );
 		separator_1.setWidth( "100%" );
@@ -272,11 +272,20 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 	
 		addComponent( getButtonsBar());
 
-		updateAccountFields();
+		changesCollector.listenForChanges( firstName );
+		changesCollector.listenForChanges( lastName );
+		changesCollector.listenForChanges( birthday );
+		changesCollector.listenForChanges( street );
+		changesCollector.listenForChanges( pobox );
+		changesCollector.listenForChanges( index );
+		changesCollector.listenForChanges( city );
+		changesCollector.listenForChanges( country );
+		changesCollector.listenForChanges( email );
+		changesCollector.listenForChanges( mobile );
+		changesCollector.listenForChanges( accessGroup );
 		
 		updateButtons();
 		updateFields();
-		
 		
 	}
 
@@ -366,16 +375,16 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 		setVisible( user != null );
 		dataToView();
 
+		showPassword.setValue( false );
 		if ( model.isEditMode()) {
 			
 			model.clearEditMode();
 			
-			updateButtons();
-			updateFields();
 		}
 
-		showPassword.setValue( false );
-		updateAccountFields();
+		updateButtons();
+		updateFields();
+
 		
 		if ( user != null && user.getId() <= 0 ) {
 
@@ -426,10 +435,9 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 
 			@Override
 			public void buttonClick( ClickEvent event) {
-				if ( !model.isEditMode() && DetailsView.this.shownUser != null ) {
 
-					deleteCancelPressed();
-				}
+				deleteCancelPressed();
+
 			}
 		});
 
@@ -486,55 +494,31 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 
 	}
 
-	private void updateAccountFields() {
-		if ( this.shownUser != null 
-				&& this.shownUser.getAccount() != null ) {
-			
-				noAccountMsg.setVisible( false );
-				usrname.setVisible( true );
-				password.setVisible( showPassword.getValue());
-				showPassword.setVisible( true );
-
-				editcreateButton.setCaption( model.getApp().getResourceStr( "general.button.edit" ));
-				
-				usrname.setValue( this.shownUser.getAccount().getUsrName());
-				password.setValue( this.shownUser.getAccount().getPwd());
-				
-		} else {
-			
-			noAccountMsg.setVisible( true );
-			usrname.setVisible( false );
-			password.setVisible( false );
-			showPassword.setVisible( false );
-
-			editcreateButton.setCaption( model.getApp().getResourceStr( "general.button.create" ));
-
-			usrname.setValue( "" );
-			password.setValue( "" );
-			
-		}
-
-		editcreateButton.setVisible( model.isEditMode());
-		
-	}
-	
 	private void updateButtons() {
 
-		if ( model.isEditMode() ) {
-
-			editCloseButton.setCaption( model.getApp().getResourceStr( "general.button.close" ) );
-			editCloseButton.setIcon( new ThemeResource("icons/16/approve.png"));
-
-			deleteButton.setVisible( false );
+		editCloseButton.setEnabled( model.allowsToEdit());
+		deleteButton.setEnabled( model.allowsToEdit());
 			
-		} else {
+		switch ( model.getEditMode()) {
+			case ADD:
+			case EDIT:
+				editCloseButton.setCaption( model.getApp().getResourceStr( "general.button.ok" ));
+				editCloseButton.setIcon( new ThemeResource("icons/16/approve.png"));
 
-			editCloseButton.setCaption( model.getApp().getResourceStr( "general.button.edit" ));
-			editCloseButton.setIcon( new ThemeResource("icons/16/edit.png"));
-
-			deleteButton.setVisible( true );
-
+				deleteButton.setCaption( model.getApp().getResourceStr( "general.button.cancel" ));
+//				deleteButton.setVisible( false );
+				break;
+			case VIEW:
+				editCloseButton.setCaption( model.getApp().getResourceStr( "general.button.edit" ));
+				editCloseButton.setIcon( new ThemeResource("icons/16/edit.png"));
+				
+				deleteButton.setCaption( model.getApp().getResourceStr( "general.button.delete" ));
+//				deleteButton.setVisible( true );
+				break;
+			default:
+				break;
 		}
+		
 
 	}
 
@@ -557,128 +541,139 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 		email.setEnabled( enable );
 		mobile.setEnabled( enable );
 		
+/*		
 		// Here account management fields handling
 		noAccountMsg.setEnabled( enable );
 		usrname.setEnabled( false );
 		password.setEnabled( false );
 //		showPassword.setEnabled( enable );
 		editcreateButton.setEnabled( enable );
+*/
+		
+		updateAccountFields();
 
+		if ( enable )
+			changesCollector.startToListen();
+		else
+			changesCollector.stopToListen();
+		
+		
+		
 	}
 
-	private void editSavePressed() {
+	private void updateAccountFields() {
+		
+		if ( this.shownUser != null ) {
 
-		logger.debug( "EditClose button has been pressed!" );
+			if ( this.shownUser.getAccount() != null ) {
 
-		switch ( model.getEditMode()) {
-		case ADD:
+				noAccountMsg.setVisible( false );
+				showPassword.setVisible( model.getSessionOwner().isSuperUserFlag());
+				
+				usrname.setVisible( showPassword.getValue());
+				password.setVisible( showPassword.getValue());
 
-			viewToData();
-			
-			if ( addToolAndItem( DetailsView.this.shownItem ) != null ) {
+				accountButton.setCaption( "Edit Account" ); //model.getApp().getResourceStr( "account.button.edit" ));
+				
+				usrname.setValue( this.shownUser.getAccount().getUsrName());
+				password.setValue( this.shownUser.getAccount().getPwd());
+				
+				usrname.setEnabled( model.isEditMode());
+				password.setEnabled( model.isEditMode());
+				
+				
+			} else {
 
-				model.setViewMode();
+				noAccountMsg.setVisible( true );
+				showPassword.setVisible( false );
+
+				usrname.setVisible( false );
+				password.setVisible( false );
+
+				accountButton.setCaption( "Create Account" ); //model.getApp().getResourceStr( "account.button.create" ));
+
+				usrname.setValue( "" );
+				password.setValue( "" );
+				
 			}
+
+			accountButton.setVisible( model.isEditMode());
 			
-			break;
-
-		case EDIT:
-			
-			viewToData();
-			
-			if ( updateUser( DetailsView.this.shownUser ) != null ) {
-
-				model.setViewMode();
-			}
-
-			model.setViewMode();
-			
-			break;
-		case VIEW:
-
-			changesCollector.resume();
-			model.setEditMode( this.shownUser.getId() > 0 ? EditModeType.EDIT : EditModeType.ADD );
-			
-			
-			updateFields();
-			
-//			initCategoryComboBox( model.getSelectedCategory());
-			
-			initUserComboBox( this.shownItem.getCurrentUser());
-			initStatusComboBox( this.shownItem.getStatus());
-			initReservedComboBox( this.shownItem.getReservedBy());
-
-			model.setEditMode();
-			break;
-		default:
-			break;
-	}
-
-		
-		
-		
-		
-		if ( !model.isEditMode()) {
-
-			changesCollector.clearChanges();
-
-			model.setEditMode( this.shownUser.getId() > 0 ? EditModeType.EDIT : EditModeType.ADD );
-
 		} else {
-			if ( changesCollector.wasItChanged()) {
-
-				if ( validate()) {
-					// Changes must be stored
-					viewToData();
-	
-					if ( this.shownUser.getId() > 0 ) {
-						// This is existing record update
-						OrgUser newUser = model.update( this.shownUser );
-						if ( newUser == null ) {
-	
-							String template = model.getApp().getResourceStr( "general.error.update.header" );
-							Object[] params = { this.shownUser.getFirstAndLastNames() };
-							template = MessageFormat.format( template, params );
-	
-							Notification.show( template, Notification.Type.ERROR_MESSAGE );
-	
-						} else {
-							currentWasSet( null );
-						}
-					} else {
-						// This is new record. It must be added
-						OrgUser newUser = model.add( this.shownUser );
-						if ( newUser == null ) {
-	
-							String template = model.getApp().getResourceStr( "general.error.add.header" );
-							Object[] params = { this.shownUser.getFirstAndLastNames() };
-							template = MessageFormat.format( template, params );
-	
-							Notification.show( template, Notification.Type.ERROR_MESSAGE );
-	
-						} else {
-							currentWasSet( null );
-						}
-	
-					}
-				} else {
-					
-					return;
-				}
-			}
-
-			changesCollector.stopListeningForChanges();
-
-			model.setEditMode( EditModeType.VIEW );
+			
+			// Nothing to show
+			
+			noAccountMsg.setVisible( false );
+			usrname.setVisible( false );
+			password.setVisible( false );
+			showPassword.setVisible( false );
+			accountButton.setVisible( false );
 			
 		}
+			
+				
+		
+	}
+	
+	
+	private void editSavePressed() {
 
+		logger.debug( "EditClose button has been pressed!  EditMode was " + model.getEditMode());
 
-		updateAccountFields();
+		switch ( model.getEditMode()) {
+			case ADD:
+	
+				viewToData();
+				
+				addUser( shownUser );
+	
+				
+				break;
+	
+			case EDIT:
+				
+				updateUser( shownUser );
+	
+				break;
+			case VIEW:
+	
+				model.setEditMode( this.shownUser.getId() > 0 ? EditModeType.EDIT : EditModeType.ADD );
+				
+				break;
+			default:
+				break;
+		}
+
 		updateButtons();
 		updateFields();
+		
+		logger.debug( "EditClose button pressing handled!  EditMode now is " + model.getEditMode());
+		
 	}
 
+	private void deleteCancelPressed() {
+
+		switch ( model.getEditMode()) {
+			case ADD:
+			case EDIT:
+				model.setViewMode();
+				dataToView();
+				break;
+			case VIEW:
+
+				deleteUser( shownUser );
+				
+				break;
+			default:
+				break;
+		}
+
+		updateButtons();
+		updateFields();
+		
+	}
+
+	
 	// This method call AccountView dialog
 	private void accountMgmt() {
 	
@@ -793,28 +788,87 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 		
 	}
 
-	private void deleteCancelPressed() {
+	// For now just to save code
+	private OrgUser addUser( OrgUser user ) {
 
-		switch ( model.getEditMode()) {
-			case ADD:
-			case COPY:
-			case EDIT:
-				model.setViewMode();
-				dataToView();
-				break;
-			case VIEW:
+		OrgUser newUser = null;
+		
+		if ( changesCollector.wasItChanged()) {
 
-				deleteUser( shownUser );
-				
-				break;
-			default:
-				break;
+			if ( validate()) {
+				// Changes must be stored
+				viewToData();
+
+				if ( this.shownUser.getId() <= 0 ) {
+
+					// This is new record. It must be added
+					
+					newUser = model.add( this.shownUser );
+					
+					if ( newUser != null ) {
+
+						model.setViewMode();
+						currentWasSet( newUser );
+						
+					} else {
+
+						String template = model.getApp().getResourceStr( "general.error.add.header" );
+						Object[] params = { this.shownUser.getFirstAndLastNames() };
+						template = MessageFormat.format( template, params );
+
+						Notification.show( template, Notification.Type.ERROR_MESSAGE );
+
+					}
+
+				}
+			} 
+		
 		}
-
-		updateButtons();
-		updateFields();
 		
+		
+		return newUser;
 	}
+	
+	private OrgUser updateUser( OrgUser user ) {
+
+		OrgUser updatedUser = null;
 		
+		if ( changesCollector.wasItChanged()) {
+
+			if ( validate()) {
+				// Changes must be stored
+				viewToData();
+
+				if ( this.shownUser.getId() > 0 ) {
+
+					// This is existing record update
+					
+					updatedUser = model.update( user );
+					
+					if ( updatedUser != null ) {
+
+						model.setViewMode();
+						currentWasSet( updatedUser );
+
+					} else {
+
+						String template = model.getApp().getResourceStr( "general.error.update.header" );
+						Object[] params = { this.shownUser.getFirstAndLastNames() };
+						template = MessageFormat.format( template, params );
+
+						Notification.show( template, Notification.Type.ERROR_MESSAGE );
+						
+					}
+				}		
+			} 
+		
+		} else {
+			model.setViewMode();
+		}
+		
+		
+		return updatedUser;
+	}
+	
 	
 }

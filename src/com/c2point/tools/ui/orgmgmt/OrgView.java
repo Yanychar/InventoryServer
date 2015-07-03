@@ -600,7 +600,7 @@ public class OrgView extends VerticalLayout implements OrgChangedListener {
 
 				// Nothing was changed
 				model.clearEditMode();
-				changesCollector.stopListeningForChanges();
+				changesCollector.startToListen();
 				
 			}
 
