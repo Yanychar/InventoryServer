@@ -23,7 +23,8 @@ public class StuffListModel extends AbstractModel {
 	private Organisation 		selectedOrg;
 	private OrgUser 			selectedUser;
 	
-
+	private boolean				accountUpdated;
+	
 	public StuffListModel() {
 		this( null );
 
@@ -37,6 +38,7 @@ public class StuffListModel extends AbstractModel {
 		
 		setupAccess( FunctionalityType.USERS_MGMT, this.selectedOrg );
 		
+		accountUpdated = false;
 	}
 	
 	public void initModel() {
@@ -111,9 +113,16 @@ public class StuffListModel extends AbstractModel {
 	public void setPresenceFilter( PresenceFilterType presenceFilter ) { this.presenceFilter = presenceFilter; }
 
 	public OrgUser getSelectedUser() { return selectedUser; }
-	public void setSelectedUser( OrgUser selectedUser ) { 
-		this.selectedUser = selectedUser; 
-		fireSelected( selectedUser );
+	public void setSelectedUser( OrgUser selectedUser ) {
+		
+		if ( getSelectedUser() != selectedUser ) {
+			
+			this.accountUpdated = false;
+			this.selectedUser = selectedUser; 
+
+			fireSelected( selectedUser );
+			
+		}
 	}
 
 	public Organisation getSelectedOrg() { return selectedOrg; }
@@ -122,6 +131,8 @@ public class StuffListModel extends AbstractModel {
 		if ( getSelectedOrg() != selectedOrg ) {
 			
 			this.selectedOrg = selectedOrg;
+			this.accountUpdated = false;
+			
 
 			setupAccess( FunctionalityType.USERS_MGMT, this.selectedOrg );
 			
@@ -271,11 +282,16 @@ public class StuffListModel extends AbstractModel {
 			}
 
 		}
-*/		
+*/
+		
+		this.accountUpdated = this.accountUpdated || bRes;
+		
 		
 		logger.debug( "Tried to save account. Result: " + bRes );
 		return bRes;
 	}
+	
+	public boolean accountWasChanged() { return this.accountUpdated; }
 	
 	public boolean checkName( String newName ) {
 		

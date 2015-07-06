@@ -79,7 +79,7 @@ public class AccessRightsCollector extends HashMap<Long, AccessRight> {
 	
 	private Long getKey( FunctionalityType func, OwnershipType oType ) {
 		
-		return new Long( func.value() * 10 + oType.value());
+		return new Long( func.ordinal() * 10 + oType.value());
 		
 	}
 

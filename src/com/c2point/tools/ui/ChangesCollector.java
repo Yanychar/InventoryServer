@@ -75,8 +75,8 @@ public class ChangesCollector {
 		
 	}
 
-	private void changed() { changed( true ); }
-	private void changed( boolean wasChangedFlag ) { if ( !suspendedToListen ) this.wasChangedFlag = wasChangedFlag; }
+	public void changed() { changed( true ); }
+	public void changed( boolean wasChangedFlag ) { if ( !suspendedToListen ) this.wasChangedFlag = wasChangedFlag; }
 
 	
 }

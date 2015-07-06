@@ -73,6 +73,20 @@ public class SecurityContext {
 		
 	}
 	
+	public boolean hasViewPermission( FunctionalityType func, OrgUser user, Organisation org ) {
+		
+		if ( user.getOrganisation().getId() == org.getId()) {
+			
+			return getPermission( func, OwnershipType.COMPANY ) != PermissionType.NO;
+			
+		} else {
+
+			return getPermission( func, OwnershipType.ANY ) != PermissionType.NO;
+			
+		}
+		
+	}
+	
 	
 	// Can current user change item? It depends does he own item or not
 	public boolean canChangeToolItem( FunctionalityType func, ToolItem item ) {

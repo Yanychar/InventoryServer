@@ -13,7 +13,6 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -25,7 +24,7 @@ public class AccountView extends Window {
 	private ChangesCollector	changesCollector = new ChangesCollector();
 	
 	private TextField		usrname;
-	private PasswordField	password;
+	private TextField		password;
 //	private TextField		openpassword;
 
 //	private CheckBox		showPassword;
@@ -62,7 +61,7 @@ public class AccountView extends Window {
 		new ObjectProperty<String>(pwdStr);		
 */		
 		
-		password = new PasswordField( "Password" + ":" );
+		password = new TextField( "Password" + ":" );
 		password.setWidth( "20em" );
 		password.setRequired( true );
 		password.setRequiredError( "The Field may not be empty." );		

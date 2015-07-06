@@ -9,6 +9,7 @@ import org.joda.time.LocalDate;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.c2point.tools.entity.access.AccessGroups;
+import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel.EditModeType;
@@ -16,8 +17,6 @@ import com.c2point.tools.ui.ChangesCollector;
 import com.c2point.tools.ui.accountmgmt.AccountView;
 import com.c2point.tools.ui.listeners.EditInitiationListener;
 import com.c2point.tools.utils.lang.Locales;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
@@ -25,7 +24,6 @@ import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
@@ -67,8 +65,6 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 	
 	private Label		noAccountMsg;
 	private TextField	usrname;
-	private TextField	password;
-	private CheckBox	showPassword;
 	private Button		accountButton;
 	
 	private Button		editCloseButton;
@@ -172,46 +168,8 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 		
 		usrname = new TextField( "Username" + ":" );
 		usrname.setWidth( "20em" );
+		usrname.setEnabled( false );
 		usrname.setImmediate( true );
-
-		password = new TextField( "Password" + ":" );
-		password.setWidth( "20em" );
-		password.setImmediate( true );
-		
-		showPassword = new CheckBox( "Show password" + "?");
-		showPassword.setValue( false );
-		showPassword.addValueChangeListener( new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-
-				if ( showPassword.getValue()) {
-					// It is necessary to ask "Are you sure?"
-					ConfirmDialog.show( model.getApp(), 
-							"Confirm", 
-							"Are you sure you want to show passwords?", 
-							model.getApp().getResourceStr( "general.button.ok" ), 
-							model.getApp().getResourceStr( "general.button.cancel" ), 
-							new ConfirmDialog.Listener() {
-								private static final long serialVersionUID = 1L;
-
-								@Override
-								public void onClose( ConfirmDialog dialog ) {
-									
-									showPassword.setValue( dialog.isConfirmed());
-									updateAccountFields();
-									
-								}
-						});
-				} else {
-					// Password field shall be hidden
-					updateAccountFields();
-				}
-				
-			}
-		});
-
 		
 		accountButton = new Button( "Change to 'Open Account'" );
 
@@ -252,8 +210,6 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 		
 		fl_2.addComponent( noAccountMsg );
 		fl_2.addComponent( usrname );
-		fl_2.addComponent( password );
-		fl_2.addComponent( showPassword );
 		fl_2.addComponent( accountButton );
 		
 		Label separator_1 = new Label( "<hr/>", ContentMode.HTML );
@@ -320,16 +276,6 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 //				model.setUserCode( this.shownUser );
 //			}
 //			code.setValue( this.shownUser.getCode());
-/*
-			if ( this.shownUser.getAccount() != null ) {
-				
-				usrname.setValue( this.shownUser.getAccount().getUsrName());
-				password.setValue( this.shownUser.getAccount().getPwd());
-			} else {
-				usrname.setValue( "" );
-				password.setValue( "" );
-			}
-*/			
 			
 			initAccessGroupCombo( this.shownUser );
 			
@@ -375,7 +321,6 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 		setVisible( user != null );
 		dataToView();
 
-		showPassword.setValue( false );
 		if ( model.isEditMode()) {
 			
 			model.clearEditMode();
@@ -506,14 +451,12 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 				editCloseButton.setIcon( new ThemeResource("icons/16/approve.png"));
 
 				deleteButton.setCaption( model.getApp().getResourceStr( "general.button.cancel" ));
-//				deleteButton.setVisible( false );
 				break;
 			case VIEW:
 				editCloseButton.setCaption( model.getApp().getResourceStr( "general.button.edit" ));
 				editCloseButton.setIcon( new ThemeResource("icons/16/edit.png"));
 				
 				deleteButton.setCaption( model.getApp().getResourceStr( "general.button.delete" ));
-//				deleteButton.setVisible( true );
 				break;
 			default:
 				break;
@@ -541,15 +484,6 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 		email.setEnabled( enable );
 		mobile.setEnabled( enable );
 		
-/*		
-		// Here account management fields handling
-		noAccountMsg.setEnabled( enable );
-		usrname.setEnabled( false );
-		password.setEnabled( false );
-//		showPassword.setEnabled( enable );
-		editcreateButton.setEnabled( enable );
-*/
-		
 		updateAccountFields();
 
 		if ( enable )
@@ -568,36 +502,30 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 			if ( this.shownUser.getAccount() != null ) {
 
 				noAccountMsg.setVisible( false );
-				showPassword.setVisible( model.getSessionOwner().isSuperUserFlag());
 				
-				usrname.setVisible( showPassword.getValue());
-				password.setVisible( showPassword.getValue());
-
-				accountButton.setCaption( "Edit Account" ); //model.getApp().getResourceStr( "account.button.edit" ));
-				
+				usrname.setVisible( model.getSecurityContext().hasViewPermission( 
+						FunctionalityType.ACCOUNTS_MGMT, model.getSessionOwner(), model.getSelectedOrg()));
 				usrname.setValue( this.shownUser.getAccount().getUsrName());
-				password.setValue( this.shownUser.getAccount().getPwd());
+//				usrname.setEnabled( model.isEditMode());
 				
-				usrname.setEnabled( model.isEditMode());
-				password.setEnabled( model.isEditMode());
-				
+				accountButton.setCaption( "Edit Account" ); //model.getApp().getResourceStr( "account.button.edit" ));
 				
 			} else {
 
 				noAccountMsg.setVisible( true );
-				showPassword.setVisible( false );
 
 				usrname.setVisible( false );
-				password.setVisible( false );
+				usrname.setValue( "" );
 
 				accountButton.setCaption( "Create Account" ); //model.getApp().getResourceStr( "account.button.create" ));
-
-				usrname.setValue( "" );
-				password.setValue( "" );
 				
 			}
 
-			accountButton.setVisible( model.isEditMode());
+			accountButton.setVisible( 
+					model.isEditMode()
+					&& model.getSecurityContext().hasViewPermission( 
+							FunctionalityType.ACCOUNTS_MGMT, model.getSessionOwner(), model.getSelectedOrg())
+			);
 			
 		} else {
 			
@@ -605,8 +533,6 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 			
 			noAccountMsg.setVisible( false );
 			usrname.setVisible( false );
-			password.setVisible( false );
-			showPassword.setVisible( false );
 			accountButton.setVisible( false );
 			
 		}
@@ -686,6 +612,10 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 			@Override
 			public void windowClose(CloseEvent e) {
 				
+				if ( model.accountWasChanged()) {
+					changesCollector.changed();
+				}
+				
 				logger.debug( "AccountView has been closed" );
 				updateAccountFields();				
 			}
@@ -696,19 +626,12 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 
 	private boolean validate() {
 
-/*
-		private DateField 	birthday;
-
-		private TextField	email;
-		private TextField	mobile;
-*/		
-		
 		if ( !lastName.isValid() || lastName.getValue() == null || lastName.getValue().trim().length() == 0 ) {   
 				
 			Notification.show( "Error", "Field cannot be empty!", Type.ERROR_MESSAGE );
 
-			usrname.selectAll();
-			usrname.focus();
+			lastName.selectAll();
+			lastName.focus();
 
 			return false;
 		}

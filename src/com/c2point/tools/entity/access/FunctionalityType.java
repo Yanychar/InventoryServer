@@ -2,26 +2,21 @@ package com.c2point.tools.entity.access;
 
 public enum FunctionalityType {
 
-	BORROW( 1 ),
-	CHANGESTATUS( 2 ),
-	MESSAGING( 3 ),
-	USERS_MGMT( 4 ),
-	TOOLS_MGMT( 5 ),
-	ORGS_MGMT( 6 ),
-	TRN_MGMT( 7 );
+	BORROW,
+	CHANGESTATUS,
+	MESSAGING,
+	USERS_MGMT,
+	TOOLS_MGMT,
+	ORGS_MGMT,
+	TRN_MGMT,
+	ACCOUNTS_MGMT;
 	
-	private int value = 0;
-	
-	FunctionalityType( int value ) {
-		this.value = value;
-		
-	}
-	
-	public int value() {
-		return this.value;
-	}
-
+/*	
 	public static FunctionalityType fromValue( int i ) {
+		
+		FunctionalityType.
+		
+		
 		for ( FunctionalityType type : FunctionalityType.values()) {
             if ( type.value == i ) {
                 return type;
@@ -34,5 +29,7 @@ public enum FunctionalityType {
 		
 		return valueOf( str );
 	}
+	
+*/	
 	
 }

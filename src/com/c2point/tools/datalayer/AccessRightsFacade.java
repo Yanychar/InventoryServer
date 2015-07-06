@@ -210,6 +210,7 @@ public class AccessRightsFacade {
 			{ "VIEWER", "TOOLS_MGMT",	"R",	"NO",	"NO" },
 			{ "VIEWER", "ORGS_MGMT",	"R",	"NO",	"NO" },
 			{ "VIEWER", "TRN_MGMT",		"R",	"NO",	"NO" },
+			{ "VIEWER", "ACCOUNTS_MGMT","NO",	"NO",	"NO" },
 			
 			{ "USER", "BORROW",			"R",	"RW",	"NO" },
 			{ "USER", "CHANGESTATUS",	"RW",	"R",	"NO" },
@@ -218,6 +219,7 @@ public class AccessRightsFacade {
 			{ "USER", "TOOLS_MGMT",		"NO",	"NO",	"NO" },
 			{ "USER", "ORGS_MGMT",		"NO",	"NO",	"NO" },
 			{ "USER", "TRN_MGMT",		"R",	"NO",	"NO" },
+			{ "USER", "ACCOUNTS_MGMT",	"NO",	"NO",	"NO" },
 			
 			{ "FOREMAN", "BORROW",		"R",	"RW",	"NO" },
 			{ "FOREMAN", "CHANGESTATUS","RW",	"RW",	"NO" },
@@ -226,6 +228,7 @@ public class AccessRightsFacade {
 			{ "FOREMAN", "TOOLS_MGMT",	"RW",	"RW",	"NO" },
 			{ "FOREMAN", "ORGS_MGMT",	"NO",	"NO",	"NO" },
 			{ "FOREMAN", "TRN_MGMT",	"R",	"NO",	"NO" },
+			{ "FOREMAN", "ACCOUNTS_MGMT","NO",	"NO",	"NO" },
 			
 			{ "BOSS", "BORROW",			"R",	"RW",	"NO" },
 			{ "BOSS", "CHANGESTATUS",	"RW",	"RW",	"NO" },
@@ -234,6 +237,7 @@ public class AccessRightsFacade {
 			{ "BOSS", "TOOLS_MGMT",		"RW",	"RW",	"NO" },
 			{ "BOSS", "ORGS_MGMT",		"RW",	"RW",	"NO" },
 			{ "BOSS", "TRN_MGMT",		"R",	"R",	"NO" },
+			{ "BOSS", "ACCOUNTS_MGMT",	"NO",	"NO",	"NO" },
 			
 			{ "ADMIN", "BORROW",		"R",	"R",	"NO" },
 			{ "ADMIN", "CHANGESTATUS",	"R",	"R",	"NO" },
@@ -242,6 +246,7 @@ public class AccessRightsFacade {
 			{ "ADMIN", "TOOLS_MGMT",	"RW",	"RW",	"NO" },
 			{ "ADMIN", "ORGS_MGMT",		"RW",	"RW",	"NO" },
 			{ "ADMIN", "TRN_MGMT",		"RW",	"RW",	"NO" },
+			{ "ADMIN", "ACCOUNTS_MGMT",	"RW",	"RW",	"NO" },
 			
 	};
 	
