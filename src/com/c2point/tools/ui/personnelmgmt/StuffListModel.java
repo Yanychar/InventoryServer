@@ -123,7 +123,7 @@ public class StuffListModel extends AbstractModel {
 			
 			this.selectedOrg = selectedOrg;
 
-			setupAccess( FunctionalityType.TOOLS_MGMT, this.selectedOrg );
+			setupAccess( FunctionalityType.USERS_MGMT, this.selectedOrg );
 			
 			fireListChanged();
 		}
