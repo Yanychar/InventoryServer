@@ -6,9 +6,6 @@ import java.util.List;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 
 public class ChangesCollector {
 
@@ -60,7 +57,7 @@ public class ChangesCollector {
 		listenersList.add( new Pair( field, listener ));
 
 	}
-
+/*
 	public void listenForChanges( Button ownership ) {
 		
 		new ClickListener() {
@@ -74,6 +71,7 @@ public class ChangesCollector {
 			}};
 		
 	}
+*/
 
 	public void changed() { changed( true ); }
 	public void changed( boolean wasChangedFlag ) { if ( !suspendedToListen ) this.wasChangedFlag = wasChangedFlag; }

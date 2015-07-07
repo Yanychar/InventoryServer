@@ -13,7 +13,6 @@ import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
-import com.c2point.tools.ui.ChangesCollector;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.Page;
@@ -33,8 +32,6 @@ public class ChangeItemAttributesDlg extends Window {
 
 	private ToolsListModel	model;
 	private ToolItem 			item;
-
-	private ChangesCollector	changesCollector = new ChangesCollector();
 
 /*
 	public interface StatusSelectorListener extends EventListener {
@@ -175,8 +172,6 @@ public class ChangeItemAttributesDlg extends Window {
 			}
 		});
 		
-		changesCollector.listenForChanges( ownership );
-		changesCollector.listenForChanges( status );
 
 		subContent.addComponent( ownership );
 		subContent.addComponent( status );

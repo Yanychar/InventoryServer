@@ -83,4 +83,10 @@ public class AccessRightsCollector extends HashMap<Long, AccessRight> {
 		
 	}
 
+	public AccessRight getEntry( FunctionalityType func, OwnershipType oType ) {
+		
+		return this.get( getKey( func, oType ));
+		
+	}
+	
 }

@@ -14,6 +14,7 @@ import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel.EditModeType;
 import com.c2point.tools.ui.ChangesCollector;
+import com.c2point.tools.ui.accessrightsmgmt.AccessMgmtView;
 import com.c2point.tools.ui.accountmgmt.AccountView;
 import com.c2point.tools.ui.listeners.EditInitiationListener;
 import com.c2point.tools.utils.lang.Locales;
@@ -62,6 +63,7 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 	private TextField	mobile;
 
 	private ComboBox	accessGroup;
+	private Button		accessButton;
 	
 	private Label		noAccountMsg;
 	private TextField	usrname;
@@ -162,7 +164,21 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 		accessGroup.setValidationVisible( true );
 		accessGroup.setImmediate( true );
 		
+		accessButton = new Button( "Edit Access Rights" );
+
+		accessButton.addClickListener( new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick( ClickEvent event) {
+
+				accessMgmt();
+
+			}
+		});
+
 /////
+		
 		
 		noAccountMsg = new Label ( "<B>No account. Shall be created</B>", ContentMode.HTML );
 		
@@ -202,6 +218,7 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 		fl_1.addComponent( mobile );
 		fl_1.addComponent( separator_4 );
 		fl_1.addComponent( accessGroup );
+		fl_1.addComponent( accessButton );
 
 
 
@@ -480,6 +497,8 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 		city.setEnabled( enable );
 		country.setEnabled( enable );
 		accessGroup.setEnabled( enable );
+		
+		accessButton.setVisible( model.getSecurityContext().hasViewPermission( FunctionalityType.ACCOUNTS_MGMT, model.getSelectedOrg()));
 
 		email.setEnabled( enable );
 		mobile.setEnabled( enable );
@@ -504,7 +523,7 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 				noAccountMsg.setVisible( false );
 				
 				usrname.setVisible( model.getSecurityContext().hasViewPermission( 
-						FunctionalityType.ACCOUNTS_MGMT, model.getSessionOwner(), model.getSelectedOrg()));
+						FunctionalityType.ACCOUNTS_MGMT, model.getSelectedOrg()));
 				usrname.setValue( this.shownUser.getAccount().getUsrName());
 //				usrname.setEnabled( model.isEditMode());
 				
@@ -524,7 +543,7 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 			accountButton.setVisible( 
 					model.isEditMode()
 					&& model.getSecurityContext().hasViewPermission( 
-							FunctionalityType.ACCOUNTS_MGMT, model.getSessionOwner(), model.getSelectedOrg())
+							FunctionalityType.ACCOUNTS_MGMT, model.getSelectedOrg())
 			);
 			
 		} else {
@@ -618,6 +637,29 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 				
 				logger.debug( "AccountView has been closed" );
 				updateAccountFields();				
+			}
+			
+		});
+		
+	}
+
+	// This method call AccessMgmtView dialog
+	private void accessMgmt() {
+	
+		AccessMgmtView view = new AccessMgmtView( model ); 
+		model.getApp().addWindow( view );
+		
+		view.addCloseListener( new CloseListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void windowClose(CloseEvent e) {
+				
+				if ( model.accountWasChanged()) {
+					changesCollector.changed();
+				}
+				
+				logger.debug( "AccessMgmtView has been closed" );
 			}
 			
 		});

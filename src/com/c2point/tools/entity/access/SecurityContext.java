@@ -59,7 +59,7 @@ public class SecurityContext {
 	public boolean hasEditPermissionAll( FunctionalityType func ) { return getPermission( func, OwnershipType.ANY ) == PermissionType.RW; 	}
 
 	
-	public boolean hasEditPermission( FunctionalityType func, OrgUser user, Organisation org ) {
+	public boolean hasEditPermission( FunctionalityType func, Organisation org ) {
 		
 		if ( user.getOrganisation().getId() == org.getId()) {
 			
@@ -73,7 +73,7 @@ public class SecurityContext {
 		
 	}
 	
-	public boolean hasViewPermission( FunctionalityType func, OrgUser user, Organisation org ) {
+	public boolean hasViewPermission( FunctionalityType func, Organisation org ) {
 		
 		if ( user.getOrganisation().getId() == org.getId()) {
 			

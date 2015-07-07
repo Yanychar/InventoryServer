@@ -78,7 +78,7 @@ public class AbstractModel  {
 
 		this.allowOtherCompanies = getApp().getSessionData().getContext().hasViewPermissionAll( fType );
 		this.allowEdit = getApp().getSessionData().getContext().hasEditPermission( 
-							fType, app.getSessionOwner(), org );
+							fType, org );
 		
 	}
 	
