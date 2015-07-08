@@ -1,5 +1,6 @@
 package com.c2point.tools.ui.orgmgmt;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,16 +14,13 @@ import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel;
+import com.c2point.tools.ui.listeners.OrgChangedListener;
 
 public class OrgListModel extends AbstractModel {
-		private static Logger logger = LogManager.getLogger( OrgListModel.class.getName());
+	private static Logger logger = LogManager.getLogger( OrgListModel.class.getName());
 
-	private PresenceFilterType	presenceFilter = PresenceFilterType.CURRENT;
+	private Organisation 		selectedOrg;
 	
-	private Organisation 		selectedOrganisation;
-	
-	private	boolean				orgsListSupported;
-
 	public OrgListModel() {
 		
 		this( null );
@@ -32,12 +30,10 @@ public class OrgListModel extends AbstractModel {
 	public OrgListModel( Organisation org ) {
 		super();
 
-		checkListSupport();
+		this.selectedOrg = ( org != null ? org : getApp().getSessionData().getOrg());
+		setViewMode();
 
-//		if ( !isOrgListSupported()) {
-
-			setSelectedOrg( org != null ? org : getApp().getSessionData().getOrg());		
-			
+		setupAccess( FunctionalityType.ORGS_MGMT, this.selectedOrg );
 		
 	}
 	
@@ -46,12 +42,6 @@ public class OrgListModel extends AbstractModel {
 		// Initial model initialization here if necesary
 		
 		fireListChanged();
-	}
-	
-	public boolean isOrgListSupported() { return this.orgsListSupported; }
-	public void checkListSupport() {
-		
-		orgsListSupported = getSecurityContext().hasViewPermissionAll( FunctionalityType.ORGS_MGMT ); 
 	}
 	
 	public void addChangedListener( OrgChangedListener listener ) {
@@ -110,30 +100,42 @@ public class OrgListModel extends AbstractModel {
 	     }
 	 }
 
-	public PresenceFilterType getPresenceFilter() { return presenceFilter; }
-	public void setPresenceFilter( PresenceFilterType presenceFilter ) { this.presenceFilter = presenceFilter; }
+	public Organisation getSelectedOrg() { return this.selectedOrg; }
+	public void setSelectedOrg( Organisation selectedOrg ) {
+		
+		
+		if ( getSelectedOrg() != selectedOrg ) {
+			
+			this.selectedOrg = selectedOrg;
+			
+			checkOwnerSelectable();
 
-	public Organisation getSelectedOrg() { return selectedOrganisation; }
-	public void setSelectedOrg( Organisation selectedOrganisation ) { 
-		this.selectedOrganisation = selectedOrganisation; 
-		fireSelected( selectedOrganisation );
+			setupAccess( FunctionalityType.ORGS_MGMT, this.selectedOrg );
+			
+			fireSelected( this.selectedOrg );
+		}
+		
+		
 	}
 
 	public Collection<Organisation> getOrganisations() {
+
+		Collection<Organisation> list = null;
 		
-		if ( isOrgListSupported()) {
+		if ( allowsOtherCompanies()) {
+			
 			return DataFacade.getInstance().list( Organisation.class );
+			
+		} else {
+			
+			list = new ArrayList<Organisation>();
+			
+			if ( getSelectedOrg() != null ) 
+				list.add( getSelectedOrg());
+			
 		}
 		
-		return null;
-/*		
-		Collection<Organisation> list = new ArrayList<Organisation>();
-		
-		if ( getSelectedOrg() != null ) 
-			list.add( getSelectedOrg());
-		
 		return list;
-*/		
 		
 	}
 
@@ -142,7 +144,7 @@ public class OrgListModel extends AbstractModel {
 		Organisation newOrg = null;
 
 		// Add to DB
-		if ( isOrgListSupported() && addedOrg != null ) {
+		if ( allowsToEdit() && addedOrg != null ) {
 			
 			newOrg = OrganisationFacade.getInstance().add( addedOrg );
 			
@@ -165,7 +167,7 @@ public class OrgListModel extends AbstractModel {
 		Organisation newOrg = null;
 		
 		// Update DB
-		if ( updatedOrg != null ) {
+		if ( allowsToEdit() && updatedOrg != null ) {
 
 //			addUpdateResponsibleIfNecessary();
 			
@@ -189,7 +191,7 @@ public class OrgListModel extends AbstractModel {
 
 		
 		// Update DB
-		if ( isOrgListSupported() && deletedOrg != null ) {
+		if ( allowsToEdit() && deletedOrg != null ) {
 
 			org = OrganisationFacade.getInstance().delete( deletedOrg );
 			
@@ -215,41 +217,37 @@ public class OrgListModel extends AbstractModel {
 
 	public Collection<OrgUser> getUsers() {
 		
-		return UsersFacade.getInstance().list( selectedOrganisation );
+		return UsersFacade.getInstance().list( getSelectedOrg());
 	}
 
-/*
-	// Check that responsible person exists already and add if necessary
-	private OrgUser addUpdateResponsibleIfNecessary() {
-		return addUpdateResponsibleIfNecessary( null );
+
+	private boolean serviceOwnerSelectable = true;
+	public boolean ownerCanBeSelected() {
+		
+		return serviceOwnerSelectable;
 	}
-	private OrgUser addUpdateResponsibleIfNecessary( Organisation updatedOrg ) {
+	
+	private void checkOwnerSelectable() {
 
-		OrgUser newUser = null;
+		this.serviceOwnerSelectable = false;
 		
-		if ( updatedOrg == null ) 
-			updatedOrg = this.selectedOrganisation;
-		
-		OrgUser responsibleUser = updatedOrg.getResponsible();
-		
-		if ( responsibleUser != null && responsibleUser.getId() < 1 ) {
+		// Employee selection is possible if there is 1 or more NOT DELETED employees
+		if ( this.selectedOrg != null && this.selectedOrg.getEmployees() != null
+			&&
+			 this.selectedOrg.getEmployees().size() > 0 ) {
 			
-			responsibleUser.setOrganisation( updatedOrg );
-			
-			UsersFacade.getInstance().setUniqueCode( responsibleUser );
-//			responsibleUser.setCode( "" );			
-
-			newUser = UsersFacade.getInstance().add( responsibleUser );
-			
-			if ( newUser != null ) {
+			for ( OrgUser user : this.selectedOrg.getEmployees().values()) {
 				
-				updatedOrg.addUser( newUser );
+				if ( !user.isDeleted()) {
+					this.serviceOwnerSelectable = true;
+					break;
+				}
 			}
-		
+			
 		}
 		
-		return newUser;
 		
 	}
-*/
+
+
 }

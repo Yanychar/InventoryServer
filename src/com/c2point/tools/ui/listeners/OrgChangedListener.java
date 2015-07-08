@@ -1,4 +1,4 @@
-package com.c2point.tools.ui.orgmgmt;
+package com.c2point.tools.ui.listeners;
 
 import java.util.EventListener;
 

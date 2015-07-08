@@ -4,26 +4,23 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.ui.AbstractMainView;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Panel;
 
 public class OrgManagementView extends AbstractMainView {
 
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( OrgManagementView.class.getName());
 
-
 	private OrgListModel		model;
 
-	private HorizontalLayout	toolbar;
-	private ComboBox			filter;
+	private Panel				toolbar;
 
-	private OrgListView 		stuffList;
+	private OrgListView 		orgsList;
 
-	private OrgView			stuffView;
+	private DetailsView			orgView;
 
 	public OrgManagementView() {
 		super();
@@ -35,50 +32,32 @@ public class OrgManagementView extends AbstractMainView {
 
 		this.setSizeFull();
 		this.setSpacing( true );
+		this.setWidth( "100%" );
 
 		this.model = new OrgListModel();
 
-		initStuffView();
+		initToolbar();
+		initStuffListView();
+		initDetailsView();
 		
-		if ( model.isOrgListSupported()) {
+		HorizontalSplitPanel hzSplit = new HorizontalSplitPanel();
+		hzSplit.setSplitPosition( 65, Unit.PERCENTAGE );
+		hzSplit.setSizeFull();
+		hzSplit.setLocked( false );
 
-			initToolbar();
-			initStuffListView();
+		hzSplit.addComponent( orgsList );
+		hzSplit.addComponent( orgView );
 
-			VerticalLayout vtSplit = new VerticalLayout();
-			HorizontalSplitPanel hzSplit = new HorizontalSplitPanel();
+		this.addComponent( toolbar );
+		this.addComponent( hzSplit );
 
-
-			hzSplit.addComponent( stuffList );
-			hzSplit.addComponent( stuffView );
-
-			hzSplit.setSplitPosition( 65, Unit.PERCENTAGE );
-
-			vtSplit.addComponent( toolbar );
-			vtSplit.addComponent( hzSplit );
-
-			vtSplit.setHeight( "100%" );
-			vtSplit.setExpandRatio( hzSplit, 1f );
-
-			this.addComponent( vtSplit );
-			
-		} else {
-
-			stuffView.setSizeFull();
-
-			this.addComponent( stuffView );
-			
-		}
-		
-		
+		this.setExpandRatio( hzSplit, 1f );
 
 	}
 
 	@Override
 	protected void initDataAtStart() {
 
-		logger.debug( "Initial entrance into the " + this.getClass().getSimpleName());
-		
 		this.model.initModel();
 
 	}
@@ -94,39 +73,36 @@ public class OrgManagementView extends AbstractMainView {
 
 	private void initToolbar() {
 
-		toolbar = new HorizontalLayout();
-		toolbar.setWidth( "100%" );
-		toolbar.setSpacing( true );
-		toolbar.setMargin( true );
-
-		Label filterLabel = new Label( "Filter:" );
-		filter = new ComboBox();
+		toolbar = new Panel();
+		
+		HorizontalLayout content = new HorizontalLayout();
+		toolbar.setContent( content );
+		
+		content.setWidth( "100%" );
+		content.setSpacing( true );
+		content.setMargin( true );
 
 		Label glue = new Label( " " );
 		glue.setHeight("100%");
 
-
-		toolbar.addComponent( filterLabel );
-		toolbar.addComponent( filter );
-		toolbar.addComponent( glue );
-
-		toolbar .setExpandRatio( glue, 1.0f );
-
-
+		content.addComponent( glue );
+		
+		content .setExpandRatio( glue, 1.0f );
+		
 	}
 
 	private void initStuffListView() {
 
 		if ( logger.isDebugEnabled()) logger.debug( "Data from model will be read!" );
 
-		stuffList = new OrgListView( this.model );
+		orgsList = new OrgListView( this.model );
 
 
 	}
 
-	private void initStuffView() {
+	private void initDetailsView() {
 
-		stuffView = new OrgView( this.model );
+		orgView = new DetailsView( this.model );
 
 
 	}

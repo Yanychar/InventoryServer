@@ -14,6 +14,7 @@ import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.ui.listeners.EditInitiationListener;
+import com.c2point.tools.ui.listeners.StuffChangedListener;
 
 public class StuffListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( StuffListModel.class.getName());

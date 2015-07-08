@@ -17,6 +17,7 @@ import com.c2point.tools.ui.ChangesCollector;
 import com.c2point.tools.ui.accessrightsmgmt.AccessMgmtView;
 import com.c2point.tools.ui.accountmgmt.AccountView;
 import com.c2point.tools.ui.listeners.EditInitiationListener;
+import com.c2point.tools.ui.listeners.StuffChangedListener;
 import com.c2point.tools.utils.lang.Locales;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
@@ -606,7 +607,7 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 				break;
 			case VIEW:
 
-				deleteUser( shownUser );
+				deleteUser( this.shownUser );
 				
 				break;
 			default:
