@@ -64,7 +64,7 @@ public class SettingsFacade extends DataFacade {
 			
 			if ( props == null ) {
 				
-				Settings settings = new Settings( org ); 
+				Property settings = new Property( org ); 
 				settings = this.insert( settings );
 				
 				props = settings.getProperties();
@@ -84,13 +84,13 @@ public class SettingsFacade extends DataFacade {
 	
 	public void setProperty( Organisation org, String key, String value ) {
 
-		Settings settings; 
+		Property settings; 
 		
 		settings = this.getSettings( org );
 		
 		if ( settings == null ) {
 
-			settings = new Settings( org ); 
+			settings = new Property( org ); 
 			settings = this.insert( settings );
 			
 		}
@@ -112,19 +112,19 @@ public class SettingsFacade extends DataFacade {
 		
 	}
 
-	private Settings getSettings( Organisation org ) {
+	private Property getSettings( Organisation org ) {
 		
 		if ( org == null )
 			throw new IllegalArgumentException( "Valid Organisation cannot be null!" );
 
 		EntityManager em = DataFacade.getInstance().createEntityManager();
 		
-		TypedQuery<Settings> query = null;
-		Settings result = null;
+		TypedQuery<Property> query = null;
+		Property result = null;
 
 		try {
 			
-			query = em.createNamedQuery( "getSettings", Settings.class )
+			query = em.createNamedQuery( "getSettings", Property.class )
 				.setParameter( "org", org );
 	
 			result = query.getSingleResult();
