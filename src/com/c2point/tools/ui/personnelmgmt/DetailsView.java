@@ -566,19 +566,21 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 
 		logger.debug( "EditClose button has been pressed!  EditMode was " + model.getEditMode());
 
+		boolean opRes = true;
+		
 		switch ( model.getEditMode()) {
 			case ADD:
 	
 				viewToData();
 				
-				addUser( shownUser );
+				opRes = addUser( shownUser ) != null;
 	
 				
 				break;
 	
 			case EDIT:
 				
-				updateUser( shownUser );
+				opRes = updateUser( shownUser ) != null;
 	
 				break;
 			case VIEW:
@@ -590,8 +592,13 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 				break;
 		}
 
-		updateButtons();
-		updateFields();
+		if ( opRes ) {
+			// Performed operation was successful
+			
+			updateButtons();
+			updateFields();
+			
+		}
 		
 		logger.debug( "EditClose button pressing handled!  EditMode now is " + model.getEditMode());
 		
@@ -699,11 +706,18 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 
 				mobile.selectAll();
 				mobile.focus();
-//				email.selectAll();
-//				email.focus();
 
 				return false;
 			}
+		}
+		
+		if ( !accessGroup.isValid()  || accessGroup.getValue() == null ) {
+
+			Notification.show( "Error", "Field cannot be empty!", Type.ERROR_MESSAGE );
+
+			accessGroup.focus();
+
+			return false;
 		}
 				
 		return true;

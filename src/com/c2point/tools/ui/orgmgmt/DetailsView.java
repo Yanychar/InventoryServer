@@ -232,7 +232,7 @@ public class DetailsView extends VerticalLayout implements OrgChangedListener {
 		
 		addComponent( headerOwner );
 		
-		addComponent( getServiceOwnerSelector());
+		addComponent( getServiceOwnerComponent());
 		
 		addComponent( getSeparator());
 		
@@ -618,7 +618,7 @@ public class DetailsView extends VerticalLayout implements OrgChangedListener {
 		
 	}
 
-	private Component addServiceOwnerSelector() {
+	private Component getServiceOwnerComponent() {
 		
 		Component selector = null;
 		

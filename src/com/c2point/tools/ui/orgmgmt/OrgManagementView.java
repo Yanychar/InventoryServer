@@ -67,7 +67,7 @@ public class OrgManagementView extends AbstractMainView {
 
 		logger.debug( "Return into the " + this.getClass().getSimpleName());
 		
-		this.model.initModel();
+//		this.model.initModel();
 
 	}
 
