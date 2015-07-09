@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -190,6 +191,8 @@ public class UsersFacade extends DataFacade {
 		
 		if ( user == null )
 			throw new IllegalArgumentException( "Valid User cannot be null!" );
+	
+		setUniqueCode( user );
 		
 		try {
 			newUser = DataFacade.getInstance().insert( user );
@@ -262,52 +265,67 @@ public class UsersFacade extends DataFacade {
 		
 		return results;
 	}
-/*	
+	
 	public void setUniqueCode( OrgUser user ) {
 
-		long lastUniqueCode = 0;
+		boolean useUserCode = false;
 		
 		try {
-			lastUniqueCode = Long.parseLong( 
-					SettingsFacade.getInstance().getProperty( user.getOrganisation(), "lastPersonnelCode" ));
+			useUserCode = Boolean.parseBoolean(
+					SettingsFacade.getInstance().getProperty( user.getOrganisation(), "usePersonnelCode", "false" ));
 		} catch ( NumberFormatException e ) {
 			
-			logger.error( "Wrong value for lastPersonnelCode was written in properties: " + 
-					SettingsFacade.getInstance().getProperty( user.getOrganisation(), "lastPersonnelCode" ));	
+			logger.error( "Wrong value for usePersonnelCode was written in properties: " + 
+					SettingsFacade.getInstance().getProperty( user.getOrganisation(), "usePersonnelCode" ));	
 		}
 		
-		if ( lastUniqueCode == 0 && user.getOrganisation() != null ) {
+		if ( useUserCode ) {
+		
+		
+			long lastUniqueCode = 0;
 			
-			lastUniqueCode = this.count( user.getOrganisation());
-
-		}
-
-		int codeLength = 6;
-		try {
-			codeLength = Integer.parseInt( 
-					SettingsFacade.getInstance().getProperty( user.getOrganisation(), "personnelCodeLength", "6" ));
-		} catch ( NumberFormatException e ) {
+			try {
+				lastUniqueCode = Long.parseLong( 
+						SettingsFacade.getInstance().getProperty( user.getOrganisation(), "lastPersonnelCode" ));
+			} catch ( NumberFormatException e ) {
+				
+				logger.error( "Wrong value for lastPersonnelCode was written in properties: " + 
+						SettingsFacade.getInstance().getProperty( user.getOrganisation(), "lastPersonnelCode" ));	
+			}
 			
-			logger.error( "Wrong value for length of PersonnelCode was written in properties: " + 
-					SettingsFacade.getInstance().getProperty( user.getOrganisation(), "personnelCodeLength" ));	
+			if ( lastUniqueCode == 0 && user.getOrganisation() != null ) {
+				
+				lastUniqueCode = this.count( user.getOrganisation());
+	
+			}
+	
+			int codeLength = 6;
+			try {
+				codeLength = Integer.parseInt( 
+						SettingsFacade.getInstance().getProperty( user.getOrganisation(), "personnelCodeLength", "6" ));
+			} catch ( NumberFormatException e ) {
+				
+				logger.error( "Wrong value for length of PersonnelCode was written in properties: " + 
+						SettingsFacade.getInstance().getProperty( user.getOrganisation(), "personnelCodeLength" ));	
+			}
+			
+			lastUniqueCode++;
+			
+			String newCode = StringUtils.leftPad(
+					Long.toString( lastUniqueCode ),
+					codeLength,	
+					'0'
+			);
+	
+			// Store new lastUniqueCode
+			SettingsFacade.getInstance().setProperty( user.getOrganisation(), 
+													  "lastPersonnelCode", 
+													  Long.toString( lastUniqueCode ));
+			// set up User code
+			user.setCode( newCode );
+			
 		}
-		
-		lastUniqueCode++;
-		
-		String newCode = StringUtils.leftPad(
-				Long.toString( lastUniqueCode ),
-				codeLength,	
-				'0'
-		);
-
-		// Store new lastUniqueCode
-		SettingsFacade.getInstance().setProperty( user.getOrganisation(), 
-												  "lastPersonnelCode", 
-												  Long.toString( lastUniqueCode ));
-		// set up User code
-		user.setCode( newCode );
-		
 	}
-*/	
+
 }
 
