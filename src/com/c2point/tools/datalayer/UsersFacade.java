@@ -268,46 +268,19 @@ public class UsersFacade extends DataFacade {
 	
 	public void setUniqueCode( OrgUser user ) {
 
-		boolean useUserCode = false;
-		
-		try {
-			useUserCode = Boolean.parseBoolean(
-					SettingsFacade.getInstance().getProperty( user.getOrganisation(), "usePersonnelCode", "false" ));
-		} catch ( NumberFormatException e ) {
-			
-			logger.error( "Wrong value for usePersonnelCode was written in properties: " + 
-					SettingsFacade.getInstance().getProperty( user.getOrganisation(), "usePersonnelCode" ));	
-		}
+		boolean useUserCode = SettingsFacade.getInstance().getBoolean( user.getOrganisation(), "usePersonnelCode", false );
 		
 		if ( useUserCode ) {
 		
-		
-			long lastUniqueCode = 0;
-			
-			try {
-				lastUniqueCode = Long.parseLong( 
-						SettingsFacade.getInstance().getProperty( user.getOrganisation(), "lastPersonnelCode" ));
-			} catch ( NumberFormatException e ) {
-				
-				logger.error( "Wrong value for lastPersonnelCode was written in properties: " + 
-						SettingsFacade.getInstance().getProperty( user.getOrganisation(), "lastPersonnelCode" ));	
-			}
-			
-			if ( lastUniqueCode == 0 && user.getOrganisation() != null ) {
+			long lastUniqueCode = SettingsFacade.getInstance().getLong( user.getOrganisation(), "lastPersonnelCode" );
+
+			if ( lastUniqueCode <= 0 && user.getOrganisation() != null ) {
 				
 				lastUniqueCode = this.count( user.getOrganisation());
 	
 			}
 	
-			int codeLength = 6;
-			try {
-				codeLength = Integer.parseInt( 
-						SettingsFacade.getInstance().getProperty( user.getOrganisation(), "personnelCodeLength", "6" ));
-			} catch ( NumberFormatException e ) {
-				
-				logger.error( "Wrong value for length of PersonnelCode was written in properties: " + 
-						SettingsFacade.getInstance().getProperty( user.getOrganisation(), "personnelCodeLength" ));	
-			}
+			int codeLength = SettingsFacade.getInstance().getInteger( user.getOrganisation(), "personnelCodeLength", 6 );
 			
 			lastUniqueCode++;
 			
@@ -318,9 +291,9 @@ public class UsersFacade extends DataFacade {
 			);
 	
 			// Store new lastUniqueCode
-			SettingsFacade.getInstance().setProperty( user.getOrganisation(), 
+			SettingsFacade.getInstance().set( user.getOrganisation(), 
 													  "lastPersonnelCode", 
-													  Long.toString( lastUniqueCode ));
+													  lastUniqueCode );
 			// set up User code
 			user.setCode( newCode );
 			

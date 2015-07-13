@@ -19,6 +19,7 @@ import com.vaadin.data.Item;
 public class TrnsFilter implements Container.Filter {
 	private static final long serialVersionUID = 1L;
 
+	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( TrnsFilter.class.getName());
 
 	private Date		dateStart;
@@ -35,15 +36,7 @@ public class TrnsFilter implements Container.Filter {
 	public TrnsFilter( Organisation org ) {
 
 		// Read default value of time period in months
-		int lengthInMonths = 6;
-		try {
-			lengthInMonths = Integer.parseInt( 
-					SettingsFacade.getInstance().getProperty( org, "periodInMonths", Integer.toString( lengthInMonths )));
-		} catch ( NumberFormatException e ) {
-			
-			logger.error( "Wrong value for length of PeriodInMonths was written in properties: " + 
-					SettingsFacade.getInstance().getProperty( org, "periodInMonths" ));	
-		}
+		int lengthInMonths = SettingsFacade.getInstance().getInteger( org, "periodInMonths", 6 );
 		
 		setDateStart( new LocalDate().minusMonths( lengthInMonths ).toDate() );
 		setDateEnd( new Date());

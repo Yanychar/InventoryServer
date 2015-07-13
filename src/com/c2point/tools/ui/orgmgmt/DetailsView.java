@@ -13,7 +13,10 @@ import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel.EditModeType;
 import com.c2point.tools.ui.ChangesCollector;
+import com.c2point.tools.ui.accessrightsmgmt.AccessMgmtView;
 import com.c2point.tools.ui.listeners.OrgChangedListener;
+import com.c2point.tools.ui.propertiesmgmt.PropsMgmtModel;
+import com.c2point.tools.ui.propertiesmgmt.PropsMgmtView;
 import com.c2point.tools.ui.util.UIhelper;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
@@ -30,6 +33,8 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.VerticalLayout;
 
 public class DetailsView extends VerticalLayout implements OrgChangedListener {
@@ -238,6 +243,19 @@ public class DetailsView extends VerticalLayout implements OrgChangedListener {
 		
 		addComponent( getButtonsBar());
 
+		changesCollector.listenForChanges( code );
+		changesCollector.listenForChanges( name );
+		changesCollector.listenForChanges( tunnus );
+
+		changesCollector.listenForChanges( street );
+//		changesCollector.listenForChanges( poBox );
+		changesCollector.listenForChanges( index );
+		changesCollector.listenForChanges( city );
+		changesCollector.listenForChanges( country );
+		changesCollector.listenForChanges( email );
+		changesCollector.listenForChanges( phone );
+	    
+		
 		updateButtons();
 		updateFields();
 	}
@@ -559,6 +577,11 @@ public class DetailsView extends VerticalLayout implements OrgChangedListener {
 		    
 		}
 		
+		if ( enabled )
+			changesCollector.startToListen();
+		else
+			changesCollector.stopToListen();
+		
 	}
 
 	private void editSavePressed() {
@@ -658,6 +681,8 @@ public class DetailsView extends VerticalLayout implements OrgChangedListener {
 
     	layout.getComponent( 0, 0 ).setWidth( "6em" );
 		
+		changesCollector.listenForChanges( serviceOwner );
+
 		return layout;
 	}
 	
@@ -722,7 +747,12 @@ public class DetailsView extends VerticalLayout implements OrgChangedListener {
 	    	layout.getComponent( 0, row ).setWidth( "6em" );
 	    }
         layout.setColumnExpandRatio( 3, 5 );
-		
+
+		changesCollector.listenForChanges( soFirstName );
+		changesCollector.listenForChanges( soLastName );
+		changesCollector.listenForChanges( soEmail );
+		changesCollector.listenForChanges( soPhone );
+        
 		return layout;
 	}
  
@@ -820,7 +850,25 @@ public class DetailsView extends VerticalLayout implements OrgChangedListener {
 
 	private void settingsMgmt() {
 		
+		final PropsMgmtModel propsModel = new PropsMgmtModel( shownOrg ); 
+		PropsMgmtView view = new PropsMgmtView( propsModel ); 
+		model.getApp().addWindow( view );
+		
+		view.addCloseListener( new CloseListener() {
+			private static final long serialVersionUID = 1L;
 
+			@Override
+			public void windowClose(CloseEvent e) {
+				
+				if ( propsModel.changed()) {
+					changesCollector.changed();
+				}
+				
+				logger.debug( "AccessMgmtView has been closed" );
+			}
+			
+		});
+		
 	}
 
 	private Component getSeparator() {

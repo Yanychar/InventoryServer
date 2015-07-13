@@ -20,14 +20,12 @@ import java.io.File;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.c2point.tools.datalayer.SettingsFacade;
 import com.c2point.tools.datalayer.ToolsFacade;
 import com.c2point.tools.datalayer.UsersFacade;
 import com.c2point.tools.entity.person.OrgUser;
@@ -340,48 +338,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 				tool.setCode( code );
 			} else {
 				
-				// Code will be generated
-				long lastUniqueCode = 0;
-				
-				try {
-					lastUniqueCode = Long.parseLong( 
-							SettingsFacade.getInstance().getProperty( model.getSelectedOrg(), "lastToolCode" ));
-				} catch ( NumberFormatException e ) {
-					
-					logger.error( "Wrong value for lastToolCode was written in properties: " + 
-							SettingsFacade.getInstance().getProperty( model.getSelectedOrg(), "lastToolCode" ));	
-				}
-				
-				if ( lastUniqueCode == 0 ) {
-					
-					lastUniqueCode = ToolsFacade.getInstance().count( model.getSelectedOrg());
-
-				}
-
-				int codeLength = 6;
-				try {
-					codeLength = Integer.parseInt( 
-							SettingsFacade.getInstance().getProperty( model.getSelectedOrg(), "toolCodeLength", "4" ));
-				} catch ( NumberFormatException e ) {
-					
-					logger.error( "Wrong value for length of ToolCode was written in properties: " + 
-							SettingsFacade.getInstance().getProperty( model.getSelectedOrg(), "toolCodeLength" ));	
-				}
-				
-				lastUniqueCode++;
-				
-				String newCode = StringUtils.leftPad(
-						Long.toString( lastUniqueCode ),
-						codeLength,	
-						'0'
-				);
-
-				// Store new lastUniqueCode
-				SettingsFacade.getInstance().setProperty( model.getSelectedOrg(), 
-														  "lastToolCode", 
-														  Long.toString( lastUniqueCode ));
-				// set up User code
-				tool.setCode( newCode );
+				ToolsFacade.getInstance().setUniqueCode( tool, model.getSelectedOrg());
 				
 			}
 		}

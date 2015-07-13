@@ -159,8 +159,7 @@ public class ToolItem extends SimplePojo {
 // Set to FREE if FREE status available in this organisation. Othervise INUSE
 		if ( tool != null ) {
 			
-			boolean freeAllowed = Boolean.parseBoolean(
-						SettingsFacade.getInstance().getProperty( tool.getOrg(), "FreeStatusAllowed", "false" ));
+			boolean freeAllowed = SettingsFacade.getInstance().get( tool.getOrg(), "freeStatusAllowed", false );
 			
 			setStatus( freeAllowed ? ItemStatus.FREE : ItemStatus.INUSE );
 	    	

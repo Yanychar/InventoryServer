@@ -576,8 +576,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		if ( !statusCBinited ) {
 			status.addItem( ItemStatus.UNKNOWN );
 			
-			boolean freeAllowed = Boolean.parseBoolean(
-					SettingsFacade.getInstance().getProperty( model.getSelectedOrg(), "FreeStatusAllowed", "false" ));
+			boolean freeAllowed = SettingsFacade.getInstance().getBoolean( model.getSelectedOrg(), "FreeStatusAllowed", false );
 			if ( freeAllowed ) {
 				status.addItem( ItemStatus.FREE );
 			}

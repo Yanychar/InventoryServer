@@ -54,15 +54,7 @@ public class ToolsHistoryListModel extends AbstractModel {
 		
 		
 		// Read default value of time period in months
-		int lengthInMonths = 1;
-		try {
-			lengthInMonths = Integer.parseInt( 
-					SettingsFacade.getInstance().getProperty( org, "periodInMonths", "6" ));
-		} catch ( NumberFormatException e ) {
-			
-			logger.error( "Wrong value for length of PeriodInMonths was written in properties: " + 
-					SettingsFacade.getInstance().getProperty( org, "periodInMonths" ));	
-		}
+		int lengthInMonths = SettingsFacade.getInstance().getInteger( org, "periodInMonths", 6 );
 		
 		setDateStart( new LocalDate().minusMonths( lengthInMonths ).toDate(), false );
 		setDateEnd( new Date(), false );

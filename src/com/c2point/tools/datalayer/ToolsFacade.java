@@ -198,51 +198,39 @@ public class ToolsFacade extends DataFacade {
 		
 	}
 
-
 	public void setUniqueCode( Tool tool, Organisation org ) {
 
-		long lastUniqueCode = 0;
+		boolean useToolCode = SettingsFacade.getInstance().getBoolean( org, "useToolCode", false );
 		
-		try {
-			lastUniqueCode = Long.parseLong( 
-					SettingsFacade.getInstance().getProperty( org, "lastToolCode" ));
-		} catch ( NumberFormatException e ) {
-			
-			logger.error( "Wrong value for lastToolCode was written in properties: " + 
-					SettingsFacade.getInstance().getProperty( org, "lastToolCode" ));	
-		}
-		
-		if ( lastUniqueCode == 0 ) {
-			
-			lastUniqueCode = this.count( org );
+		if ( useToolCode ) {
 
-		}
-
-		int codeLength = 6;
-		try {
-			codeLength = Integer.parseInt( 
-					SettingsFacade.getInstance().getProperty( org, "toolCodeLength", "6" ));
-		} catch ( NumberFormatException e ) {
+			long lastUniqueCode = SettingsFacade.getInstance().getLong( org, "lastToolCode" );
 			
-			logger.error( "Wrong value for length of PersonnelCode was written in properties: " + 
-					SettingsFacade.getInstance().getProperty( org, "toolCodeLength" ));	
+			if ( lastUniqueCode <= 0 && org != null ) {
+				
+				lastUniqueCode = this.count( org );
+	
+			}
+	
+			int codeLength = SettingsFacade.getInstance().getInteger( org, "toolCodeLength", 6 );
+			
+			lastUniqueCode++;
+			
+			String newCode = StringUtils.leftPad(
+					Long.toString( lastUniqueCode ),
+					codeLength,	
+					'0'
+			);
+	
+			// Store new lastUniqueCode
+			SettingsFacade.getInstance().set( org, 
+											  "lastToolCode", 
+											  lastUniqueCode );
+			// set up Tool code
+			tool.setCode( newCode );
 		}
-		
-		lastUniqueCode++;
-		
-		String newCode = StringUtils.leftPad(
-				Long.toString( lastUniqueCode ),
-				codeLength,	
-				'0'
-		);
-
-		// Store new lastUniqueCode
-		SettingsFacade.getInstance().setProperty( org, 
-												  "lastToolCode", 
-												  Long.toString( lastUniqueCode ));
-		// set up Tool code
-		tool.setCode( newCode );
-		
 	}
 	
 }
+
+

@@ -16,7 +16,6 @@
 			Should be deployed to the server -->
 		<conf name="nodeploy" />
 	</configurations>
-	
 	<dependencies defaultconf="default" defaultconfmapping="default->default">
 		<!-- The core server part of Vaadin -->
 		<dependency org="com.vaadin" name="vaadin-server" rev="&vaadin.version;" />
@@ -27,9 +26,9 @@
 		<!-- Push support -->
 		<dependency org="com.vaadin" name="vaadin-push" rev="&vaadin.version;" />
 
-		<!-- Servlet 3.0 API 
+		<!-- Servlet 3.0 API --> 
 		<dependency org="javax.servlet" name="javax.servlet-api" rev="3.0.1" conf="nodeploy->default" />
--->
+
 		<!-- Precompiled DefaultWidgetSet -->
 		<dependency org="com.vaadin" name="vaadin-client-compiled"
 			rev="&vaadin.version;" />
@@ -65,6 +64,8 @@
 		
 		<!-- OpenCSV support -->
 		<dependency org="net.sf.opencsv" name="opencsv" rev="2.3"/>
+		
+		<dependency org="org.vaadin.addons" name="formcheckbox" rev="1.0.2" />
 
 	</dependencies>
 </ivy-module>

@@ -11,7 +11,7 @@ public class AllProperties {
 	
 	private static Map<Long, OrgProperties> orgMap = null;
 	
-	public AllProperties() {
+	private AllProperties() {
 
 		orgMap = new HashMap<Long, OrgProperties>();
 
@@ -32,20 +32,26 @@ public class AllProperties {
 	public static OrgProperties getProperties( Organisation org ) {
 		
 		// Create Object if it was not created before. Similar to instance in sceleton pattern
-		if ( orgMap == null )
+		if ( orgMap == null ) {
 			
 			new AllProperties();
-		
-		
-		OrgProperties orgProps = orgMap.get( org.getId());
-		
-		if ( orgProps == null ) {
-			
-			orgMap.put( org.getId(), new OrgProperties( org ));
 		}
 		
+		OrgProperties orgProps = null;
 		
-		return null;
+		if ( org != null ) {
+
+			orgProps = orgMap.get( org.getId());
+			
+			if ( orgProps == null ) {
+				
+				orgProps = new OrgProperties( org );
+				orgMap.put( org.getId(), orgProps );
+			}
+		}
+		
+		return orgProps;
 	}
+	
 	
 }

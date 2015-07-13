@@ -485,28 +485,28 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 
 	private void updateFields() {
 
-		boolean enable = model.isEditMode();
+		boolean enabled = model.isEditMode();
 		
 //		code.setEnabled( enable );
-		firstName.setEnabled( enable );
-		lastName.setEnabled( enable );
-		birthday.setEnabled( enable );
+		firstName.setEnabled( enabled );
+		lastName.setEnabled( enabled );
+		birthday.setEnabled( enabled );
 
-		street.setEnabled( enable );
-		pobox.setEnabled( enable );
-		index.setEnabled( enable );
-		city.setEnabled( enable );
-		country.setEnabled( enable );
-		accessGroup.setEnabled( enable );
+		street.setEnabled( enabled );
+		pobox.setEnabled( enabled );
+		index.setEnabled( enabled );
+		city.setEnabled( enabled );
+		country.setEnabled( enabled );
+		accessGroup.setEnabled( enabled );
 		
 		accessButton.setVisible( model.getSecurityContext().hasViewPermission( FunctionalityType.ACCOUNTS_MGMT, model.getSelectedOrg()));
 
-		email.setEnabled( enable );
-		mobile.setEnabled( enable );
+		email.setEnabled( enabled );
+		mobile.setEnabled( enabled );
 		
 		updateAccountFields();
 
-		if ( enable )
+		if ( enabled )
 			changesCollector.startToListen();
 		else
 			changesCollector.stopToListen();

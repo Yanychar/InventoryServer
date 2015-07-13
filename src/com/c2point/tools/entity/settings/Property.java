@@ -6,8 +6,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.Transient;
-
 import com.c2point.tools.entity.SimplePojo;
 import com.c2point.tools.entity.organisation.Organisation;
 
@@ -17,7 +15,7 @@ import com.c2point.tools.entity.organisation.Organisation;
 					"WHERE property.organisation = :org AND " +
 					"property.deleted = false"
 	),
-	@NamedQuery( name = "getProperty", 
+	@NamedQuery( name = "findNamedProperty", 
 	query = "SELECT property FROM Property property " +
 				"WHERE property.organisation = :org AND " +
 				"property.name = :name AND " +
@@ -62,5 +60,37 @@ public class Property  extends SimplePojo {
 	
 	public String getValue() { return value; }
 	public void setValue( String value ) { this.value = value; }
+	public void setValue( Property prop ) {
 
+		setValue( prop.getValue());
+		
+	}
+
+	public Object convertValue() {
+		
+		Object retObj = null;
+		
+		switch ( this.type ) {
+			case BOOLEAN:
+				retObj = Boolean.parseBoolean( this.value );
+				break;
+			case INT:
+				retObj = Integer.parseInt( this.value );
+				break;
+			case LONG:
+				retObj = Long.parseLong( this.value );
+				break;
+			case STRING:
+				retObj = this.value;
+				break;
+			case UNKNOWN:
+			default:
+				break;
+			
+		}
+		
+		return retObj;
+		
+	}
+	
 }
