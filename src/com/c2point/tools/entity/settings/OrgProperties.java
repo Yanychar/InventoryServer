@@ -73,9 +73,20 @@ public class OrgProperties {
 		try {
 			
 			Object value = this.listOfProperties.get( name );
-			if ( value != null )
-				return ( T )value;
-			else
+			
+			if ( value != null ) {
+
+				if ( c.isInstance( value )) {
+					
+					return ( T )value;
+				} else {
+
+					logger.error( "Cannot convert Parameter '" + name + "' from type " + value.getClass().getSimpleName() + " into " + c.getSimpleName());
+					
+				}
+				
+				
+			} else
 				logger.debug( "Parameter '" + name + "' was not found in the Map Of Properties. " );
 			
 		} catch( Exception e ) {

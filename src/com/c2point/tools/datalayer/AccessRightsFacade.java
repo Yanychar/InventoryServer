@@ -1,17 +1,20 @@
 package com.c2point.tools.datalayer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.InventoryUI;
+import com.c2point.tools.entity.SimplePojo;
 import com.c2point.tools.entity.access.AccessGroups;
 import com.c2point.tools.entity.access.AccessRightsCollector;
 import com.c2point.tools.entity.access.AccessRight;
@@ -22,7 +25,7 @@ import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.transactions.TransactionOperation;
 import com.vaadin.ui.UI;
 
-public class AccessRightsFacade {
+public class AccessRightsFacade extends DataFacade {
 
 	private static Logger logger = LogManager.getLogger( AccessRightsFacade.class.getName()); 
 
@@ -51,8 +54,26 @@ public class AccessRightsFacade {
 		return ret;
 	}
 
-	public List<AccessRight> getAccessRights( OrgUser user ) {
-	
+	public List<AccessRight> getDefaultRights( OrgUser  user ) {
+
+		List<AccessRight> list = new ArrayList<AccessRight>();
+		
+		for ( FunctionalityType func : FunctionalityType.values()) {
+			
+			for ( OwnershipType ownership : OwnershipType.values()) {
+				
+				// Add Access Rights record 
+				list.add( getDefaultRight( user, func, ownership ));
+				
+			}
+			
+		}
+		
+		return list;
+	}
+
+	public List<AccessRight> getCustomRights( OrgUser  user ) {
+
 		List<AccessRight> list = null;
 		
 		EntityManager em = DataFacade.getInstance().createEntityManager();
@@ -70,41 +91,22 @@ public class AccessRightsFacade {
 			em.close();
 		}
 		
-		// Add missing rights if necessary
-		AccessRightsCollector tmpMap = new AccessRightsCollector( list );
-		
-		for ( FunctionalityType func : FunctionalityType.values()) {
-			
-			for ( OwnershipType ownership : OwnershipType.values()) {
-				
-				if ( !tmpMap.exists( func, ownership )) {
-					
-					// Access Rights record is missing. Create new one and ...
-					AccessRight record = new AccessRight( user, func, ownership, getDefaultRight( user, func, ownership ));
-					
-					// ... add Access Record to DB ...
-					AccessRight newRecord = addAccessRights( record ); 
-					
-					if ( newRecord == null ) {
-						// Cannot store record but it must be used anyway
-						logger.error( "Cannot add Access Record for the user: " + user.getFirstAndLastNames());
-						
-						newRecord = record;
-					}
-					
-					// ... and also add new record to the list
-					list.add( newRecord );
-					tmpMap.addEntry( newRecord );
-					
-				}
-			}
-			
-		}
-		
 		return list;
 	}
 
-	public AccessRight addAccessRights( AccessRight record ) {
+	
+	public List<AccessRight> getAccessRights( OrgUser user ) {
+
+		// Firstly read default rights
+		AccessRightsCollector tmpMap = new AccessRightsCollector();
+		
+		tmpMap.addEntries( getDefaultRights( user ));
+		tmpMap.addEntries( getCustomRights( user ));	
+		
+		return new ArrayList<AccessRight>( tmpMap.values());
+	}
+
+	public AccessRight saveAccessRights( AccessRight record ) {
 		
 		if ( record == null )
 			throw new IllegalArgumentException ( "AccessRight record cannot be null or emptyl!" );
@@ -113,14 +115,38 @@ public class AccessRightsFacade {
 			throw new IllegalArgumentException ( "AccessRight record PARAMETERS cannot be null or emptyl!" );
 		
 		AccessRight newRecord = null;
+		TransactionOperation operation;
 		
 		try {
-			newRecord = DataFacade.getInstance().insert( record );
+
+			newRecord = DataFacade.getInstance().find( AccessRight.class, record.getId());
 			
-			TransactionsFacade.getInstance().writeAccessRights( 
-					(( InventoryUI )UI.getCurrent()).getSessionOwner(), 
-					newRecord.getUser(), 
-					TransactionOperation.ADD );
+			if ( newRecord == null ) {
+				
+				// Record shall be added
+				record.setDefaultRight( false );
+				newRecord = DataFacade.getInstance().insert( record );
+				
+				operation = TransactionOperation.ADD;
+				
+			} else {
+
+				// Record shall be updated
+				newRecord.setPermission( record.getPermission());
+				newRecord.setDefaultRight( false );
+				
+				newRecord = DataFacade.getInstance().merge( newRecord );
+
+				operation = TransactionOperation.EDIT;
+				
+			}
+			
+			if ( newRecord != null ) {
+				TransactionsFacade.getInstance().writeAccessRights( 
+						(( InventoryUI )UI.getCurrent()).getSessionOwner(), 
+						newRecord.getUser(), 
+						operation );
+			}
 			
 		} catch ( Exception e) {
 			logger.error( "Cannot insert AccessRights record into DB\n" + e );
@@ -131,47 +157,69 @@ public class AccessRightsFacade {
 		
 		return newRecord;
 	}
-	
-	public AccessRight updateAccessRights( AccessRight record ) {
 
-		AccessRight newRecord = null;
+	public boolean deleteAccessRight( AccessRight record ) {
 		
-		try {
-			
-			newRecord = DataFacade.getInstance().find( AccessRight.class, record.getId());
-			
-			if ( newRecord == null ) {
-				logger.error( "Old Access Record was not found in the DB. Cannot update!!!" );
-				
-				return null;
+		boolean res = true;
+		if ( record != null ) {
+		
+			try {
+				remove( record );
+			} catch ( Exception e ) {
+				logger.debug( "Failed (can be absent) to remove AccessRight!" );
+				res = false;
 			}
 
-//			newRecord.setFunction( record.getFunction());
-//			newRecord.setType( record.getType());
-			newRecord.setPermission( record.getPermission());
+			TransactionsFacade.getInstance().writeAccessRights( 
+					(( InventoryUI )UI.getCurrent()).getSessionOwner(), 
+					record.getUser(), 
+					TransactionOperation.DELETE );
 			
-			newRecord = DataFacade.getInstance().merge( newRecord );
-			
-			if ( newRecord != null ) {
-				TransactionsFacade.getInstance().writeAccessRights( 
-						(( InventoryUI )UI.getCurrent()).getSessionOwner(), 
-						newRecord.getUser(), 
-						TransactionOperation.EDIT );
-			}
-			
-		} catch ( Exception e) {
-			logger.error( "Cannot update AccessRights record into DB\n" + e );
 		}
 		
-		if ( logger.isDebugEnabled())
-				logger.debug( "AccessRights record was updated: " + newRecord );
-		
-		return newRecord;
+		return res;
 	}
 
-	private PermissionType getDefaultRight( OrgUser  user, FunctionalityType func, OwnershipType ownership ) {
+	
+	public void clearAccessRights( OrgUser user ) {
+		
+		List<AccessRight> existingRights = getAccessRights( user );
+		
+		if ( existingRights != null && existingRights.size() > 0 ) {
+		
+			EntityManager em = createEntityManager();
+			try {
+				em.getTransaction().begin();
+				for (SimplePojo p : existingRights) {
+					p = em.find(p.getClass(), p.getId());
+					if ( p != null ) {
+						em.remove(p);
+					}
+				}
+				em.getTransaction().commit();
+			} catch (PersistenceException e) {
+				throw e;
+			} finally {
+				em.close();
+			}
 
-		PermissionType permission = PermissionType.NO;
+			TransactionsFacade.getInstance().writeAccessRights( 
+					(( InventoryUI )UI.getCurrent()).getSessionOwner(), 
+					user, 
+					TransactionOperation.DELETE );
+			
+		}
+		
+	}
+
+	public AccessRight getDefaultRight( AccessRight record ) {
+		
+		return getDefaultRight( record.getUser(), record.getFunction(), record.getType());
+	}
+	
+	public AccessRight getDefaultRight( OrgUser  user, FunctionalityType func, OwnershipType ownership ) {
+
+		PermissionType permission;
 	
 		// First one for superuser from Uisko only
 		if ( user.isSuperUserFlag() && user.getOrganisation().isServiceOwner()) {
@@ -180,18 +228,10 @@ public class AccessRightsFacade {
 			
 			permission = getDefPermissionFromDefMap( user, func, ownership );		
 		}
-/*		
-		else if ( func == FunctionalityType.MESSAGING	&& ownership != OwnershipType.ANY ) permission = PermissionType.RW;
-		else if ( func == FunctionalityType.BORROW 		&& ownership == OwnershipType.OWN ) permission = PermissionType.R;
-		else if ( func == FunctionalityType.BORROW 		&& ownership == OwnershipType.COMPANY ) permission = PermissionType.RW;
-		else if ( func == FunctionalityType.CHANGESTATUS	&& ownership == OwnershipType.OWN ) permission = PermissionType.RW;
-		else if ( func == FunctionalityType.CHANGESTATUS	&& ownership == OwnershipType.COMPANY ) permission = PermissionType.R;
-*/	
+
+		AccessRight record = new AccessRight( user, func, ownership, permission, true );
 		
-//		permission = defaultMap.get( ) 
-		
-		
-		return permission;
+		return record;
 	}
 
 //	public List<AccessGroup> 

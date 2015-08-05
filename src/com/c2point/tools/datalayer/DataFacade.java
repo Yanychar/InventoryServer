@@ -1,6 +1,5 @@
 package com.c2point.tools.datalayer;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -191,7 +190,7 @@ public class DataFacade {
 	}
 
 	/** Removes all entities in single transaction */
-	public void removeAll(ArrayList<SimplePojo> entities) {
+	public void removeAll(List< ? extends SimplePojo> entities) {
 		EntityManager em = createEntityManager();
 		try {
 			em.getTransaction().begin();

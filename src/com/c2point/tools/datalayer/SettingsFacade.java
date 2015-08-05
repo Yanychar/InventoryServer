@@ -59,60 +59,118 @@ public class SettingsFacade extends DataFacade {
 
 	public Boolean getBoolean( Organisation org, String name ) {
 		
-		return get( org, name, false );
+		return get( Boolean.class, org, name, false );
 	}
 		
 	public Boolean getBoolean( Organisation org, String name, Boolean defValue ) {
 		
-		return get( org, name, defValue );
+		return get( Boolean.class, org, name, defValue );
 	}
 	
 	public Integer getInteger( Organisation org, String name ) {
 		
-		return get( org, name, -1 );
+		return get( Integer.class, org, name, -1 );
 	}
 	
 	public Integer getInteger( Organisation org, String name, Integer defValue ) {
 		
-		return get( org, name, defValue );
+		return get( Integer.class, org, name, defValue );
 	}
 	
 	public Long getLong( Organisation org, String name ) {
 		
-		return get( org, name, -1L );
+		return get( Long.class, org, name, -1L );
 	}
 	
 	public Long getLong( Organisation org, String name, Long defValue ) {
 		
-		return get( org, name, defValue );
+		return get( Long.class, org, name, defValue );
 	}
 	
 	public String getString( Organisation org, String name ) {
 		
-		return get( org, name, ( String )null );
+		return get( String.class, org, name, ( String )null );
 	}
 	
 	public String getString( Organisation org, String name, String defValue ) {
 		
-		return get( org, name, defValue );
+		return get( String.class, org, name, defValue );
+	}
+
+	public void set( Organisation org, String name, Object value ) {
+		
+		set( org, name, value, true );
 	}
 	
-	public void set( Organisation org, String name, Object value ) {
+	public void setInteger( Organisation org, String name, String value, boolean persist ) {
+		
+		try {
+			set( org, name, Integer.valueOf( value ), persist );
+		} catch ( NumberFormatException e ) {
+			
+			set( org, name, Integer.valueOf( -1 ), persist );
+		}
+		
+	}
+
+	public void setLong( Organisation org, String name, String value, boolean persist ) {
+		
+		try {
+			set( org, name, Long.valueOf( value ), persist );
+		} catch ( NumberFormatException e ) {
+			
+			set( org, name, Long.valueOf( -1 ), persist );
+		}
+		
+	}
+	
+	public void set( Organisation org, String name, Object value, boolean persist ) {
 
 		OrgProperties props = AllProperties.getProperties( org );
 		
 		props.set( name, value );
 
+		if ( persist ) {
+			
+			persistOrg( props );
+		}
+		
+	}
+
+	public boolean persistOrg( Organisation org ) {
+
+		OrgProperties props = AllProperties.getProperties( org );
+		
+		return persistOrg( props );
+	}
+	
+	private boolean persistOrg( OrgProperties props ) {
+
+		boolean bRes = true;   // Result of persitence operations. TRUE if all were saved successfully
+		
 		Property prop;
-		while ( props.hasToUpdate()) {
+		
+		while ( props != null && props.hasToUpdate()) {
 			
 			prop = props.getNextToUpdate();
 			
 			if ( prop != null ) {
-				storeProperty( prop );
+				
+				bRes = bRes && ( storeProperty( prop ) != null );
 			}
 		}
 		
+		return bRes;
+
+	}
+
+	
+	public void persistAll() {
+
+		for ( OrgProperties props : AllProperties.getAllOrgProperties()) {
+			
+			persistOrg( props );
+		}
 	}
 
 	public String getSystemProperty( String key ) {
@@ -216,9 +274,9 @@ public class SettingsFacade extends DataFacade {
 		return newProp;
 	}
 
-	public <T> T get( Organisation org, String name, T defValue ) {
+	private <T> T get( Class<T> c, Organisation org, String name, T defValue ) {
 
-		Class<T> c = null;
+//		Class<T> c = null;
 		T value = null;
 		
 		OrgProperties props = AllProperties.getProperties( org );

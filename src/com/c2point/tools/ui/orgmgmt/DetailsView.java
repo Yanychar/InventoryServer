@@ -7,13 +7,11 @@ import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.c2point.tools.entity.access.AccessGroups;
-import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel.EditModeType;
 import com.c2point.tools.ui.ChangesCollector;
-import com.c2point.tools.ui.accessrightsmgmt.AccessMgmtView;
 import com.c2point.tools.ui.listeners.OrgChangedListener;
 import com.c2point.tools.ui.propertiesmgmt.PropsMgmtModel;
 import com.c2point.tools.ui.propertiesmgmt.PropsMgmtView;
@@ -860,11 +858,11 @@ public class DetailsView extends VerticalLayout implements OrgChangedListener {
 			@Override
 			public void windowClose(CloseEvent e) {
 				
-				if ( propsModel.changed()) {
+				if ( propsModel.wasItChanged()) {
 					changesCollector.changed();
 				}
 				
-				logger.debug( "AccessMgmtView has been closed" );
+				logger.debug( "PropertiesMgmtView has been closed" );
 			}
 			
 		});

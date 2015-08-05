@@ -13,24 +13,17 @@ import com.c2point.tools.entity.access.AccessRightsCollector;
 import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.access.OwnershipType;
 import com.c2point.tools.entity.access.PermissionType;
-import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.ui.ChangesCollector;
-import com.c2point.tools.ui.accountmgmt.AccountView;
 import com.c2point.tools.ui.personnelmgmt.StuffListModel;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
@@ -121,7 +114,7 @@ public class AccessMgmtView extends Window {
 				
 				table.addComponent( getAccCombo( acCollector.getEntry( func, OwnershipType.COMPANY )),2, row );
 				
-				if ( model.getSessionOwner().getOrganisation().isServiceOwner()) {
+				if ( model.getSessionOwner().getOrganisation().isServiceOwner() || model.getSessionOwner().isSuperUserFlag()) {
 					table.addComponent( getAccCombo( acCollector.getEntry( func, OwnershipType.ANY )),		3, row );
 				}
 				
@@ -179,21 +172,35 @@ public class AccessMgmtView extends Window {
 				if ( changedMap.size() > 0 ) {
 					
 					Iterator<AccCombo> iterator = changedMap.keySet().iterator();
-					AccessRight arRecord;
+					AccessRight record;
+					AccessRight defRecord;
 					boolean res = true;
+					
+					AccessRightsFacade af = AccessRightsFacade.getInstance();
+					
 					while (iterator.hasNext()) {
 						
-						arRecord = iterator.next().getArRecord();
-						res = res &&
-								AccessRightsFacade.getInstance().updateAccessRights( arRecord) != null;
-						logger.debug( "Save accessRights" + arRecord );
+						record = iterator.next().getArRecord();
+						defRecord = af.getDefaultRight( record );
+						
+						if (  defRecord == null
+							|| defRecord.getPermission() != record.getPermission()) {
+						
+							res = res &&
+									AccessRightsFacade.getInstance().saveAccessRights( record ) != null;
+							logger.debug( "Save accessRights" + record );
+						} else if ( true ) {
+							res = res &&
+									AccessRightsFacade.getInstance().deleteAccessRight( record );
+							logger.debug( "Save accessRights" + record );
+						}
 					}
 
 					if ( res ) {
 						AccessMgmtView.this.close();
 					} else {
 						
-						Notification.show( "Error", "Cannot Access Rights", Type.ERROR_MESSAGE );
+						Notification.show( "Error", "Cannot save Access Rights", Type.ERROR_MESSAGE );
 						
 					}
 						

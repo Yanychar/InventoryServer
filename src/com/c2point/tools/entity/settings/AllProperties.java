@@ -1,5 +1,6 @@
 package com.c2point.tools.entity.settings;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,5 +54,8 @@ public class AllProperties {
 		return orgProps;
 	}
 	
-	
+	public static Collection<OrgProperties> getAllOrgProperties() {
+		
+		return orgMap.values();
+	}
 }

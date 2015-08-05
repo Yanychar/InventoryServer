@@ -1,26 +1,22 @@
 package com.c2point.tools.ui.propertiesmgmt;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.datalayer.DataFacade;
-import com.c2point.tools.datalayer.OrganisationFacade;
-import com.c2point.tools.datalayer.PresenceFilterType;
-import com.c2point.tools.datalayer.UsersFacade;
-import com.c2point.tools.entity.access.FunctionalityType;
+import com.c2point.tools.datalayer.SettingsFacade;
 import com.c2point.tools.entity.organisation.Organisation;
-import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel;
-import com.c2point.tools.ui.listeners.OrgChangedListener;
+import com.c2point.tools.ui.ChangesCollector;
 import com.c2point.tools.ui.listeners.PropertiesListener;
 
 public class PropsMgmtModel extends AbstractModel {
+	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( PropsMgmtModel.class.getName());
 
 	private Organisation 		org;
+
+	private ChangesCollector	changesCollector = new ChangesCollector();
+	
 	
 	public PropsMgmtModel( Organisation org ) {
 		super();
@@ -52,17 +48,20 @@ public class PropsMgmtModel extends AbstractModel {
 	public Organisation getOrg() { return this.org; }
 	public void setOrg( Organisation org ) { this.org = org; }
 
-	public boolean changed() {
-		
-		return true;
-	}
-	
 	public boolean update() {
 		
-		boolean bRes = false;
+		boolean bRes = SettingsFacade.getInstance().persistOrg( this.org );
 		
 		return bRes;
 	}
+
+	public ChangesCollector	getChangesCollector() { return  this.changesCollector; }
 	
+
+	public boolean wasItChanged() {
+		
+		return this.changesCollector.wasItChanged();
+	}
+
 }
 	

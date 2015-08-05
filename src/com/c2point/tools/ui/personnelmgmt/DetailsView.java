@@ -817,6 +817,10 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 
 			if ( validate()) {
 				// Changes must be stored
+				
+				// Additionally delete AR records if access group has been changed
+				AccessGroups oldAG = this.shownUser.getAccessGroup();
+				
 				viewToData();
 
 				if ( this.shownUser.getId() > 0 ) {
@@ -829,6 +833,11 @@ public class DetailsView extends VerticalLayout implements StuffChangedListener,
 
 						model.setViewMode();
 						currentWasSet( updatedUser );
+						
+						// Additionally delete AR records if access group has been changed
+						if ( oldAG != updatedUser.getAccessGroup()) {
+							model.clearAccessRights( updatedUser );
+						}
 
 					} else {
 

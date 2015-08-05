@@ -36,7 +36,7 @@ public class TrnsFilter implements Container.Filter {
 	public TrnsFilter( Organisation org ) {
 
 		// Read default value of time period in months
-		int lengthInMonths = SettingsFacade.getInstance().getInteger( org, "periodInMonths", 6 );
+		int lengthInMonths = SettingsFacade.getInstance().getInteger( org, "periodInMonths", 1 );
 		
 		setDateStart( new LocalDate().minusMonths( lengthInMonths ).toDate() );
 		setDateEnd( new Date());

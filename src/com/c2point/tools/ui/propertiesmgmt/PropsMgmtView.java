@@ -1,42 +1,19 @@
 package com.c2point.tools.ui.propertiesmgmt;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.datalayer.AccessRightsFacade;
-import com.c2point.tools.entity.access.AccessRight;
-import com.c2point.tools.entity.access.AccessRightsCollector;
-import com.c2point.tools.entity.access.FunctionalityType;
-import com.c2point.tools.entity.access.OwnershipType;
-import com.c2point.tools.entity.access.PermissionType;
-import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.ui.ChangesCollector;
-import com.c2point.tools.ui.accountmgmt.AccountView;
-import com.c2point.tools.ui.personnelmgmt.StuffListModel;
+import com.c2point.tools.datalayer.SettingsFacade;
+import com.c2point.tools.entity.organisation.Organisation;
 import com.eijsink.vaadin.components.formcheckbox.FormCheckBox;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.data.util.converter.StringToIntegerConverter;
-import com.vaadin.data.validator.IntegerRangeValidator;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -53,8 +30,6 @@ public class PropsMgmtView extends Window {
 	private FormCheckBox 		allowUserCode;
 	private TextField			userCodeLength;
 	private TextField			lastUsedCode;
-	
-	private ChangesCollector	changesCollector = new ChangesCollector();
 	
 	public PropsMgmtView( PropsMgmtModel model ) {
 		
@@ -81,6 +56,8 @@ public class PropsMgmtView extends Window {
 
 		
 		setContent( content );
+		
+		modelToView();
 		
 		updateFields();
 		
@@ -120,9 +97,9 @@ public class PropsMgmtView extends Window {
 		table.addComponent( userCodeLength );
 		table.addComponent( lastUsedCode );
 				
-		changesCollector.listenForChanges( allowUserCode );
-		changesCollector.listenForChanges( userCodeLength ); 
-		changesCollector.listenForChanges( lastUsedCode );
+		model.getChangesCollector().listenForChanges( allowUserCode );
+		model.getChangesCollector().listenForChanges( userCodeLength ); 
+		model.getChangesCollector().listenForChanges( lastUsedCode );
 		
 		allowUserCode.addValueChangeListener( new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -163,9 +140,23 @@ public class PropsMgmtView extends Window {
 	
 	private void viewToModelUserCode() {
 
+		SettingsFacade sf = SettingsFacade.getInstance();
+		Organisation org = model.getOrg();
+				
+		sf.set( org, "allowUserCode", allowUserCode.getValue(), false );
+		sf.setInteger( org, "userCodeLength", userCodeLength.getValue(), false );
+		sf.set( org, "lastUsedCode", lastUsedCode.getValue(), false );
+		
 	}
 	
 	private void modelToViewUserCode() {
+
+		SettingsFacade sf = SettingsFacade.getInstance();
+		Organisation org = model.getOrg();
+				
+		allowUserCode.setValue(	sf.getBoolean( org, "allowUserCode", true ));
+		userCodeLength.setValue(sf.getInteger( org, "userCodeLength", 4 ).toString());
+		lastUsedCode.setValue(	sf.getString( org, "lastUsedCode", "0001" ));
 		
 	}
 	
@@ -182,7 +173,7 @@ public class PropsMgmtView extends Window {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				if ( wereChanged() ) {
+				if ( model.getChangesCollector().wasItChanged()) {
 					
 					if ( validateAndSave()) {
 						
@@ -228,14 +219,7 @@ public class PropsMgmtView extends Window {
 		return bar;
 	}
 	
-	private boolean wereChanged() {
-
-		boolean bRes = changesCollector.wasItChanged();
 		
-		logger.debug( "Content changed? " + bRes );
-		return bRes;
-	}
-	
 	private boolean validateAndSave() {
 
 		boolean bRes = validate() && save();
@@ -262,7 +246,7 @@ public class PropsMgmtView extends Window {
 		if ( !bRes ) {
 
 			String template = model.getApp().getResourceStr( "general.error.update.header" );
-			Object[] params = { this.shownOrg.getName() };
+			Object[] params = { model.getOrg().getName() };
 			template = MessageFormat.format( template, params );
 
 			Notification.show( template, Notification.Type.ERROR_MESSAGE );

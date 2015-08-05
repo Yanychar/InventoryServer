@@ -179,7 +179,7 @@ public class ChangeItemAttributesDlg extends Window {
 
 	private void fillStatusField() {
 
-		boolean freeAllowed = SettingsFacade.getInstance().get( model.getOrg(), "freeStatusAllowed", false );
+		boolean freeAllowed = SettingsFacade.getInstance().getBoolean( model.getOrg(), "freeStatusAllowed", false );
 		
 		for ( ItemStatus oneStatus : ItemStatus.values()) {
 			if ( oneStatus != ItemStatus.UNKNOWN 

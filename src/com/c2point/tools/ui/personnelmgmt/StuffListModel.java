@@ -1,10 +1,10 @@
 package com.c2point.tools.ui.personnelmgmt;
 
 import java.util.Collection;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.datalayer.AccessRightsFacade;
 import com.c2point.tools.datalayer.AuthenticationFacade;
 import com.c2point.tools.datalayer.PresenceFilterType;
 import com.c2point.tools.datalayer.UsersFacade;
@@ -195,6 +195,13 @@ public class StuffListModel extends AbstractModel {
 		return newUser;
 		
 	}
+	
+	public void clearAccessRights( OrgUser user ) {
+
+		AccessRightsFacade.getInstance().clearAccessRights( user );
+		
+	}
+	
 	
 	public OrgUser delete( OrgUser deletedUser ) {
 		

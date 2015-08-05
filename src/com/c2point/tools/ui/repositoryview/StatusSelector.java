@@ -60,7 +60,7 @@ public class StatusSelector extends Window {
 	
 //		center();
 		
-		boolean freeAllowed = SettingsFacade.getInstance().get( org, "freeStatusAllowed", false );
+		boolean freeAllowed = SettingsFacade.getInstance().getBoolean( org, "freeStatusAllowed", false );
 		
 		single = new OptionGroup();
 		for ( ItemStatus status : ItemStatus.values()) {

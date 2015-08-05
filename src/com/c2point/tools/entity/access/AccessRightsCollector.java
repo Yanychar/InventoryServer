@@ -22,11 +22,8 @@ public class AccessRightsCollector extends HashMap<Long, AccessRight> {
 		
 		this();
 		
-		if ( list != null && list.size() > 0 ) {
+		addEntries( list ); 
 			
-			addEntries( list ); 
-			
-		}
 	}
 
 	public void addEntry( AccessRight record ) {

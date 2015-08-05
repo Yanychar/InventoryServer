@@ -5,6 +5,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Transient;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,20 +32,31 @@ public class AccessRight extends SimplePojo {
 	@Enumerated( EnumType.ORDINAL )
 	private PermissionType		permission;
 	
+	@Transient
+	private boolean 			defaultRight;
 	
 	public AccessRight() {
 		super();
-		
+
+		setDefaultRight( false );		
 	}
 
 	public AccessRight( OrgUser user, FunctionalityType func, OwnershipType ownership, PermissionType permission ) {
+		this( user, func, ownership, permission, false );
+		
+	}
+
+	public AccessRight( OrgUser user, FunctionalityType func, OwnershipType ownership, PermissionType permission, boolean isDefault ) {
+		this();
 		
 		setUser( user );
 		setFunction( func );
 		setType( ownership );
 		setPermission( permission );
+		setDefaultRight( isDefault );
 	}
 
+	
 	public OrgUser getUser() { return user; }
 	public void setUser(OrgUser user) { this.user = user; }
 
@@ -56,7 +68,10 @@ public class AccessRight extends SimplePojo {
 
 	public PermissionType getPermission() { return permission; }
 	public void setPermission(PermissionType permission) { this.permission = permission; }
-	
+
+	public boolean isDefaultRight() { return defaultRight; }
+	public void setDefaultRight(boolean defaultRight) { this.defaultRight = defaultRight; }
+
 	public String toString() {
 		return "Access Record: ( " + getFunction() + ", " + getType() + ", " + getPermission() + " )";
 	}
