@@ -314,9 +314,11 @@ public class StuffListModel extends AbstractModel {
 			
 			Account account = AuthenticationFacade.getInstance().findByUserName( newName );
 			
-			if ( account == null 
+			if ( account == null  
 				||
-				 account.getId() == this.getSelectedUser().getAccount().getId()) {
+				this.getSelectedUser().getAccount() != null 
+					&&
+				this.getSelectedUser().getAccount().getId() == account.getId()) {
 
 				// Account found and this is account we are editing right now!
 				bRes = true;

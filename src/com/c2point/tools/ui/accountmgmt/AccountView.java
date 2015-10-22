@@ -1,5 +1,8 @@
 package com.c2point.tools.ui.accountmgmt;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.c2point.tools.datalayer.AuthenticationFacade;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.ui.ChangesCollector;
@@ -121,14 +124,11 @@ public class AccountView extends Window {
 
 		setContent( content );
 		
-		dataToView();
 		
 		changesCollector.listenForChanges( usrname );
 		changesCollector.listenForChanges( password );
-		
-		changesCollector.clearChanges();
-		
-//		showPassword.setValue( false );
+
+		dataToView();
 		
 	}
 
@@ -271,6 +271,36 @@ public class AccountView extends Window {
 		return bRes;
 	}
 
+	private void generateUserName( OrgUser user ) {
+		
+		if ( user != null ) {
+			
+			String newName =  
+			    StringUtils.defaultString( user.getLastName()).trim()
+			  + StringUtils.defaultString( user.getFirstName()).trim();
+			
+			newName = newName.toLowerCase().substring( 0,  8 );   
+			
+			int count = 1;
+			while( AuthenticationFacade.getInstance().findByUserName( newName ) != null ) {
+
+				newName =  
+					    StringUtils.defaultString( user.getLastName()).trim()
+					  + StringUtils.defaultString( user.getFirstName()).trim();
+				
+				newName = newName.toLowerCase().substring( 0,  8 )   
+					  + "." + Integer.toString( count );
+				
+				count++;
+				
+			};
+			
+			usrname.setValue( newName );
+			
+		}
+		
+	}
+	
 	private void generatePassword() {
 		
 		password.setValue( PasswordGenerator.getNewPassword());
@@ -287,12 +317,16 @@ public class AccountView extends Window {
 				
 			usrname.setValue( user.getAccount().getUsrName());
 			password.setValue( user.getAccount().getPwd());
-				
+
+			changesCollector.clearChanges();
+			
 		} else {
 			
 			usrname.setValue( "" );
 			password.setValue( "" );
 
+			generateUserName( user );
+			generatePassword();
 		}
 
 	}

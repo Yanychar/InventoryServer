@@ -269,10 +269,14 @@ public class UsersFacade extends DataFacade {
 	public void setUniqueCode( OrgUser user ) {
 
 		boolean useUserCode = SettingsFacade.getInstance().getBoolean( user.getOrganisation(), "usePersonnelCode", false );
+
+		// Force to assign user code even it is not used lately
+		SettingsFacade.getInstance().set( user.getOrganisation(), "usePersonnelCode", true );
+		useUserCode = true;
 		
 		if ( useUserCode ) {
 		
-			long lastUniqueCode = SettingsFacade.getInstance().getLong( user.getOrganisation(), "lastPersonnelCode" );
+			long lastUniqueCode = SettingsFacade.getInstance().getLong( user.getOrganisation(), "lastPersonnelCode", Long.valueOf( 1 ));
 
 			if ( lastUniqueCode <= 0 && user.getOrganisation() != null ) {
 				
