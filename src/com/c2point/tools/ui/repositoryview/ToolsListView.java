@@ -113,7 +113,6 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 				if ( logger.isDebugEnabled()) logger.debug( "Selection were changed" );
 
 				try {
-					Item item = itemsTable.getItem( itemsTable.getValue());
 					Object itemId = itemsTable.getValue();
 //					model.setSelectedItem(( ToolItem ) item.getItemProperty( "data" ).getValue());
 					model.setSelectedItem(( ToolItem ) itemId );

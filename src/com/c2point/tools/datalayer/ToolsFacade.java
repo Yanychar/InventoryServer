@@ -54,16 +54,24 @@ public class ToolsFacade extends DataFacade {
 	/*
 	 * Below methods for Tool objects manipulation
 	 */
-	public Tool getTool( Organisation org, Tool searchTool ) {
+	public Tool searchTool( Organisation org, Tool searchTool ) {
 		
 		Tool resTool = null;
 		
-		Collection<Tool> existingToolList = getTools( org, searchTool.getCategory());
+		Collection<Tool> existingToolList = searchTools( org, searchTool.getCategory());
 		
 		for ( Tool tool : existingToolList ) {
 			
+			boolean checkCode = searchTool.getCode() != null && searchTool.getCode().length() > 0; 
+			
 			if ( tool != null && tool.getName() != null 
-					&& tool.getCode().trim().compareToIgnoreCase( searchTool.getCode().trim()) == 0
+
+//					&& tool.getCode().trim().compareToIgnoreCase( searchTool.getCode().trim()) == 0
+					
+					&& ( checkCode ? tool.getCode().trim().compareToIgnoreCase( searchTool.getCode().trim()) == 0 : true )
+					
+					
+					
 					&& tool.getName().trim().compareToIgnoreCase( searchTool.getName().trim()) == 0
 //					&& tool.getDescription().trim().compareToIgnoreCase( searchTool.getDescription().trim()) == 0
 					&& tool.getManufacturer().getId() == searchTool.getManufacturer().getId()
@@ -107,7 +115,7 @@ public class ToolsFacade extends DataFacade {
 		
 	}
 
-	public Collection<Tool> getTools( Organisation org, Category category ) {
+	public Collection<Tool> searchTools( Organisation org, Category category ) {
 		
 		if ( org == null && category == null )
 			throw new IllegalArgumentException( "Valid Organisation and/or Category cannot be null when add Tool!" );

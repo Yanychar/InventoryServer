@@ -195,7 +195,7 @@ public class ToolsListModel extends AbstractModel {
 		
 		if ( this.selectedCategory != null ) {
 
-			return ToolsFacade.getInstance().getTools( getSelectedOrg(), this.selectedCategory );
+			return ToolsFacade.getInstance().searchTools( getSelectedOrg(), this.selectedCategory );
 		}
 		
 				
