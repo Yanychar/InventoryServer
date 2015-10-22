@@ -56,6 +56,16 @@ public class OrgUser extends Person {
 	@Enumerated( EnumType.ORDINAL )
 	private AccessGroups	accessGroup;
 	
+	public OrgUser() {
+		
+		super();
+	}
+
+	public OrgUser( String firstName, String lastName ) {
+		
+		super( firstName, lastName );
+	}
+
 	public Organisation getOrganisation() { return organisation; }
 	public void setOrganisation( Organisation organisation ) { this.organisation = organisation; }
 	

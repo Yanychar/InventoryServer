@@ -9,10 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.FailedListener;
-import com.vaadin.ui.Upload.ProgressListener;
-import com.vaadin.ui.Upload.StartedListener;
-import com.vaadin.ui.Upload.SucceededListener;
 
 public class UploadComponent extends Upload  { // implements StartedListener, SucceededListener, FailedListener, ProgressListener {
 	private static final long serialVersionUID = 1L;

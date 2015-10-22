@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Tool;
 import com.vaadin.ui.UI;
@@ -87,7 +88,7 @@ public class ImportComponent implements StartedListener, SucceededListener, Fail
 				importProcessor.process();
 					
 			} catch ( Exception e ) {
-				writeLog( "ERROR!!! ... Failed import file: " + event.getFilename());
+				writeLog( "\nERROR!!! ... Failed import file: " + event.getFilename());
 				logger.error( "Failed to import file: " + event.getFilename());
 				logger.error( e );
 			}
@@ -108,20 +109,28 @@ public class ImportComponent implements StartedListener, SucceededListener, Fail
 
 		switch ( status ) {
 			case COMMENT:
-				if ( logger.isDebugEnabled())
-					writeLog( "  Line " + lineNumber + ". This is comment" );
+//				if ( logger.isDebugEnabled())
+//					writeLog( "  Line " + lineNumber + ": This is comment" );
 				break;
 			case FAILED:
+				writeLog( "  Line " + lineNumber + ": Failed to process:  " + showObject( status, processedObject ));
+				break;
 			case VALIDATION_FAILED:
-				writeLog( "  Line " + lineNumber + ". FAILED to process:  " + showObject( processedObject ));
+				writeLog( "  Line " + lineNumber + ": Failed to validate:  " + showObject( status, processedObject ));
+				break;
+			case PERSON_NOT_FOUND:
+				writeLog( "  Line " + lineNumber + ": User not found:  " + showObject( status, processedObject ));
+				break;
+			case TOOL_ITEM_EXIST:
+				writeLog( "  Line " + lineNumber + ": Tool Item with similar barcode exists already:  " + showObject( status, processedObject ));
 				break;
 			case PROCESSED:
 				if ( logger.isDebugEnabled())
-					writeLog( "  Line " + lineNumber + ". Processed: " + showObject( processedObject ));
+					writeLog( "  Line " + lineNumber + ". Processed: " + showObject( status, processedObject ));
 				break;
 			case VALIDATED:
 				if ( logger.isDebugEnabled())
-					writeLog( "  Line " + lineNumber + ". Validated: " + showObject( processedObject ));
+					writeLog( "  Line " + lineNumber + ". Validated: " + showObject( status, processedObject ));
 				break;
 			case EXIST:
 				writeLog( "  Line " + lineNumber + ". FAILED. Exists already. Was not added!" );
@@ -142,7 +151,7 @@ public class ImportComponent implements StartedListener, SucceededListener, Fail
 			str = str.concat( "#" + i + " " );
 		}
 		
-		writeLog( "ERROR!!! ... Failed to process following lines from the file: " + str );
+		writeLog( "\nERROR!!! ... Failed to process following lines from the file: " + str );
 		
 		try {
 			importProcessor.getFile().delete();
@@ -177,7 +186,7 @@ public class ImportComponent implements StartedListener, SucceededListener, Fail
 		}
 	}
 
-	private String showObject( Object processedObject ) {
+	private String showObject( ProcessedStatus status, Object processedObject ) {
 		
 		String resp = "???";
 		
@@ -192,6 +201,12 @@ public class ImportComponent implements StartedListener, SucceededListener, Fail
 				ToolItem item = ( ToolItem )processedObject;
 				
 				resp = item.getFullName() + " assigned to " + item.getCurrentUser().getLastAndFirstNames();
+				
+			} else if ( processedObject instanceof OrgUser ) {
+				
+				OrgUser user = ( OrgUser )processedObject;
+
+				resp = user.getLastAndFirstNames();
 				
 			} else {
 				

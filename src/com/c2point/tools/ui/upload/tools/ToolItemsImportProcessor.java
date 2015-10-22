@@ -17,15 +17,18 @@
 package com.c2point.tools.ui.upload.tools;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.datalayer.ToolsFacade;
 import com.c2point.tools.datalayer.UsersFacade;
 import com.c2point.tools.entity.person.OrgUser;
@@ -33,6 +36,8 @@ import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.entity.tool.Tool;
+import com.c2point.tools.entity.tool.identity.ToolIdentity;
+import com.c2point.tools.entity.tool.identity.ToolIdentityType;
 import com.c2point.tools.ui.toolsmgmt.ToolsListModel;
 import com.c2point.tools.ui.upload.FileProcessor;
 import com.c2point.tools.ui.upload.ProcessedStatus;
@@ -93,12 +98,31 @@ public class ToolItemsImportProcessor extends FileProcessor {
 				|| nextLine.length == 1 && nextLine[0].trim().length() == 0
 				|| nextLine[0].trim().length() > 0 && nextLine[ 0 ].trim().charAt( 0 ) == '#' ) {
 			
-			// Comment or empty line
+			// Comment 
 			logger.debug( "   Validation passed: Line #"+lineNumber+" is empty or commented out" );
 
 			return ProcessedStatus.COMMENT;
 			
 		}
+		// Check for empty line
+		boolean nonEmptyFound = false;
+		for( String str : nextLine ) {
+			
+			if ( str != null && str.length() > 0 ) {
+				nonEmptyFound = true;
+				break;
+			}
+		}
+		
+		// All strings are empty ==>> Empty line == COMMENT
+		if ( !nonEmptyFound ) {
+			// Empty line
+			logger.debug( "   Validation passed: Line #"+lineNumber+" is empty or commented out" );
+
+			return ProcessedStatus.COMMENT;
+			
+		}
+		
 		
 		// 2. Validate number of columns
 		if ( nextLine.length != columnPatterns.length ) {
@@ -166,22 +190,35 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		Category category = handleCategory( nextLine );
 
 		Manufacturer manufacturer = handleManufacturer( nextLine );
+	
+		OrgUser searchUser = createUser( nextLine );
 		
-		tmpRes = ProcessedStatus.FAILED;
-		Tool tool = handleTool( nextLine, category, manufacturer );
-		
-		if ( tool != null && tmpRes == ProcessedStatus.PROCESSED ) { 
-			
-			handleToolItem( nextLine, tool );
+		OrgUser toolItemOwner = findPerson( searchUser );
+		if ( toolItemOwner == null ) {
 
-			res = tmpRes;
+			setProcessedObject( searchUser );
+			
+			res = ProcessedStatus.PERSON_NOT_FOUND;
 			
 		} else {
-
-			res = tmpRes;
-			
-		}
 		
+			tmpRes = ProcessedStatus.FAILED;
+			
+			Tool tool = handleTool( nextLine, category, manufacturer );
+			
+			if ( tool != null && tmpRes == ProcessedStatus.PROCESSED ) { 
+				
+				handleToolItem( nextLine, toolItemOwner, tool );
+	
+				res = tmpRes;
+				
+			} else {
+	
+				res = tmpRes;
+				
+			}
+				
+		}
 		logger.debug( "      Processing " + ( res == ProcessedStatus.PROCESSED ? "passed" : "FAILED" )); 
 			
 		return res;
@@ -228,7 +265,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 
 	private Tool findExistingTool( Tool tool ) {
 	
-		Tool resTool = ToolsFacade.getInstance().getTool( model.getSelectedOrg(), tool );
+		Tool resTool = ToolsFacade.getInstance().searchTool( model.getSelectedOrg(), tool );
 		
 		return resTool;
 	}
@@ -240,7 +277,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		return addedTool;
 	}
 
-	private ToolItem createToolItem( String [] nextLine, Tool tool ) {
+	private ToolItem createToolItem( String [] nextLine, OrgUser toolItemUser, Tool tool ) {
 	
 		ToolItem resItem = 	new ToolItem( tool, model.getSessionOwner(), model.getSessionOwner() );
 
@@ -248,17 +285,17 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		if ( nextLine[ 8 ] != null && nextLine[ 8 ].length() > 0 ) {
 			resItem.setBarcode( nextLine[ 8 ]);
 
-			logger.debug( "Not necessary to create Tools Item from imported record. Tool is enough (no user specified)");
+			logger.debug( "Bar code has been set");
 
 		}
 		
 		// 
-		setCurrentUserIfNecessary( nextLine,  resItem );
+		resItem.setCurrentUser( toolItemUser );
 		
 		// If There is no current user specified or specified but does not exist than no Item will be created
-		if ( resItem.getCurrentUser() == null ) {
+		if ( toolItemUser == null ) {
 
-			logger.debug( "No current user identified. Item shall not be created! Tool is enough" );
+			logger.debug( "No current user identified. It is not possible to assign Tool Item" );
 			
 			resItem = null;
 		} else {
@@ -285,23 +322,32 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		return resItem;
 	}
 
-	private void setCurrentUserIfNecessary( String [] nextLine,  ToolItem item ) {
-	
-		if ( nextLine[ 13 ] != null && nextLine[ 13 ].length() > 0 
-			&&
-			 nextLine[ 14 ] != null && nextLine[ 14 ].length() > 0
-		) {
+	private OrgUser createUser( String [] nextLine ) {
+		
+		return new OrgUser( 
+				StringUtils.defaultString( nextLine[ 13 ] ).trim(),
+				StringUtils.defaultString( nextLine[ 14 ] ).trim()
+		);
+	}
+
+	private OrgUser findPerson( OrgUser searchUser ) {
+		
+		OrgUser foundUser = null;
+		
+		// Find User (org, firstName, lastName)
+		List< OrgUser > userList = UsersFacade.getInstance().listByFIO( 
+																model.getSelectedOrg(), 
+																searchUser.getFirstName(), 
+																searchUser.getLastName() );
+
+		// If user found set it as current user
+		if ( userList != null && userList.size() > 0 ) {
 			
-			// Find User (org, firstName, lastName)
-			List< OrgUser > userList = UsersFacade.getInstance().listByFIO( model.getSelectedOrg(), nextLine[ 13 ], nextLine[ 14 ] );
-			// If user found set it as current user
-			if ( userList != null ) {
-				item.setCurrentUser( userList.get( 0 ));
-				logger.debug( "User: " + userList.get( 0 ) + " was set as Current User" );
-			}
-			
-			
+			foundUser = userList.get( 0 );
+			logger.debug( "User found: " + foundUser );
 		}
+		
+		return foundUser;
 	}
 	
 	private ToolItem findExistingToolItem( ToolItem item ) {
@@ -311,7 +357,25 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		// Currently it is not understood how to find existing tool and what does "existing tool" mean 
 		
 		ToolItem resItem = null;
+
+		Collection<ToolItem> tList = ItemsFacade.getInstance().getItems( 
+											item.getCurrentUser().getOrganisation(), 
+											new ToolIdentity( ToolIdentityType.BARCODE, StringUtils.defaultString( item.getBarcode())));
 		
+		if ( tList != null && tList.size() > 0 ) {
+		
+			if ( tList.size() > 1 ) {
+			
+				logger.error( "More than 1 Tool Item with the same Barcode: " + StringUtils.defaultString( item.getBarcode()));
+			}
+			
+			resItem = tList.iterator().next();
+		
+			this.tmpRes = ProcessedStatus.TOOL_ITEM_EXIST;
+
+			setProcessedObject( resItem );
+			
+		}
 		
 		return resItem;
 	}
@@ -431,7 +495,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		return tool;
 	}
 
-	private ToolItem handleToolItem( String[] nextLine, Tool tool ) {
+	private ToolItem handleToolItem( String[] nextLine, OrgUser toolItemUser, Tool tool ) {
 		
 		ToolItem toolItem = null;
 
@@ -441,7 +505,8 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		if ( tool != null ) { 
 			// Tool was found or new one was added
 			// Tool Item need to be processed
-			toolItem = createToolItem( nextLine, tool );
+			toolItem = createToolItem( nextLine, toolItemUser, tool );
+			
 			ToolItem existingItem = null; 
 			
 			if ( toolItem != null ) {
@@ -452,8 +517,8 @@ public class ToolItemsImportProcessor extends FileProcessor {
 					// Tool Item with the same data found in database. Will be used 
 					logger.debug( "Tool Item exists in DB: " + existingItem );
 					
-					toolItem = existingItem;
-					
+					toolItem = null;
+
 				} else {
 					// No existing Tool Item was found in DB. New one will be added and used
 					logger.debug( "Tool Item does NOT exists in DB. Will be added" );
@@ -472,15 +537,17 @@ public class ToolItemsImportProcessor extends FileProcessor {
 				}
 			} else {
 
-				logger.debug( "Not necessary to create Tools Item from imported record. Tool is enough (no user specified)");
+				logger.debug( "Failed to create Tool Item");
+				setProcessedObject( tool );
 
-				this.tmpRes = ProcessedStatus.PROCESSED;
+//				this.tmpRes = ProcessedStatus.PROCESSED;
 				
 			}
 				
 			
 		} else {
-			logger.debug( "Tool Item cannot be found or created from imported data");
+
+			logger.debug( "Failed to create Tool Item because Tool is missing");
 			
 		}
 		

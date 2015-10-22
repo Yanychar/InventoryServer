@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.UsersFacade;
+import com.c2point.tools.entity.access.AccessGroups;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.personnelmgmt.StuffListModel;
 import com.c2point.tools.ui.upload.FileProcessor;
@@ -64,23 +65,35 @@ public class PersonnelImportProcessor extends FileProcessor {
 	protected ProcessedStatus validateLine( String[] nextLine, int lineNumber ) {
 
 		// 1. Firstly check that Line is not comment (start from #) and not empty)
-		if ( logger.isDebugEnabled()) {
-			logger.debug( "nextLine.length == " + nextLine.length );  
-			logger.debug( "nextLine[0].trim().length == " + nextLine[0].trim().length() );  
-			logger.debug( "nextLine[ 0 ].trim().startsWith( \"#\" ) == " + nextLine[ 0 ].trim().startsWith( "#" ) );
-		}
-		
 		if ( nextLine == null 
 				|| nextLine.length == 0 
 				|| nextLine.length == 1 && nextLine[0].trim().length() == 0
 				|| nextLine[0].trim().length() > 0 && nextLine[ 0 ].trim().startsWith( "#" )) {
 			
-			// Comment or empty line
-			if ( logger.isDebugEnabled()) logger.debug( "   Validation passed: Line #"+lineNumber+" is empty or commented out" );
+			// Comment 
+			logger.debug( "   Validation passed: Line #"+lineNumber+" is empty or commented out" );
+
+			return ProcessedStatus.COMMENT;
+		}
+		// Check for empty line
+		boolean nonEmptyFound = false;
+		for( String str : nextLine ) {
+			
+			if ( str != null && str.length() > 0 ) {
+				nonEmptyFound = true;
+				break;
+			}
+		}
+		
+		// All strings are empty ==>> Empty line == COMMENT
+		if ( !nonEmptyFound ) {
+			// Empty line
+			logger.debug( "   Validation passed: Line #"+lineNumber+" is empty or commented out" );
 
 			return ProcessedStatus.COMMENT;
 			
 		}
+		
 		
 		// 2. Validate number of columns
 		if ( nextLine.length != columnPatterns.length ) {
@@ -133,11 +146,14 @@ public class PersonnelImportProcessor extends FileProcessor {
 		
 		user.setOrganisation( model.getSelectedOrg());
 		
-		user.setCode( 			nextLine[ 0 ] );
+		setCode( user, nextLine[ 0 ] );
 		user.setFirstName( 		nextLine[ 1 ] );
 		user.setLastName( 		nextLine[ 2 ] );
 		user.setPhoneNumber( 	nextLine[ 3 ] );
 		user.setEmail( 			nextLine[ 4 ] );
+		
+		// By default set up access group USER
+		user.setAccessGroup( AccessGroups.USER );
 		
 		user.setSuperUserFlag( Boolean.parseBoolean( nextLine[ 5 ] ));
 		
@@ -156,4 +172,14 @@ public class PersonnelImportProcessor extends FileProcessor {
 		return res;
 	}
 
+	private void setCode( OrgUser user, String code  ) {
+	
+		if ( code != null ) {
+
+			// Not necessary to add code. It will be added automatically
+			// user.setCode( code );
+		}
+	}
+	
+	
 }
