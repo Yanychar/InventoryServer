@@ -336,7 +336,8 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 
 		updateFields( true );
 		
-		
+		setVisible( this.shownItem != null );
+	
 		if ( this.shownItem != null ) {
 			
 			if ( this.shownItem.getTool() != null ) {
@@ -402,6 +403,24 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			serialNumber.setValue( shownItem.getSerialNumber());
 			barcode.setValue( shownItem.getBarcode());
 
+		} else {
+			if ( logger.isDebugEnabled()) logger.debug( "No selection. Dataview shall be cleared" );
+
+			toolText.setValue( "" );
+			manufacturer.setValue( null );
+			toolModel.setValue( "" );
+			code.setValue( "" );
+			description.setValue( "" );
+			category.setValue( null );
+
+			personalFlag.setValue( false );
+			currentUser.setValue(  null );
+			status.setValue( null );
+			reservedBy.setValue(  null );
+			
+			serialNumber.setValue( "" );
+			barcode.setValue( "" );
+			
 		}
 		
 	}
@@ -726,7 +745,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 					model.setViewMode();
 				}
 
-				model.setViewMode();
+//				model.setViewMode();
 				
 				break;
 			case VIEW:
@@ -872,8 +891,10 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 	
 	private ToolItem updateToolItem( ToolItem item ) {
 
+		// Update Tool Item
 		ToolItem updatedItem = model.update( item );
-		
+
+		// Check result of update
 		if ( updatedItem == null ) {
 			// Failed to update
 			String template = model.getApp().getResourceStr( "general.error.update.header" );
@@ -882,11 +903,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 
 			Notification.show( template, Notification.Type.ERROR_MESSAGE );
 			
-		} else {
-
-//			currentWasSet( null );
-			
-		}
+		} 
 		
 		return updatedItem;
 		

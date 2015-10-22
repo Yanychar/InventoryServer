@@ -61,30 +61,43 @@ public class SecurityContext {
 	
 	public boolean hasEditPermission( FunctionalityType func, Organisation org ) {
 		
-		if ( user.getOrganisation().getId() == org.getId()) {
-			
-			return getPermission( func, OwnershipType.COMPANY ) == PermissionType.RW;
-			
-		} else {
-
-			return getPermission( func, OwnershipType.ANY ) == PermissionType.RW;
-			
+		try {
+			if ( user.getOrganisation().getId() == org.getId()) {
+				
+				return getPermission( func, OwnershipType.COMPANY ) == PermissionType.RW;
+				
+			} else {
+	
+				return getPermission( func, OwnershipType.ANY ) == PermissionType.RW;
+				
+			}
+		} catch ( Exception e ) {
+			if ( logger.isDebugEnabled())
+				logger.debug( "User org: " + user.getOrganisation() + ", selected org: " + org );
 		}
+		
+		return false;
 		
 	}
 	
 	public boolean hasViewPermission( FunctionalityType func, Organisation org ) {
 		
-		if ( user.getOrganisation().getId() == org.getId()) {
-			
-			return getPermission( func, OwnershipType.COMPANY ) != PermissionType.NO;
-			
-		} else {
-
-			return getPermission( func, OwnershipType.ANY ) != PermissionType.NO;
-			
+		try {
+			if ( user.getOrganisation().getId() == org.getId()) {
+				
+				return getPermission( func, OwnershipType.COMPANY ) != PermissionType.NO;
+				
+			} else {
+	
+				return getPermission( func, OwnershipType.ANY ) != PermissionType.NO;
+				
+			}
+		} catch ( Exception e ) {
+			if ( logger.isDebugEnabled())
+				logger.debug( "User org: " + user.getOrganisation() + ", selected org: " + org );
 		}
 		
+		return false;
 	}
 	
 	
