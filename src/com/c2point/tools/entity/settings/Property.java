@@ -28,7 +28,7 @@ public class Property  extends SimplePojo {
 	@ManyToOne
 	private Organisation 	organisation;
 
-	@Enumerated( EnumType.STRING )
+	@Enumerated( EnumType.ORDINAL )
 	private PropertyType	type;
 
 	private String			name;
