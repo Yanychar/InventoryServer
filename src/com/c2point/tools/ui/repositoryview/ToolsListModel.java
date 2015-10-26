@@ -6,9 +6,13 @@ import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.InventoryUI;
 import com.c2point.tools.datalayer.CategoriesFacade;
 import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.datalayer.UsersFacade;
+import com.c2point.tools.entity.access.AccessGroups;
+import com.c2point.tools.entity.access.FunctionalityType;
+import com.c2point.tools.entity.access.SecurityContext;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ItemStatus;
@@ -19,6 +23,7 @@ import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.ui.listeners.CategoryChangedListener;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
+import com.vaadin.ui.UI;
 
 public class ToolsListModel extends AbstractModel {
 
@@ -29,6 +34,8 @@ public class ToolsListModel extends AbstractModel {
 	private Filter itemsFilter = new Filter();
 
 	private ToolItem 			selectedItem;
+
+	
 	
 	public ToolsListModel() {
 		
@@ -53,7 +60,7 @@ public class ToolsListModel extends AbstractModel {
 
 	public Organisation getOrg() { return org; }
 	public void setOrg( Organisation org ) { this.org = org; }
-	
+
 	public Collection<Category> getCategories() {
 		
 		return CategoriesFacade.getInstance().listTop( this.getApp().getSessionData().getOrg());
@@ -182,8 +189,22 @@ public class ToolsListModel extends AbstractModel {
 
 	public Collection<ToolItem> getItems() {
 		
-		Collection<ToolItem> list = 
-			ItemsFacade.getInstance().getItems( getOrg());
+		Collection<ToolItem> list;
+
+		SecurityContext context = getApp().getSessionData().getContext();
+		
+		if ( context.hasViewPermissionMgmt( FunctionalityType.BORROW )) {
+
+			list = ItemsFacade.getInstance().getItems( getOrg());
+			
+		} else if ( context.hasViewPermissionOwn( FunctionalityType.CHANGESTATUS )) {
+
+			list = ItemsFacade.getInstance().getItems( getApp().getSessionOwner());
+			
+		} else {
+			
+			list = null;
+		}
 			
 		return itemsFilter.getFilteredItems( list );
 		
@@ -326,4 +347,5 @@ public class ToolsListModel extends AbstractModel {
 					;
 		}
 	}
+
 }

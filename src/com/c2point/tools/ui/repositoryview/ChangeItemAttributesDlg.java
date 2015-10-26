@@ -216,8 +216,8 @@ public class ChangeItemAttributesDlg extends Window {
 
 		if ( item != null ) {
 		
-			boolean takeOverPerm = model.getSecurityContext().canChangeToolItem( FunctionalityType.BORROW, item );   
-			boolean changeStatusPerm = model.getSecurityContext().canChangeToolItem( FunctionalityType.CHANGESTATUS, item );   
+			boolean takeOverPerm = model.getSecurityContext().canChangeToolItemIfNotOwn( FunctionalityType.BORROW, item );   
+			boolean changeStatusPerm = model.getSecurityContext().canChangeToolItemIfOwn( FunctionalityType.CHANGESTATUS, item );   
 			
 			ownership.setEnabled( takeOverPerm );
 			status.setEnabled( changeStatusPerm );

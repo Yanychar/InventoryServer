@@ -102,12 +102,28 @@ public class SecurityContext {
 	
 	
 	// Can current user change item? It depends does he own item or not
-	public boolean canChangeToolItem( FunctionalityType func, ToolItem item ) {
+	public boolean canChangeToolItemIfOwn( FunctionalityType func, ToolItem item ) {
+
+		boolean itemOwned = item.getCurrentUser().getId() == this.user.getId();
+		
+		if ( itemOwned ) {
+			
+			return ( getPermission( func, OwnershipType.OWN ) == PermissionType.RW ); 
+		}
+		
+		return false;
+	}
+	
+	public boolean canChangeToolItemIfNotOwn( FunctionalityType func, ToolItem item ) {
 		
 		boolean itemOwned = item.getCurrentUser().getId() == this.user.getId();
 		
-		return ( getPermission( func, ( itemOwned ? OwnershipType.OWN : OwnershipType.COMPANY )) == PermissionType.RW ); 
-
+		if ( !itemOwned ) {
+			
+			return ( getPermission( func, OwnershipType.COMPANY ) == PermissionType.RW ); 
+		}
+		
+		return false;
 	}
 
 	private PermissionType getPermission( FunctionalityType func, OwnershipType ownership ) {

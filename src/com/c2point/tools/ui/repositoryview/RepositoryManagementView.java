@@ -14,13 +14,13 @@ public class RepositoryManagementView extends AbstractMainView {
 	private ToolsListModel	model;
 
 	private ToolsListView	toolsList;
-	private ToolItemView		toolItemView;
-	
+	private ToolItemView	toolItemView;
+
 	public RepositoryManagementView() {
 		super();
 
 	}
-	
+
 	@Override
 	protected void initUI() {
 
@@ -28,7 +28,7 @@ public class RepositoryManagementView extends AbstractMainView {
 		this.setSpacing( true );
 
 		this.model = new ToolsListModel();
-		
+
 		initToolItemsListView();
 		initItemView();
 		
@@ -80,5 +80,5 @@ public class RepositoryManagementView extends AbstractMainView {
 		
 		
 	}
-	
+
 }

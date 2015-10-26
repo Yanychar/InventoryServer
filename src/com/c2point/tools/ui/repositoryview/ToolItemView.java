@@ -110,7 +110,7 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 		addComponent( toolText );
 		addComponent( manufacturer );
 		addComponent( toolModel );
-		addComponent( code );
+//		addComponent( code );
 		addComponent( description );
 		addComponent( category );
 		addComponent( separator1 );
