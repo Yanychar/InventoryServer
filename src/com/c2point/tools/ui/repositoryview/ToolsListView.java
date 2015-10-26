@@ -17,13 +17,20 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
+import com.vaadin.ui.themes.BaseTheme;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +39,8 @@ import org.apache.logging.log4j.Logger;
 public class ToolsListView extends VerticalLayout implements ToolItemChangedListener, FilterListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( ToolsListView.class.getName());
+
+	private static int BUTTON_WIDTH = 25;
 	
 	protected FilterToolbar		filterBar;
 	
@@ -90,20 +99,21 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 		
 		itemsTable.addContainerProperty( "name",		String.class, null );
-		itemsTable.addContainerProperty( "user", 		String.class, 	"" );
-		itemsTable.addContainerProperty( "status", 		Label.class, 	"" );
-//		itemsTable.addContainerProperty( "action", 		Button.class, 	"" );
-		
+		itemsTable.addContainerProperty( "user", 		String.class, null );
+		itemsTable.addContainerProperty( "status", 		Label.class,  null );
+		itemsTable.addContainerProperty( "buttons", 	HorizontalLayout.class, null );
 //		itemsTable.addContainerProperty( "data", 		ToolItem.class, null );
 
-		itemsTable.setVisibleColumns( new Object [] { "name", "user", "status" } ); //, "action" } );
+		itemsTable.setVisibleColumns( new Object [] { "name", "user", "status", "buttons" } ); //, "action" } );
 		
 		itemsTable.setColumnHeaders( new String[] {
 				(( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.list.header.tool" ),
 				(( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.list.header.user" ),
-				(( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.list.header.status" ) //,
-//				"Áctions"
+				(( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.list.header.status" ),
+				""
 		});
+
+		itemsTable.setColumnWidth( "buttons", BUTTON_WIDTH * 2 );
 		
 		// New User has been selected. Send event to model
 		itemsTable.addValueChangeListener( new ValueChangeListener() {
@@ -134,24 +144,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 				if ( toProcess( event ) && event.getItemId() instanceof ToolItem ) {
 					if ( logger.isDebugEnabled()) logger.debug( "Click shall be processed! Table item clicked: " + event.getItem().getItemProperty( "name" ).getValue());
 					
-					ToolItem item = ( ToolItem )event.getItemId();
-					
-					ChangeItemAttributesDlg editDlg = new ChangeItemAttributesDlg( model, item );
-					
-					UI.getCurrent().addWindow( editDlg );
-					
-					editDlg.addCloseListener( new CloseListener() {
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public void windowClose(CloseEvent e) {
-						
-							// After closing Edit dlg one click shall be handled again
-							endClickHandlingProcess();
-							
-						}
-						
-					});
+					handleActions(( ToolItem )event.getItemId());
 					
 				} else {
 					if ( logger.isDebugEnabled()) logger.debug( "Click done. No processing" );
@@ -165,6 +158,28 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 	}
 
+	private void handleActions( ToolItem item ) {
+
+		ChangeItemAttributesDlg editDlg = new ChangeItemAttributesDlg( model, item );
+		
+		UI.getCurrent().addWindow( editDlg );
+		
+		editDlg.addCloseListener( new CloseListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void windowClose(CloseEvent e) {
+			
+				// After closing Edit dlg one click shall be handled again
+				endClickHandlingProcess();
+				
+			}
+			
+		});
+		
+	}
+	
+	
 	private Object clickedId = null;
 	private int clickedCounter = 0;
 	
@@ -587,9 +602,10 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 				try { item.getItemProperty( "name" ).setValue( StringUtils.defaultString( toolItem.getTool().getFullName())); } catch ( Exception e ) {}
 				try { item.getItemProperty( "user" ).setValue( StringUtils.defaultString( toolItem.getCurrentUser().getLastAndFirstNames())); } catch ( Exception e ) {}
 				      item.getItemProperty( "status" ).setValue( new Label( "", ContentMode.HTML )); // actual value will be set below 
-//				      item.getItemProperty( "action" ).setValue( new Button( "To Do" )); // actual value will be set below
-//				categoryItem.getItemProperty( "data" ).setValue( toolItem );
 
+			          item.getItemProperty( "buttons" ).setValue( getButtonSet( toolItem ));
+				      
+				      
 				setStatusProperty( item, toolItem );
 //				setActionsContent( item, toolItem );
 				
@@ -610,5 +626,53 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		return ret;
 	}
 
+    private Component getButtonSet( ToolItem item ) {
+    	
+        HorizontalLayout buttonsSet = new HorizontalLayout();
+
+        buttonsSet.setSpacing( true );
+
+//		if ( model.allowsToEdit()) {
+        
+			final NativeButton editButton = 	createButton( "icons/16/edit.png", "toolsmgmt.edit.tooltip", item );
+	        
+	        editButton.addClickListener( new ClickListener() {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void buttonClick( ClickEvent event ) {
+					
+					ToolItem item = ( ToolItem )editButton.getData();
+					
+					itemsTable.select( item );
+					handleActions( item );
+					
+				}
+	        });
+	        
+	        buttonsSet.addComponent( editButton );
+//		}
+    	
+    	return buttonsSet;
+    }
+
+	private NativeButton createButton( String iconPath, String tooltipKey, ToolItem item ) {
+	
+		NativeButton button = new NativeButton(); 
+		
+		button.setIcon( new ThemeResource( iconPath ));
+		button.setDescription( model.getApp().getResourceStr( tooltipKey ));
+
+		button.setHeight( Integer.toString( BUTTON_WIDTH ) + "px" );
+//		button.setStyleName( "v-nativebutton-deleteButton" );
+//		button.addStyleName( "v-nativebutton-link" );
+		button.setStyleName( BaseTheme.BUTTON_LINK );
+
+		button.setData( item );
+		button.setImmediate( true );
+		
+		return button;
+		
+	}
+	
 	
 }
