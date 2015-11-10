@@ -10,12 +10,9 @@ import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.access.SecurityContext;
 import com.c2point.tools.ui.msg.MessagesView;
-import com.c2point.tools.ui.orgmgmt.OrgManagementView;
-import com.c2point.tools.ui.personnelmgmt.StuffManagementView;
 import com.c2point.tools.ui.repositoryview.RepositoryManagementView;
 import com.c2point.tools.ui.settings.SettingsView;
 import com.c2point.tools.ui.tools.history.ToolsHistoryManagementView;
-import com.c2point.tools.ui.toolsmgmt.ToolsManagementView;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractComponentContainer;
@@ -115,7 +112,8 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 		if ( context.hasViewPermissionMgmt( FunctionalityType.TRN_MGMT )) {
 			layout.addComponent( transButton );
 		}
-		layout.addComponent( reportButton );
+		
+//		layout.addComponent( reportButton );
 
 		if ( context.hasViewPermissionMgmt( FunctionalityType.ORGS_MGMT )
 			||
