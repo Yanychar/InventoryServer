@@ -188,6 +188,8 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 	public void wholeListChanged() {
 		
 		if ( logger.isDebugEnabled()) logger.debug( "Tool Items List received WhleListChanged event!" );
+
+		initCategoryFilter();
 		
 		dataFromModel();
 		
@@ -293,7 +295,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			categoryFilter.setInvalidAllowed( false );
 			categoryFilter.setImmediate(true);
 			
-			initCategoryFilter();
+//			initCategoryFilter();
 
 			Label searchIcon = new Label();
 			searchIcon.setIcon(new ThemeResource("icons/16/search.png"));
@@ -433,6 +435,10 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 
 	private void initCategoryFilter() {
 
+		deleteCatFilterChangedListener();
+		
+		categoryFilter.removeAllItems();
+		
 		// Add Category ALL
 		Category topCat = model.getTopCategory(); 
 		
@@ -447,21 +453,42 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 
 		categoryFilter.setValue( topCat );
 		
-		categoryFilter.addValueChangeListener( new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void valueChange( ValueChangeEvent event ) {
-				
-//				reReadToolsList();
-				model.setSelectedCategory(( Category )categoryFilter.getValue());
-				
-			}
-			
-		});
-		
+		addCatFilterChangedListener();		
 		
 	}
+	
+	private ValueChangeListener catFilterChangedListener = null;
+	private ValueChangeListener addCatFilterChangedListener() {
+		
+		if ( catFilterChangedListener == null ) {
+
+			catFilterChangedListener = new ValueChangeListener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void valueChange( ValueChangeEvent event ) {
+					
+					model.setSelectedCategory(( Category )categoryFilter.getValue());
+					
+				}
+				
+			};
+
+			categoryFilter.addValueChangeListener( catFilterChangedListener );
+			
+		}
+		
+		return catFilterChangedListener;
+
+	}
+	private void deleteCatFilterChangedListener() {
+
+		if ( catFilterChangedListener != null ) {
+			categoryFilter.removeValueChangeListener( catFilterChangedListener );
+			catFilterChangedListener = null;
+		}
+	}
+	
 
 	private void addCategory( Category cat, ComboBox combo, int level ) {
 
