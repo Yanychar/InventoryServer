@@ -63,12 +63,13 @@ public class ToolItemsImportProcessor extends FileProcessor {
 			new PatternLen( "", 50 ),  // Tool Name				4		6		
 			new PatternLen( "",255 ),  // Tool Description		5		7
 			new PatternLen( "", 50 ),  // Barcode				7		8
-			new PatternLen( "", 10 ),  // Buy Time						9
-			new PatternLen( "", 10 ),  // Price							10
-			new PatternLen( "",  2 ),  // Guarantee						11
-			new PatternLen( "", 10 ),  // Last Maintenance Time  		12
-			new PatternLen( "", 40 ),	// First Name of User	8		13
-			new PatternLen( "", 40 ),	// Last Name of User	9		14
+			new PatternLen( "", 50 ),  // Serial Number    				9
+			new PatternLen( "", 10 ),  // Buy Time						10
+			new PatternLen( "", 10 ),  // Price							11
+			new PatternLen( "",  2 ),  // Guarantee						12
+			new PatternLen( "", 10 ),  // Last Maintenance Time  		13
+			new PatternLen( "", 40 ),	// First Name of User	8		14
+			new PatternLen( "", 40 ),	// Last Name of User	9		15
 	};
 	
 	
@@ -288,6 +289,14 @@ public class ToolItemsImportProcessor extends FileProcessor {
 			logger.debug( "Bar code has been set");
 
 		}
+
+		if ( nextLine[ 9 ] != null && nextLine[ 9 ].length() > 0 ) {
+			resItem.setSerialNumber( nextLine[ 9 ]);
+
+			logger.debug( "Serial Number has been set");
+
+		}
+		
 		
 		// 
 		resItem.setCurrentUser( toolItemUser );
@@ -305,18 +314,18 @@ public class ToolItemsImportProcessor extends FileProcessor {
 			//	takuu
 			//	maintenanceTime
 			
-			resItem.setBuyTime( createLocalDate( nextLine[ 9 ] ));
+			resItem.setBuyTime( createLocalDate( nextLine[ 10 ] ));
 			try {
-				resItem.setPrice( Double.valueOf( nextLine[ 10 ] ));
+				resItem.setPrice( Double.valueOf( nextLine[ 11 ] ));
 			} catch ( Exception e ) {
 				resItem.setPrice( null );
 			}
 			try {
-				resItem.setTakuu( Integer.valueOf( nextLine[ 11 ] ));
+				resItem.setTakuu( Integer.valueOf( nextLine[ 12 ] ));
 			} catch ( Exception e ) {
 				resItem.setTakuu( null );
 			}
-			resItem.setMaintenance( createLocalDate( nextLine[ 12 ] ));
+			resItem.setMaintenance( createLocalDate( nextLine[ 13 ] ));
 		}
 		
 		return resItem;
@@ -325,8 +334,8 @@ public class ToolItemsImportProcessor extends FileProcessor {
 	private OrgUser createUser( String [] nextLine ) {
 		
 		return new OrgUser( 
-				StringUtils.defaultString( nextLine[ 13 ] ).trim(),
-				StringUtils.defaultString( nextLine[ 14 ] ).trim()
+				StringUtils.defaultString( nextLine[ 14 ] ).trim(),
+				StringUtils.defaultString( nextLine[ 15 ] ).trim()
 		);
 	}
 

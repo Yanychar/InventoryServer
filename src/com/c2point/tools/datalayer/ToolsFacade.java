@@ -62,21 +62,8 @@ public class ToolsFacade extends DataFacade {
 		
 		for ( Tool tool : existingToolList ) {
 			
-			boolean checkCode = searchTool.getCode() != null && searchTool.getCode().length() > 0; 
-			
-			if ( tool != null && tool.getName() != null 
+			if ( equal( searchTool, tool )) {
 
-//					&& tool.getCode().trim().compareToIgnoreCase( searchTool.getCode().trim()) == 0
-					
-					&& ( checkCode ? tool.getCode().trim().compareToIgnoreCase( searchTool.getCode().trim()) == 0 : true )
-					
-					
-					
-					&& tool.getName().trim().compareToIgnoreCase( searchTool.getName().trim()) == 0
-//					&& tool.getDescription().trim().compareToIgnoreCase( searchTool.getDescription().trim()) == 0
-					&& tool.getManufacturer().getId() == searchTool.getManufacturer().getId()
-					&& tool.getModel().trim().compareToIgnoreCase( searchTool.getModel().trim()) == 0
-			){
 				resTool = tool;
 				break;
 			}
@@ -238,7 +225,54 @@ public class ToolsFacade extends DataFacade {
 			tool.setCode( newCode );
 		}
 	}
+
 	
+	private boolean equal( Tool t1, Tool t2 ) {
+		
+		boolean res = false;
+		
+		// Extrime case
+		if ( t1 == null && t2 == null ) return true;
+		
+		if ( t1 != null && t2 != null ) {
+			// Code
+			//	  Old code :  tool.getCode().trim().compareToIgnoreCase( searchTool.getCode().trim()) == 0
+			res = 
+				StringUtils.defaultString( t1.getCode()).trim()
+					.compareToIgnoreCase( StringUtils.defaultString( t2.getCode()).trim()) == 0;
+			
+			
+			// Manufacturer
+			//	Old code :  tool.getManufacturer().getId() == searchTool.getManufacturer().getId()
+			if ( res ) {
+				boolean resManuf = false;
+				if ( t1.getManufacturer() == null && t2.getManufacturer() == null ) {
+					resManuf = true;
+				} else if ( t1.getManufacturer() != null && t2.getManufacturer() != null ) {
+					// ID of manufacturer shall be checked only
+					resManuf = t1.getManufacturer().getId() == t2.getManufacturer().getId();
+				}
+				
+				res = res && resManuf; 
+				
+			}
+
+			// Model
+			//	Old code :  tool.getModel().trim().compareToIgnoreCase( searchTool.getModel().trim()) == 0
+			res = res &&
+					StringUtils.defaultString( t1.getModel()).trim()
+						.compareToIgnoreCase( StringUtils.defaultString( t2.getModel()).trim()) == 0;
+			
+			// Name
+			//	Old code :  tool.getName().trim().compareToIgnoreCase( searchTool.getName().trim()) == 0
+			res = res &&
+					StringUtils.defaultString( t1.getName()).trim()
+						.compareToIgnoreCase( StringUtils.defaultString( t2.getName()).trim()) == 0;
+			
+		}
+		
+		return res;
+	}
 }
 
 
