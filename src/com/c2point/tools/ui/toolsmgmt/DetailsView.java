@@ -1,12 +1,14 @@
 package com.c2point.tools.ui.toolsmgmt;
 
 import java.text.MessageFormat;
+import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.c2point.tools.datalayer.SettingsFacade;
+import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
@@ -19,6 +21,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
@@ -31,6 +34,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
@@ -55,6 +59,11 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 	
 	private TextField		serialNumber;
 	private TextField		barcode;
+	
+	private PopupDateField	buyDate;
+	private PopupDateField	nextMaintenance;
+	private TextField		price;
+	private TextField		takuu;	
 
 	
 	private Button		editcloseButton;
@@ -149,25 +158,44 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		barcode = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.barcode" ));
 		barcode.setNullRepresentation( "" );
 		barcode.setImmediate( true );
-
-		Label separator = new Label( "<hr/>", ContentMode.HTML );
-		separator.setWidth( "100%" );
+//
+		buyDate = new PopupDateField( "Bought" + ":" );
+//		buyDate.setValue( new Date());
+		buyDate.setDateFormat( "dd.MM.yyyy" );
 		
+		nextMaintenance = new PopupDateField( "Next Maintenance" + ":" );
+		nextMaintenance.setDateFormat( "MM.yyyy" );
+		nextMaintenance.setResolution( Resolution.MONTH);
 		
+		price = new TextField( "Price" + ":" );
+		takuu = new TextField( "Guarantee" + ":" );
+//		
 		addComponent( toolText );
 		addComponent( manufacturer );
 		addComponent( toolModel );
-		addComponent( code );
+		
+		if ( SettingsFacade.getInstance().getBoolean( model.getSelectedOrg(), "allowToolCode", false )) {
+			addComponent( code );
+		}
+		
 		addComponent( description );
 		addComponent( category );
-		addComponent( separator );
+		addComponent( getSeparator());
 		addComponent( personalFlag );
 		addComponent( currentUser );
 		addComponent( status );
 		addComponent( reservedBy );
+		addComponent( getSeparator());
 		addComponent( serialNumber );
 		addComponent( barcode );
+		addComponent( getSeparator());
 		
+		addComponent( buyDate );
+		addComponent( price );
+		addComponent( takuu );
+		addComponent( nextMaintenance );
+		
+		addComponent( getSeparator());
 		addComponent( getButtonsBar());
 		
 		updateButtons();
@@ -908,5 +936,13 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		return updatedItem;
 		
 	}
+
+	private Component getSeparator() {
 	
+		Label separator = new Label( "<hr/>", ContentMode.HTML );
+		separator.setWidth( "100%" );
+		
+		return separator;
+	}
+
 }
