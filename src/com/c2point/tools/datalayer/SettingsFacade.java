@@ -13,6 +13,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,7 +70,7 @@ public class SettingsFacade extends DataFacade {
 	
 	public Integer getInteger( Organisation org, String name ) {
 		
-		return get( Integer.class, org, name, -1 );
+		return getInteger( org, name, null );
 	}
 	
 	public Integer getInteger( Organisation org, String name, Integer defValue ) {
@@ -77,19 +78,46 @@ public class SettingsFacade extends DataFacade {
 		return get( Integer.class, org, name, defValue );
 	}
 	
+	public Integer getPosInteger( Organisation org, String name, Integer defValue ) {
+		
+		Integer res = getInteger( org, name, defValue );
+		
+		if ( res.intValue() <= 0 ) {
+			
+			res = defValue;
+		}
+		
+		
+		return res;
+	}
+	
 	public Long getLong( Organisation org, String name ) {
 		
-		return get( Long.class, org, name, -1L );
+		return getLong( org, name, null );
 	}
 	
 	public Long getLong( Organisation org, String name, Long defValue ) {
 		
 		return get( Long.class, org, name, defValue );
 	}
+
+	public Long getPosLong( Organisation org, String name, Long defValue ) {
+		
+		Long res = getLong( org, name, defValue );
+		
+		if ( res.longValue() <= 0 ) {
+			
+			res = defValue;
+		}
+		
+		
+		return res;
+	}
+	
 	
 	public String getString( Organisation org, String name ) {
 		
-		return get( String.class, org, name, ( String )null );
+		return getString( org, name, ( String )null );
 	}
 	
 	public String getString( Organisation org, String name, String defValue ) {
@@ -97,6 +125,14 @@ public class SettingsFacade extends DataFacade {
 		return get( String.class, org, name, defValue );
 	}
 
+	public String getNonEmptyString( Organisation org, String name, String defValue ) {
+		
+		String res = StringUtils.defaultIfEmpty( getString( org, name, defValue ), defValue );
+		
+		return res;
+	}
+	
+	
 	public void set( Organisation org, String name, Object value ) {
 		
 		set( org, name, value, true );

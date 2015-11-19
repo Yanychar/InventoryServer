@@ -27,13 +27,17 @@ public class PropsMgmtView extends Window {
 
 	private PropsMgmtModel		model;
 
+	// User Code settings
 	private FormCheckBox 		allowUserCode;
-	private TextField			userCodeLength;
-	private TextField			lastUsedUserCode;
+	private TextField			lengthUserCode;
+	private FormCheckBox 		automaticUserCode;
+	private TextField			prefixUserCode;
 
+	// Tools Code settings
 	private FormCheckBox 		allowToolCode;
-	private TextField			toolCodeLength;
-	private TextField			lastUsedToolCode;
+	private TextField			lengthToolCode;
+	private FormCheckBox 		automaticToolCode;
+	private TextField			prefixToolCode;
 	
 	public PropsMgmtView( PropsMgmtModel model ) {
 		
@@ -69,10 +73,104 @@ public class PropsMgmtView extends Window {
 	}
 
 	private void updateFields() {
-		updateUserCodeFields();
-		updateToolCodeFields();
+		updateUserCodeChanged();
+		updateToolCodeChanged();
 	}
 	
+	/* Tool Code management */
+	private Component getToolCodeSettings() {
+
+		FormLayout table = new FormLayout();
+		table.setSpacing( true );
+		table.setMargin( true );
+		table.setSpacing( true );
+		table.setWidth( "100%" );
+		
+		allowToolCode 	= new FormCheckBox( "Use Tool ID" + ":" );
+		lengthToolCode	= new TextField( "Length of Tool ID" + ":" );
+		
+		automaticToolCode = new FormCheckBox( "Automatically assigned Tool ID" + ":" );
+		prefixToolCode	= new TextField( "Prefix for Tool ID" + ":" );
+
+		table.addComponent( allowToolCode );
+		table.addComponent( lengthToolCode );
+		table.addComponent( automaticToolCode );
+		table.addComponent( prefixToolCode );
+		
+		model.getChangesCollector().listenForChanges( allowToolCode );
+		model.getChangesCollector().listenForChanges( automaticToolCode );
+		
+		allowToolCode.addValueChangeListener( new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange( ValueChangeEvent event ) {
+				
+				updateToolCodeChanged();
+				
+			}
+			
+		});
+		
+		automaticToolCode.addValueChangeListener( new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange( ValueChangeEvent event ) {
+				
+				updateToolCodeChanged();
+				
+			}
+			
+		});
+		
+		return table;
+	}
+
+	private void updateToolCodeChanged() {
+
+		boolean flagAllow = allowToolCode.getValue();
+		boolean flagAuto = automaticToolCode.getValue();
+		
+		lengthToolCode.setEnabled( flagAllow ); 
+		automaticToolCode.setEnabled( flagAllow );
+		prefixToolCode.setEnabled( flagAllow && flagAuto );
+			
+
+	}
+
+	private boolean validateToolCodeFields() {
+
+		return lengthToolCode.isValid() && prefixToolCode.isValid();
+		
+	}
+	
+	private void viewToModelToolCode() {
+
+		SettingsFacade sf = SettingsFacade.getInstance();
+		Organisation org = model.getOrg();
+				
+		sf.set( org, "allowToolCode", allowToolCode.getValue(), false );
+		sf.setInteger( org, "toolCodeLength", lengthToolCode.getValue(), false );
+
+		sf.set( org, "automaticToolCode", automaticToolCode.getValue(), false );
+		sf.set( org, "prefixToolCode", prefixToolCode.getValue(), false );
+
+	}
+	
+	private void modelToViewToolCode() {
+
+		SettingsFacade sf = SettingsFacade.getInstance();
+		Organisation org = model.getOrg();
+				
+		allowToolCode.setValue(	sf.getBoolean( org, "allowToolCode", false ));
+		lengthToolCode.setValue(sf.getPosInteger( org, "toolCodeLength", 4 ).toString());
+		automaticToolCode.setValue(	sf.getBoolean( org, "automaticToolCode", true ));
+		prefixToolCode.setValue(	sf.getNonEmptyString( org, "prefixToolCode", "" ));
+
+	}
+	/* ... end of Tool Code management */
+
 	/* User Code management */
 	private Component getUserCodeSettings() {
 
@@ -82,10 +180,12 @@ public class PropsMgmtView extends Window {
 		table.setSpacing( true );
 		table.setWidth( "100%" );
 		
-		allowUserCode 	= new FormCheckBox( "User Code is used" + ":" );
-		userCodeLength 	= new TextField( "Length of User Code" + ":" );
-		lastUsedUserCode	= new TextField( "Latest User Code" + ":" );
+		allowUserCode 	= new FormCheckBox( "Use Personnel ID" + ":" );
+		lengthUserCode	= new TextField( "Length of Personnel ID" + ":" );
 		
+		automaticUserCode = new FormCheckBox( "Automatically assigned Personnel ID" + ":" );
+		prefixUserCode	= new TextField( "Prefix for Personnel ID" + ":" );
+
 //		userCodeLength.addValidator( new IntegerRangeValidator( "Code shall be between 4 and 8 digits", 4, 8 ));
 //		lastUsedCode.addValidator( new RegexpValidator( "[0-9]{4,8}", "Wrong code specified" ));
 				
@@ -101,12 +201,12 @@ public class PropsMgmtView extends Window {
 		
 		
 		table.addComponent( allowUserCode );
-		table.addComponent( userCodeLength );
-		table.addComponent( lastUsedUserCode );
-				
+		table.addComponent( lengthUserCode );
+		table.addComponent( automaticUserCode );
+		table.addComponent( prefixUserCode );
+		
 		model.getChangesCollector().listenForChanges( allowUserCode );
-		model.getChangesCollector().listenForChanges( userCodeLength ); 
-		model.getChangesCollector().listenForChanges( lastUsedUserCode );
+		model.getChangesCollector().listenForChanges( automaticUserCode );
 		
 		allowUserCode.addValueChangeListener( new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -114,34 +214,42 @@ public class PropsMgmtView extends Window {
 			@Override
 			public void valueChange( ValueChangeEvent event ) {
 				
-				updateUserCodeFields();
+				updateUserCodeChanged();
 				
 			}
 			
 		});
 		
-		
+		automaticUserCode.addValueChangeListener( new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange( ValueChangeEvent event ) {
 				
+				updateUserCodeChanged();
+				
+			}
+			
+		});
+		
 		return table;
 	}
 
-	private void updateUserCodeFields() {
+	private void updateUserCodeChanged() {
 
-		if ( allowUserCode.getValue()) {
-			userCodeLength.setEnabled( true ); 
-			lastUsedUserCode.setEnabled( true );
-		} else {
-			userCodeLength.clear(); 
-			lastUsedUserCode.clear();
-			userCodeLength.setEnabled( false ); 
-			lastUsedUserCode.setEnabled( false );
-		}
+		boolean flagAllow = allowUserCode.getValue();
+		boolean flagAuto = automaticUserCode.getValue();
 		
+		lengthUserCode.setEnabled( flagAllow ); 
+		automaticUserCode.setEnabled( flagAllow );
+		prefixUserCode.setEnabled( flagAllow && flagAuto );
+			
+
 	}
-	
+
 	private boolean validateUserCodeFields() {
 
-		return userCodeLength.isValid() && lastUsedUserCode.isValid();
+		return lengthUserCode.isValid() && prefixUserCode.isValid();
 		
 	}
 	
@@ -151,9 +259,11 @@ public class PropsMgmtView extends Window {
 		Organisation org = model.getOrg();
 				
 		sf.set( org, "allowUserCode", allowUserCode.getValue(), false );
-		sf.setInteger( org, "userCodeLength", userCodeLength.getValue(), false );
-		sf.set( org, "lastUsedCode", lastUsedUserCode.getValue(), false );
-		
+		sf.setInteger( org, "userCodeLength", lengthUserCode.getValue(), false );
+
+		sf.set( org, "automaticUserCode", automaticUserCode.getValue(), false );
+		sf.set( org, "prefixUserCode", prefixUserCode.getValue(), false );
+
 	}
 	
 	private void modelToViewUserCode() {
@@ -162,108 +272,12 @@ public class PropsMgmtView extends Window {
 		Organisation org = model.getOrg();
 				
 		allowUserCode.setValue(	sf.getBoolean( org, "allowUserCode", true ));
-		userCodeLength.setValue(sf.getInteger( org, "userCodeLength", 4 ).toString());
-		lastUsedUserCode.setValue(	sf.getString( org, "lastUsedCode", "0001" ));
-		
+		lengthUserCode.setValue(sf.getPosInteger( org, "userCodeLength", 4 ).toString());
+		automaticUserCode.setValue(	sf.getBoolean( org, "automaticUserCode", true ));
+		prefixUserCode.setValue(	sf.getNonEmptyString( org, "prefixUserCode", "" ));
+
 	}
 	/* ... end of User Code management */
-
-	/* Tool Code management */
-
-	private Component getToolCodeSettings() {
-
-		FormLayout table = new FormLayout();
-		table.setSpacing( true );
-		table.setMargin( true );
-		table.setSpacing( true );
-		table.setWidth( "100%" );
-		
-		allowToolCode 	= new FormCheckBox( "Tool Code is used" + ":" );
-		toolCodeLength 	= new TextField( "Length of Tool Code" + ":" );
-		lastUsedToolCode	= new TextField( "Latest Tool Code" + ":" );
-		
-//		userCodeLength.addValidator( new IntegerRangeValidator( "Code shall be between 4 and 8 digits", 4, 8 ));
-//		lastUsedCode.addValidator( new RegexpValidator( "[0-9]{4,8}", "Wrong code specified" ));
-				
-		
-//		final ObjectProperty<Integer> property = new ObjectProperty<Integer>(42);
-		// Create a TextField, which edits Strings
-		// Use a converter between String and Integer
-//		userCodeLength.setConverter(new StringToIntegerConverter());
-		// And bind the field
-//		userCodeLength.setPropertyDataSource(property);
-//		userCodeLength.addValidator( new RegexpValidator( "[0-9]", "Code shall be between 4 and 8 digits" ));
-		
-		
-		
-		table.addComponent( allowToolCode );
-		table.addComponent( toolCodeLength );
-		table.addComponent( lastUsedToolCode );
-				
-		model.getChangesCollector().listenForChanges( allowToolCode );
-		model.getChangesCollector().listenForChanges( toolCodeLength ); 
-		model.getChangesCollector().listenForChanges( lastUsedToolCode );
-		
-		allowToolCode.addValueChangeListener( new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void valueChange( ValueChangeEvent event ) {
-				
-				updateToolCodeFields();
-				
-			}
-			
-		});
-		
-		
-				
-		return table;
-	}
-
-	private void updateToolCodeFields() {
-
-		if ( allowToolCode.getValue()) {
-			toolCodeLength.setEnabled( true ); 
-			lastUsedToolCode.setEnabled( true );
-		} else {
-			toolCodeLength.clear(); 
-			lastUsedToolCode.clear();
-			toolCodeLength.setEnabled( false ); 
-			lastUsedToolCode.setEnabled( false );
-		}
-		
-	}
-	
-	private boolean validateToolCodeFields() {
-
-		return toolCodeLength.isValid() && lastUsedToolCode.isValid();
-		
-	}
-	
-	private void viewToModelToolCode() {
-
-		SettingsFacade sf = SettingsFacade.getInstance();
-		Organisation org = model.getOrg();
-				
-		sf.set( org, "allowToolCode", allowToolCode.getValue(), false );
-		sf.setInteger( org, "toolCodeLength", toolCodeLength.getValue(), false );
-		sf.set( org, "lastUsedToolCode", lastUsedToolCode.getValue(), false );
-		
-	}
-	
-	private void modelToViewToolCode() {
-
-		SettingsFacade sf = SettingsFacade.getInstance();
-		Organisation org = model.getOrg();
-				
-		allowToolCode.setValue(	sf.getBoolean( org, "allowToolCode", false ));
-		toolCodeLength.setValue(sf.getInteger( org, "toolCodeLength", 4 ).toString());
-		lastUsedToolCode.setValue(	sf.getString( org, "lastUsedToolCode", "0001" ));
-		
-	}
-	
-	/* ... end of Tool Code management */
 	
 	private Component getControlBar() {
 		
