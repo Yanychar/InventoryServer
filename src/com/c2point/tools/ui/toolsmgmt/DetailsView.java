@@ -295,6 +295,11 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			serialNumber.setReadOnly( false );
 			barcode.setReadOnly( false );
 			
+			buyDate.setReadOnly( false );
+			nextMaintenance.setReadOnly( false );
+			price.setReadOnly( false );
+			takuu.setReadOnly( false );
+			
 		} else {
 			toolText.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD );
 			code.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD ); // ( mode == EditMode.COPY || mode == EditMode.VIEW );
@@ -309,7 +314,12 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			reservedBy.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
 			serialNumber.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
 			barcode.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
-		
+
+			buyDate.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
+			nextMaintenance.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
+			price.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
+			takuu.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
+			
 		}
 		
 	}
