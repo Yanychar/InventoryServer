@@ -216,7 +216,8 @@ public class ToolItem extends SimplePojo {
 		
 		return null;
 	}
-	public void setBuyTime( LocalDate date ) { setBuyTimeForDB( date != null ? date.toDate() : null ); }
+	public void setBuyTime( LocalDate date ) { setBuyTime( date != null ? date.toDate() : null ); }
+	public void setBuyTime( Date date ) { setBuyTimeForDB( date ); }
 	
 	public LocalDate getMaintenance() {
 		try {
@@ -225,7 +226,8 @@ public class ToolItem extends SimplePojo {
 		
 		return null;
 	}
-	public void setMaintenance( LocalDate date ) { setMaintenanceForDB( date != null ? date.toDate() : null ); }
+	public void setMaintenance( LocalDate date ) { setMaintenance( date != null ? date.toDate() : null ); }
+	public void setMaintenance( Date date ) { setMaintenanceForDB( date ); }
 
 	public Double getPrice() { return price; }
 	public void setPrice( Double price ) { this.price = price; }

@@ -1,14 +1,12 @@
 package com.c2point.tools.ui.toolsmgmt;
 
 import java.text.MessageFormat;
-import java.util.Date;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
+import org.vaadin.ui.NumberField;
 
 import com.c2point.tools.datalayer.SettingsFacade;
-import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
@@ -62,8 +60,8 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 	
 	private PopupDateField	buyDate;
 	private PopupDateField	nextMaintenance;
-	private TextField		price;
-	private TextField		takuu;	
+	private NumberField		price;
+	private NumberField		takuu;	
 
 	
 	private Button		editcloseButton;
@@ -167,8 +165,8 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		nextMaintenance.setDateFormat( "MM.yyyy" );
 		nextMaintenance.setResolution( Resolution.MONTH);
 		
-		price = new TextField( "Price" + ":" );
-		takuu = new TextField( "Guarantee" + ":" );
+		price = new NumberField( "Price" + ":" );
+		takuu = new NumberField( "Guarantee (months)" + ":" );
 //		
 		addComponent( toolText );
 		addComponent( manufacturer );
@@ -440,6 +438,12 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			
 			serialNumber.setValue( shownItem.getSerialNumber());
 			barcode.setValue( shownItem.getBarcode());
+			
+			buyDate.setValue( shownItem.getBuyTime().toDate());
+			nextMaintenance.setValue( shownItem.getMaintenance().toDate());
+			price.setValue( shownItem.getPrice());
+			takuu.setValue( shownItem.getTakuu().doubleValue());
+			
 
 		} else {
 			if ( logger.isDebugEnabled()) logger.debug( "No selection. Dataview shall be cleared" );
@@ -458,7 +462,12 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			
 			serialNumber.setValue( "" );
 			barcode.setValue( "" );
-			
+
+			buyDate.setValue( null );
+			nextMaintenance.setValue( null );
+			price.setValue( "" );
+			takuu.setValue( "" );
+
 		}
 		
 	}
@@ -492,7 +501,16 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			
 			shownItem.setSerialNumber( serialNumber.getValue());
 			shownItem.setBarcode( barcode.getValue());
-				
+			
+			shownItem.setBuyTime( buyDate.getValue());
+			shownItem.setMaintenance( nextMaintenance.getValue());
+			shownItem.setPrice( price.getDoubleValueDoNotThrow());
+			
+			try {
+				shownItem.setTakuu( Integer.valueOf( takuu.getValue()));
+			} catch ( Exception e ) {
+				shownItem.setTakuu( 0 );
+			}
 		}
 		
 	}
