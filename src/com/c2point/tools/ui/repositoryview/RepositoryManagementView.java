@@ -14,7 +14,7 @@ public class RepositoryManagementView extends AbstractMainView {
 	private ToolsListModel	model;
 
 	private ToolsListView	toolsList;
-	private ToolItemView	toolItemView;
+	private DetailsView	toolItemView;
 
 	public RepositoryManagementView() {
 		super();
@@ -76,7 +76,7 @@ public class RepositoryManagementView extends AbstractMainView {
 	
 	private void initItemView() {
 
-		toolItemView = new ToolItemView( this.model );
+		toolItemView = new DetailsView( this.model );
 		
 		
 	}

@@ -2,18 +2,24 @@ package com.c2point.tools.ui.repositoryview;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
+import com.c2point.tools.ui.util.DoubleField;
+import com.c2point.tools.ui.util.IntegerField;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-public class ToolItemView extends FormLayout implements ToolItemChangedListener {
+public class DetailsView extends FormLayout implements ToolItemChangedListener {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LogManager.getLogger( ToolItemView.class.getName());
+	private static Logger logger = LogManager.getLogger( DetailsView.class.getName());
 
 	private ToolsListModel	model;
 	
@@ -33,10 +39,14 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 	private TextField		serialNumber;
 	private TextField		barcode;
 
+	private PopupDateField	buyDate;
+	private PopupDateField	nextMaintenance;
+	private DoubleField		price;
+	private IntegerField	takuu;
 	
 	private ToolItem	shownItem;
 
-	public ToolItemView( ToolsListModel model ) {
+	public DetailsView( ToolsListModel model ) {
 		super();
 		
 		setModel( model );
@@ -101,11 +111,20 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 		barcode.setNullRepresentation( "" );
 		barcode.setImmediate( true );
 
-		Label separator1 = new Label( "<hr/>", ContentMode.HTML );
-		separator1.setWidth( "100%" );
-		Label separator2 = new Label( "<hr/>", ContentMode.HTML );
-		separator2.setWidth( "100%" );
+		buyDate = new PopupDateField( "Bought" + ":" );
+//		buyDate.setValue( new Date());
+		buyDate.setDateFormat( "dd.MM.yyyy" );
 		
+		nextMaintenance = new PopupDateField( "Next Maintenance" + ":" );
+		nextMaintenance.setDateFormat( "MM.yyyy" );
+		nextMaintenance.setResolution( Resolution.MONTH);
+		
+		price = new DoubleField( "Price" + ":" );
+		price.setLocale( model.getApp().getSessionData().getLocale());
+		price.setMinValue( 0. );		
+		
+		takuu = new IntegerField( "Guarantee (months)" + ":" );
+		takuu.setupMaxValue( 120 );
 		
 		addComponent( toolText );
 		addComponent( manufacturer );
@@ -113,14 +132,20 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 //		addComponent( code );
 		addComponent( description );
 		addComponent( category );
-		addComponent( separator1 );
+		addComponent( getSeparator());
 		addComponent( personalFlag );
-		addComponent( separator2 );
+		addComponent( getSeparator());
 		addComponent( currentUser );
 		addComponent( status );
 		addComponent( reservedBy );
 		addComponent( serialNumber );
 		addComponent( barcode );
+		addComponent( getSeparator());
+		
+		addComponent( buyDate );
+		addComponent( price );
+		addComponent( takuu );
+		addComponent( nextMaintenance );
 		
 		disallowToUpdate();
 		
@@ -150,7 +175,12 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 		reservedBy.setReadOnly( !allow );
 		serialNumber.setReadOnly( !allow );
 		barcode.setReadOnly( !allow );
-			
+
+		buyDate.setReadOnly( !allow );
+		price.setReadOnly( !allow );
+		takuu.setReadOnly( !allow );
+		nextMaintenance.setReadOnly( !allow );
+		
 	}
 
 	
@@ -223,6 +253,11 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 				serialNumber.setValue( shownItem.getSerialNumber());
 				barcode.setValue( shownItem.getBarcode());
 
+				buyDate.setValue( shownItem.getBuyTime() != null ? shownItem.getBuyTime().toDate() : null );
+				nextMaintenance.setValue( shownItem.getMaintenance() != null ? shownItem.getMaintenance().toDate() : null );
+				price.setValue( shownItem.getPrice());
+				takuu.setValue( shownItem.getTakuu());
+				
 			} else {
 				// No ToolItem selected and/or Category selected
 
@@ -235,5 +270,13 @@ public class ToolItemView extends FormLayout implements ToolItemChangedListener 
 		
 		disallowToUpdate();
 	}
-	
+
+	private Component getSeparator() {
+		
+		Label separator = new Label( "<hr/>", ContentMode.HTML );
+		separator.setWidth( "100%" );
+		
+		return separator;
+	}
+
 }

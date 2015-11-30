@@ -1,10 +1,10 @@
 package com.c2point.tools.ui.toolsmgmt;
 
 import java.text.MessageFormat;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
-import org.vaadin.ui.NumberField;
 
 import com.c2point.tools.datalayer.SettingsFacade;
 import com.c2point.tools.entity.person.OrgUser;
@@ -14,14 +14,19 @@ import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.ui.listeners.EditInitiationListener;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
+import com.c2point.tools.ui.util.DoubleField;
+import com.c2point.tools.ui.util.IntegerField;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -60,9 +65,8 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 	
 	private PopupDateField	buyDate;
 	private PopupDateField	nextMaintenance;
-	private NumberField		price;
-	private NumberField		takuu;	
-
+	private DoubleField		price;
+	private IntegerField	takuu;
 	
 	private Button		editcloseButton;
 	private Button		deleteButton;
@@ -165,9 +169,13 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		nextMaintenance.setDateFormat( "MM.yyyy" );
 		nextMaintenance.setResolution( Resolution.MONTH);
 		
-		price = new NumberField( "Price" + ":" );
-		takuu = new NumberField( "Guarantee (months)" + ":" );
-//		
+		price = new DoubleField( "Price" + ":" );
+		price.setLocale( model.getApp().getSessionData().getLocale());
+		price.setMinValue( 0. );		
+		
+		takuu = new IntegerField( "Guarantee (months)" + ":" );
+		takuu.setupMaxValue( 120 );
+
 		addComponent( toolText );
 		addComponent( manufacturer );
 		addComponent( toolModel );
@@ -439,10 +447,10 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			serialNumber.setValue( shownItem.getSerialNumber());
 			barcode.setValue( shownItem.getBarcode());
 			
-			buyDate.setValue( shownItem.getBuyTime().toDate());
-			nextMaintenance.setValue( shownItem.getMaintenance().toDate());
+			buyDate.setValue( shownItem.getBuyTime() != null ? shownItem.getBuyTime().toDate() : null );
+			nextMaintenance.setValue( shownItem.getMaintenance() != null ? shownItem.getMaintenance().toDate() : null );
 			price.setValue( shownItem.getPrice());
-			takuu.setValue( shownItem.getTakuu().doubleValue());
+			takuu.setValue( shownItem.getTakuu());
 			
 
 		} else {
@@ -472,50 +480,81 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		
 	}
 
-	private void viewToData() {
+	private boolean viewToData() {
 
+		boolean res = false;
+		
 		if ( this.shownItem != null ) {
 			
-			if ( model.getEditMode() == ToolsListModel.EditModeType.ADD ) {
+			if ( validateAll()) {
+				if ( model.getEditMode() == ToolsListModel.EditModeType.ADD ) {
+					
+					shownItem.getTool().setName( toolText.getValue());
+					shownItem.getTool().setCode( code.getValue());
+					shownItem.getTool().setDescription( description.getValue());
+					shownItem.getTool().setCategory(( Category ) category.getValue());
+					shownItem.getTool().setManufacturer(( Manufacturer ) manufacturer.getValue() );
+					shownItem.getTool().setModel( toolModel.getValue());
+					
+					
+				} else if ( model.getEditMode() == ToolsListModel.EditModeType.EDIT ) {
+					
+					shownItem.getTool().setCode( code.getValue());
+					shownItem.getTool().setDescription( description.getValue());
+					shownItem.getTool().setCategory(( Category ) category.getValue());
+				}
+	
+				shownItem.setPersonalFlag( personalFlag.getValue());
 				
-				shownItem.getTool().setName( toolText.getValue());
-				shownItem.getTool().setCode( code.getValue());
-				shownItem.getTool().setDescription( description.getValue());
-				shownItem.getTool().setCategory(( Category ) category.getValue());
-				shownItem.getTool().setManufacturer(( Manufacturer ) manufacturer.getValue() );
-				shownItem.getTool().setModel( toolModel.getValue());
+				shownItem.setCurrentUser(( OrgUser )currentUser.getValue());
+				shownItem.setStatus(( ItemStatus ) status.getValue());
+				shownItem.setReservedBy(( OrgUser )reservedBy.getValue());
 				
+				shownItem.setSerialNumber( serialNumber.getValue());
+				shownItem.setBarcode( barcode.getValue());
 				
-			} else if ( model.getEditMode() == ToolsListModel.EditModeType.EDIT ) {
-				
-				shownItem.getTool().setCode( code.getValue());
-				shownItem.getTool().setDescription( description.getValue());
-				shownItem.getTool().setCategory(( Category ) category.getValue());
-			}
+				shownItem.setBuyTime( buyDate.getValue());
+				shownItem.setMaintenance( nextMaintenance.getValue());
+				shownItem.setPrice( price.getDoubleValueNoException());
+				shownItem.setTakuu( takuu.getIntegerValueNoException());
 
-			shownItem.setPersonalFlag( personalFlag.getValue());
-			
-			shownItem.setCurrentUser(( OrgUser )currentUser.getValue());
-			shownItem.setStatus(( ItemStatus ) status.getValue());
-			shownItem.setReservedBy(( OrgUser )reservedBy.getValue());
-			
-			shownItem.setSerialNumber( serialNumber.getValue());
-			shownItem.setBarcode( barcode.getValue());
-			
-			shownItem.setBuyTime( buyDate.getValue());
-			shownItem.setMaintenance( nextMaintenance.getValue());
-			shownItem.setPrice( price.getDoubleValueDoNotThrow());
-			
-			try {
-				shownItem.setTakuu( Integer.valueOf( takuu.getValue()));
-			} catch ( Exception e ) {
-				shownItem.setTakuu( 0 );
+				
+				res = true;
 			}
 		}
-		
+
+		return res;
 	}
 
+	private boolean validateAll() {
+		
+		boolean res = 
+				validate( buyDate )
+				&& validate( nextMaintenance )
+				&& validate( price )
+				&& validate( takuu );
+		
+		return res;
+	}
 	
+	private boolean validate( @SuppressWarnings("rawtypes") AbstractField field ) {
+		boolean res = false;
+		
+		field.setValidationVisible( false );
+		try {
+			field.validate();
+			res = true;
+		} catch (InvalidValueException e) {
+			field.setValidationVisible(true);
+			if ( field instanceof AbstractTextField )
+				(( AbstractTextField )field ).selectAll();
+			else 
+				field.focus();
+		}			
+		
+		return res;
+		
+	}
 	
 	private boolean categoryCBinited = false;
 	private  void initCategoryComboBox( Category selectedCat ) {
@@ -775,33 +814,36 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		switch ( model.getEditMode()) {
 			case ADD:
 
-				viewToData();
+				if ( viewToData()) {
 				
-				if ( addToolAndItem( DetailsView.this.shownItem ) != null ) {
-
-					model.setViewMode();
+					if ( addToolAndItem( DetailsView.this.shownItem ) != null ) {
+	
+						model.setViewMode();
+					}
 				}
 				
 				break;
 			case COPY:
-				viewToData();
+				if ( viewToData()) {
 				
-				if ( addToolItem( DetailsView.this.shownItem ) != null ) {
-
-					model.setViewMode();
+					if ( addToolItem( DetailsView.this.shownItem ) != null ) {
+	
+						model.setViewMode();
+					}
 				}
 				
 				break;
 			case EDIT:
 				
-				viewToData();
+				if ( viewToData()) {
 				
-				if ( updateToolItem( DetailsView.this.shownItem ) != null ) {
-
-					model.setViewMode();
+					if ( updateToolItem( DetailsView.this.shownItem ) != null ) {
+	
+						model.setViewMode();
+					}
+	
+	//				model.setViewMode();
 				}
-
-//				model.setViewMode();
 				
 				break;
 			case VIEW:
