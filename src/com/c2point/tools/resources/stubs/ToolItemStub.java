@@ -46,7 +46,7 @@ public class ToolItemStub {
 		setId( item.getId());
 		setCode( item.getTool().getCode());
 		setName( item.getTool().getName());
-		setDescription( item.getTool().getDescription());
+		setDescription( item.getTool().getToolInfo());
 		try {
 			setManufacturer( item.getTool().getManufacturer().getName());
 		} catch( Exception e ) {

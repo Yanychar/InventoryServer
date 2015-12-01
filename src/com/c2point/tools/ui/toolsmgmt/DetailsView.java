@@ -388,7 +388,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 				
 				toolText.setValue( this.shownItem.getTool().getName());
 				code.setValue( this.shownItem.getTool().getCode());
-				description.setValue( this.shownItem.getTool().getDescription());
+				description.setValue( this.shownItem.getTool().getToolInfo());
 
 				Category tmpCat = shownItem.getTool().getCategory();
 				if ( tmpCat != null ) {
@@ -491,7 +491,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 					
 					shownItem.getTool().setName( toolText.getValue());
 					shownItem.getTool().setCode( code.getValue());
-					shownItem.getTool().setDescription( description.getValue());
+					shownItem.getTool().setToolInfo( description.getValue());
 					shownItem.getTool().setCategory(( Category ) category.getValue());
 					shownItem.getTool().setManufacturer(( Manufacturer ) manufacturer.getValue() );
 					shownItem.getTool().setModel( toolModel.getValue());
@@ -500,7 +500,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 				} else if ( model.getEditMode() == ToolsListModel.EditModeType.EDIT ) {
 					
 					shownItem.getTool().setCode( code.getValue());
-					shownItem.getTool().setDescription( description.getValue());
+					shownItem.getTool().setToolInfo( description.getValue());
 					shownItem.getTool().setCategory(( Category ) category.getValue());
 				}
 	

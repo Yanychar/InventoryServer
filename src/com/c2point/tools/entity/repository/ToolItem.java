@@ -97,7 +97,7 @@ import com.c2point.tools.entity.tool.Tool;
 			+ "item.deleted = false AND "
 			+ "item.tool.org = :org AND "
 			+ "( LOCATE( :searchStr, UPPER( item.tool.name )) > 0 OR "
-			+ "  LOCATE( :searchStr, UPPER( item.tool.description )) > 0 OR "
+			+ "  LOCATE( :searchStr, UPPER( item.tool.toolInfo )) > 0 OR "
 			+ "  LOCATE( :searchStr, UPPER( item.tool.manufacturer.name )) > 0 OR "
 			+ "  LOCATE( :searchStr, UPPER( item.tool.model )) > 0 OR "
 			+ "  LOCATE( :searchStr, UPPER( item.serialNumber )) > 0 OR"
@@ -143,6 +143,9 @@ public class ToolItem extends SimplePojo {
 	
 	private Double			price;
 	private Integer				takuu;
+	
+	@Column(name="description")
+	private String 			comments;
 	
 	public ToolItem() {
 		this( null, null, null );
@@ -235,6 +238,10 @@ public class ToolItem extends SimplePojo {
 	public Integer getTakuu() { return takuu; }
 	public void setTakuu( Integer takuu ) { this.takuu = takuu; }
 
+	public String getComments() { return comments; }
+	public void setComments( String comments ) { this.comments = comments; }
+
+	
 	public String getFullName() { 
 		
 		return ( getTool() != null ? getTool().getFullName() : "" );

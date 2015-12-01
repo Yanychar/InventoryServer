@@ -1,5 +1,6 @@
 package com.c2point.tools.entity.tool;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -42,7 +43,8 @@ public class Tool extends SimplePojo {
 	private String		code;
 	private String		name;
 
-	private String 		description;
+	@Column(name="description")
+	private String 		toolInfo;
 	
 	private Category 	category;
 	
@@ -64,8 +66,8 @@ public class Tool extends SimplePojo {
 	public String getName() { return name; }
 	public void setName( String name ) { this.name = name; }
 
-	public String getDescription() { return description; }
-	public void setDescription( String description ) { this.description = description; }
+	public String getToolInfo() { return toolInfo; }
+	public void setToolInfo( String toolInfo ) { this.toolInfo = toolInfo; }
 
 	public Category getCategory() { return category; }
 	public void setCategory( Category category ) { this.category = category; }
@@ -93,7 +95,7 @@ public class Tool extends SimplePojo {
 	@Override
 	public String toString() {
 		return "Tool [code=" + code + ", name=" + name + ", description="
-				+ description + ", category=" + category + ", manufacturer="
+				+ toolInfo + ", category=" + category + ", manufacturer="
 				+ manufacturer + ", model=" + model + "]";
 	}
 

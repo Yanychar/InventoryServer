@@ -251,7 +251,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 			resTool.setModel( nextLine [ 4 ] );
 			setupCode( resTool, nextLine [ 5 ] );
 			resTool.setName( nextLine [ 6 ] );
-			resTool.setDescription( nextLine [ 7 ] );
+			resTool.setToolInfo( nextLine [ 7 ] );
 	
 			resTool.setCategory( category );
 			

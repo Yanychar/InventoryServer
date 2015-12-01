@@ -672,8 +672,8 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 				if ( tool.getName() != null &&
 					 tool.getName().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
 				
-				if ( tool.getDescription() != null &&
-					 tool.getDescription().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
+				if ( tool.getToolInfo() != null &&
+					 tool.getToolInfo().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
 
 				if ( tool.getManufacturer() != null && tool.getManufacturer().getName() != null 
 						&& tool.getManufacturer().getName().toLowerCase().indexOf( searchString.toLowerCase()) != -1 ) return true;
