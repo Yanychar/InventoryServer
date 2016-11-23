@@ -208,7 +208,7 @@ public class ToolsListModel extends AbstractModel {
 		
 	}
 
-	public ToolItem add( ToolItem addedItem ) {
+	public ToolItem addItem( ToolItem addedItem ) {
 		
 		ToolItem newItem = null;
 		
@@ -243,7 +243,7 @@ public class ToolsListModel extends AbstractModel {
 			
 				addedItem.setTool( newTool );
 			
-				newItem = add( addedItem );			
+				newItem = addItem( addedItem );			
 			
 				if ( newItem != null ) {
 					
@@ -258,7 +258,7 @@ public class ToolsListModel extends AbstractModel {
 		
 	}
 	
-	public ToolItem update( ToolItem updatedItem ) {
+	public ToolItem updateItem( ToolItem updatedItem ) {
 		
 		ToolItem newItem = null;
 		

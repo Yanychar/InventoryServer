@@ -12,6 +12,7 @@ import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
+import com.c2point.tools.ui.AbstractModel.EditModeType;
 import com.c2point.tools.ui.listeners.EditInitiationListener;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
 import com.c2point.tools.ui.util.DoubleField;
@@ -30,6 +31,8 @@ import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -40,6 +43,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 
 public class DetailsView extends FormLayout implements ToolItemChangedListener, EditInitiationListener {
 	private static final long serialVersionUID = 1L;
@@ -49,7 +53,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 	
 	private TextField 		toolText;
 	private TextField		code;
-	private TextArea 		description;
+	private TextArea 		toolInfo;
 	private ComboBox		category;
 	private ComboBox		manufacturer;
 	private TextField		toolModel;
@@ -62,17 +66,19 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 	
 	private TextField		serialNumber;
 	private TextField		barcode;
+	private TextArea 		comments;
 	
 	private PopupDateField	buyDate;
 	private PopupDateField	nextMaintenance;
 	private DoubleField		price;
 	private IntegerField	takuu;
 	
-	private Button		editcloseButton;
-	private Button		deleteButton;
+//	private Button			editcloseButton;
+//	private Button			deleteButton;
 	
-	private ToolItem	shownItem;
-
+	private ToolItem		shownItem;
+	
+	
 	public DetailsView( ToolsListModel model ) {
 		super();
 		
@@ -82,7 +88,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		initView();
 		
 		model.addListener(( ToolItemChangedListener ) this );
-		model.addListener(( EditInitiationListener ) this );
+//		model.addListener(( EditInitiationListener ) this );
 		
 		model.clearEditMode();
 	}
@@ -102,10 +108,10 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		code.setNullRepresentation( "" );
 		code.setImmediate( true );
 
-		description = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.descr" ));
-		description.setNullRepresentation( "" );
-		description.setRows( 3 );
-		description.setImmediate( true );
+		toolInfo = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.toolinfo" ));
+		toolInfo.setNullRepresentation( "" );
+		toolInfo.setRows( 3 );
+		toolInfo.setImmediate( true );
 		
 		category = new ComboBox( model.getApp().getResourceStr( "toolsmgmt.view.label.category" ));
 		category.setInputPrompt( model.getApp().getResourceStr( "toolsmgmt.text.select.category" ));
@@ -157,12 +163,16 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		serialNumber.setNullRepresentation( "" );
 		serialNumber.setImmediate( true );
 
-		barcode = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.barcode" ));
+		barcode = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.barcode" ) +":" );
 		barcode.setNullRepresentation( "" );
 		barcode.setImmediate( true );
-//
+
+		comments = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" ));
+		comments.setNullRepresentation( "" );
+		comments.setRows( 3 );
+		comments.setImmediate( true );
+		
 		buyDate = new PopupDateField( "Bought" + ":" );
-//		buyDate.setValue( new Date());
 		buyDate.setDateFormat( "dd.MM.yyyy" );
 		
 		nextMaintenance = new PopupDateField( "Next Maintenance" + ":" );
@@ -184,7 +194,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			addComponent( code );
 		}
 		
-		addComponent( description );
+		addComponent( toolInfo );
 		addComponent( category );
 		addComponent( getSeparator());
 		addComponent( personalFlag );
@@ -194,6 +204,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		addComponent( getSeparator());
 		addComponent( serialNumber );
 		addComponent( barcode );
+		addComponent( comments );
 		addComponent( getSeparator());
 		
 		addComponent( buyDate );
@@ -218,7 +229,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		
 		toolBarLayout.setWidth( "100%");
 		toolBarLayout.setMargin( new MarginInfo( false, true, false, true ));
-
+/*
 		editcloseButton = new Button();
 		
 		editcloseButton.addClickListener( new ClickListener() {
@@ -227,7 +238,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			@Override
 			public void buttonClick( ClickEvent event) {
 					
-				editSavePressed();
+				editButtonPressed();
 				
 			}
 		});
@@ -250,12 +261,15 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 
 		toolBarLayout.addComponent( editcloseButton);
 		toolBarLayout.addComponent( deleteButton);
+
+*/		
+		
 		
 		return toolBarLayout;
 	}
 
 	private void updateButtons() {
-
+/*
 		editcloseButton.setEnabled( model.allowsToEdit());
 		deleteButton.setEnabled( model.allowsToEdit());
 			
@@ -279,7 +293,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			default:
 				break;
 		}
-			
+*/			
 	}
 	private void updateFields() {
 		updateFields( false );
@@ -289,7 +303,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		if ( allowUpdateAll ) {
 			toolText.setReadOnly( false );
 			code.setReadOnly( false );
-			description.setReadOnly( false );
+			toolInfo.setReadOnly( false );
 			category.setReadOnly( false );
 			manufacturer.setReadOnly( false );
 			toolModel.setReadOnly( false );
@@ -300,6 +314,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			reservedBy.setReadOnly( false );
 			serialNumber.setReadOnly( false );
 			barcode.setReadOnly( false );
+			comments.setReadOnly( false );
 			
 			buyDate.setReadOnly( false );
 			nextMaintenance.setReadOnly( false );
@@ -309,7 +324,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		} else {
 			toolText.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD );
 			code.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD ); // ( mode == EditMode.COPY || mode == EditMode.VIEW );
-			description.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD ); //( mode == EditMode.COPY || mode == EditMode.VIEW );
+			toolInfo.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD ); //( mode == EditMode.COPY || mode == EditMode.VIEW );
 			category.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD ); 
 			manufacturer.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD);
 			toolModel.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD );
@@ -320,6 +335,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			reservedBy.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
 			serialNumber.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
 			barcode.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
+			comments.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.VIEW );
 
 			buyDate.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
 			nextMaintenance.setReadOnly( model.getEditMode() == ToolsListModel.EditModeType.VIEW );
@@ -388,7 +404,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 				
 				toolText.setValue( this.shownItem.getTool().getName());
 				code.setValue( this.shownItem.getTool().getCode());
-				description.setValue( this.shownItem.getTool().getToolInfo());
+				toolInfo.setValue( this.shownItem.getTool().getToolInfo());
 
 				Category tmpCat = shownItem.getTool().getCategory();
 				if ( tmpCat != null ) {
@@ -446,6 +462,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			
 			serialNumber.setValue( shownItem.getSerialNumber());
 			barcode.setValue( shownItem.getBarcode());
+			comments.setValue( this.shownItem.getComments());
 			
 			buyDate.setValue( shownItem.getBuyTime() != null ? shownItem.getBuyTime().toDate() : null );
 			nextMaintenance.setValue( shownItem.getMaintenance() != null ? shownItem.getMaintenance().toDate() : null );
@@ -460,7 +477,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			manufacturer.setValue( null );
 			toolModel.setValue( "" );
 			code.setValue( "" );
-			description.setValue( "" );
+			toolInfo.setValue( "" );
 			category.setValue( null );
 
 			personalFlag.setValue( false );
@@ -470,6 +487,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			
 			serialNumber.setValue( "" );
 			barcode.setValue( "" );
+			comments.setValue( "" );
 
 			buyDate.setValue( null );
 			nextMaintenance.setValue( null );
@@ -491,7 +509,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 					
 					shownItem.getTool().setName( toolText.getValue());
 					shownItem.getTool().setCode( code.getValue());
-					shownItem.getTool().setToolInfo( description.getValue());
+					shownItem.getTool().setToolInfo( toolInfo.getValue());
 					shownItem.getTool().setCategory(( Category ) category.getValue());
 					shownItem.getTool().setManufacturer(( Manufacturer ) manufacturer.getValue() );
 					shownItem.getTool().setModel( toolModel.getValue());
@@ -500,7 +518,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 				} else if ( model.getEditMode() == ToolsListModel.EditModeType.EDIT ) {
 					
 					shownItem.getTool().setCode( code.getValue());
-					shownItem.getTool().setToolInfo( description.getValue());
+					shownItem.getTool().setToolInfo( toolInfo.getValue());
 					shownItem.getTool().setCategory(( Category ) category.getValue());
 				}
 	
@@ -512,6 +530,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 				
 				shownItem.setSerialNumber( serialNumber.getValue());
 				shownItem.setBarcode( barcode.getValue());
+				shownItem.setComments( comments.getValue());
 				
 				shownItem.setBuyTime( buyDate.getValue());
 				shownItem.setMaintenance( nextMaintenance.getValue());
@@ -761,7 +780,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 	
 	@Override
 	public void initiateAdd() {
-
+/*
 		updateFields( true );
 
 		initCategoryComboBox( model.getSelectedCategory());
@@ -773,12 +792,16 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 
 		updateButtons();
 		updateFields();
+*/
+		ToolItemEditDlg editDlg = new ToolItemEditDlg( model, EditModeType.ADD );
+		
+		UI.getCurrent().addWindow( editDlg );
 		
 	}
 
 	@Override
 	public void initiateCopy() {
-
+/*
 		updateFields( true );
 
 		initUserComboBox( this.shownItem.getCurrentUser());
@@ -789,11 +812,15 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 
 		updateButtons();
 		updateFields();
+*/
+		ToolItemEditDlg editDlg = new ToolItemEditDlg( model, EditModeType.COPY );
+		
+		UI.getCurrent().addWindow( editDlg );
 		
 	}
 	@Override
 	public void initiateEdit() {
-
+/*
 		updateFields( true );
 
 //		initCategoryComboBox( model.getSelectedCategory());
@@ -806,9 +833,12 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 
 		updateButtons();
 		updateFields();
+*/
+		ToolItemEditDlg editDlg = new ToolItemEditDlg( model, EditModeType.EDIT );
 		
+		UI.getCurrent().addWindow( editDlg );
 	}
-
+	
 	private void editSavePressed() {
 
 		switch ( model.getEditMode()) {
@@ -968,7 +998,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 	
 	private ToolItem addToolItem( ToolItem item ) {
 		
-		ToolItem addedItem = model.add( item );
+		ToolItem addedItem = model.addItem( item );
 		
 		if ( addedItem == null ) {
 			// Failed to update
@@ -990,7 +1020,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 	private ToolItem updateToolItem( ToolItem item ) {
 
 		// Update Tool Item
-		ToolItem updatedItem = model.update( item );
+		ToolItem updatedItem = model.updateItem( item );
 
 		// Check result of update
 		if ( updatedItem == null ) {

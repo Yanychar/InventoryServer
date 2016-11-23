@@ -6,11 +6,9 @@ import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.InventoryUI;
 import com.c2point.tools.datalayer.CategoriesFacade;
 import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.datalayer.UsersFacade;
-import com.c2point.tools.entity.access.AccessGroups;
 import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.access.SecurityContext;
 import com.c2point.tools.entity.organisation.Organisation;
@@ -23,7 +21,7 @@ import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.ui.listeners.CategoryChangedListener;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
-import com.vaadin.ui.UI;
+import com.c2point.tools.ui.printpdf.ToolsListForm;
 
 public class ToolsListModel extends AbstractModel {
 
@@ -348,4 +346,28 @@ public class ToolsListModel extends AbstractModel {
 		}
 	}
 
+	public ToolsListForm getDocToPrint() {
+		
+		return getDocToPrint( getItems());
+	}
+	
+	public ToolsListForm getDocToPrint( Collection<ToolItem> tiList ) {
+		ToolsListForm document = new ToolsListForm( getApp().getSessionData().getBundle());
+		//Create document
+		
+		// Fill document
+		document.printHeader();
+//		document.addSubheader();
+
+		document.printList( tiList );
+//		document.printBody();		
+				
+		document.printFooter();
+		
+		document.close();
+		
+		return document;
+		
+	}
+	
 }

@@ -25,7 +25,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 	
 	private TextField 		toolText;
 	private TextField		code;
-	private TextArea 		description;
+	private TextArea 		toolInfo;
 	private TextField		category;
 	private TextField		manufacturer;
 	private TextField		toolModel;
@@ -38,6 +38,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 	
 	private TextField		serialNumber;
 	private TextField		barcode;
+	private TextArea 		comments;
 
 	private PopupDateField	buyDate;
 	private PopupDateField	nextMaintenance;
@@ -72,10 +73,10 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 		code.setNullRepresentation( "" );
 		code.setImmediate( true );
 
-		description = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.descr" ));
-		description.setNullRepresentation( "" );
-		description.setRows( 3 );
-		description.setImmediate( true );
+		toolInfo = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.toolinfo" ));
+		toolInfo.setNullRepresentation( "" );
+		toolInfo.setRows( 3 );
+		toolInfo.setImmediate( true );
 		
 		category = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.category" ));
 		category.setNullRepresentation( "" );
@@ -107,10 +108,15 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 		serialNumber.setNullRepresentation( "" );
 		serialNumber.setImmediate( true );
 
-		barcode = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.barcode" ));
+		barcode = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.barcode" ) +":" );
 		barcode.setNullRepresentation( "" );
 		barcode.setImmediate( true );
 
+		comments = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" ));
+		comments.setNullRepresentation( "" );
+		comments.setRows( 3 );
+		comments.setImmediate( true );
+		
 		buyDate = new PopupDateField( "Bought" + ":" );
 //		buyDate.setValue( new Date());
 		buyDate.setDateFormat( "dd.MM.yyyy" );
@@ -130,7 +136,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 		addComponent( manufacturer );
 		addComponent( toolModel );
 //		addComponent( code );
-		addComponent( description );
+		addComponent( toolInfo );
 		addComponent( category );
 		addComponent( getSeparator());
 		addComponent( personalFlag );
@@ -140,6 +146,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 		addComponent( reservedBy );
 		addComponent( serialNumber );
 		addComponent( barcode );
+		addComponent( comments );
 		addComponent( getSeparator());
 		
 		addComponent( buyDate );
@@ -164,7 +171,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 
 		toolText.setReadOnly( !allow );
 		code.setReadOnly( !allow );
-		description.setReadOnly( !allow );
+		toolInfo.setReadOnly( !allow );
 		category.setReadOnly( !allow );
 		manufacturer.setReadOnly( !allow );
 		toolModel.setReadOnly( !allow );
@@ -175,6 +182,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 		reservedBy.setReadOnly( !allow );
 		serialNumber.setReadOnly( !allow );
 		barcode.setReadOnly( !allow );
+		comments.setReadOnly( !allow );
 
 		buyDate.setReadOnly( !allow );
 		price.setReadOnly( !allow );
@@ -224,7 +232,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 					
 					toolText.setValue( this.shownItem.getTool().getName());
 					code.setValue( this.shownItem.getTool().getCode());
-					description.setValue( this.shownItem.getTool().getToolInfo());
+					toolInfo.setValue( this.shownItem.getTool().getToolInfo());
 	
 					category.setValue( shownItem.getTool().getCategory() != null 
 							? shownItem.getTool().getCategory().getName() 
@@ -252,6 +260,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 				
 				serialNumber.setValue( shownItem.getSerialNumber());
 				barcode.setValue( shownItem.getBarcode());
+				comments.setValue( shownItem.getComments());
 
 				buyDate.setValue( shownItem.getBuyTime() != null ? shownItem.getBuyTime().toDate() : null );
 				nextMaintenance.setValue( shownItem.getMaintenance() != null ? shownItem.getMaintenance().toDate() : null );

@@ -66,6 +66,12 @@ public class Category extends SimplePojo {
 		super();
 	}
 	
+	public Category( String name ) {
+		
+		this( "", name );
+		
+	}
+	
 	public Category( String code, String name ) {
 		
 		this( code, name, false );

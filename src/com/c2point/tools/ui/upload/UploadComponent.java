@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.c2point.tools.utils.TemporalFileGen;
 import com.vaadin.ui.Upload;
 
 public class UploadComponent extends Upload  { // implements StartedListener, SucceededListener, FailedListener, ProgressListener {
@@ -58,7 +59,7 @@ public class UploadComponent extends Upload  { // implements StartedListener, Su
               }
 			
 		}
-
+/*
 		private File createTempFile() {
 		
 	    	try {
@@ -78,12 +79,12 @@ public class UploadComponent extends Upload  { // implements StartedListener, Su
 	    	
 			return null;
 		}
-		
+*/		
 		public File getTempFile() { 
 			
 			if ( downloadedFile == null ) {
 				
-				createTempFile();
+				downloadedFile = TemporalFileGen.createTempFile();
 			}
 			
 			return downloadedFile; 

@@ -25,4 +25,6 @@
 
 
     <inherits name="com.eijsink.vaadin.components.formcheckbox.FormCheckBoxWidgetset" />
+
+    <inherits name="org.vaadin.ui.NumberFieldWidgetset" />
 </module>

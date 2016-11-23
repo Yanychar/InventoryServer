@@ -9,7 +9,8 @@ public enum FunctionalityType {
 	TOOLS_MGMT,
 	ORGS_MGMT,
 	TRN_MGMT,
-	ACCOUNTS_MGMT;
+	ACCOUNTS_MGMT,
+	REPORTS_MGMT;
 	
 /*	
 	public static FunctionalityType fromValue( int i ) {

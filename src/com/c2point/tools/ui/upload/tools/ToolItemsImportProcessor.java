@@ -394,7 +394,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 /*		
 		ToolItem addedItem = ItemsFacade.getInstance().add( item );
 */
-		ToolItem addedItem = model.add( item );
+		ToolItem addedItem = model.addItem( item );
 		
 		if ( logger.isDebugEnabled() && addedItem != null )
 		
@@ -573,7 +573,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 			date = df.parseLocalDate( dateStr );			
 			
 		} catch( Exception e ) {
-			logger.error( "Cannot convert to date: '" + dateStr + "'" );
+			logger.debug( "Cannot convert to date: '" + dateStr + "'" );
 			date = null;
 		}
 		

@@ -251,6 +251,7 @@ public class AccessRightsFacade extends DataFacade {
 			{ "VIEWER", "ORGS_MGMT",	"R",	"NO",	"NO" },
 			{ "VIEWER", "TRN_MGMT",		"R",	"NO",	"NO" },
 			{ "VIEWER", "ACCOUNTS_MGMT","NO",	"NO",	"NO" },
+			{ "VIEWER", "REPORTS_MGMT", "R",	"NO",	"NO" },
 			
 			{ "USER", "BORROW",			"R",	"RW",	"NO" },
 			{ "USER", "CHANGESTATUS",	"RW",	"R",	"NO" },
@@ -260,6 +261,7 @@ public class AccessRightsFacade extends DataFacade {
 			{ "USER", "ORGS_MGMT",		"NO",	"NO",	"NO" },
 			{ "USER", "TRN_MGMT",		"R",	"NO",	"NO" },
 			{ "USER", "ACCOUNTS_MGMT",	"NO",	"NO",	"NO" },
+			{ "USER", "REPORTS_MGMT", 	"R",	"NO",	"NO" },
 			
 			{ "FOREMAN", "BORROW",		"R",	"RW",	"NO" },
 			{ "FOREMAN", "CHANGESTATUS","RW",	"RW",	"NO" },
@@ -269,6 +271,7 @@ public class AccessRightsFacade extends DataFacade {
 			{ "FOREMAN", "ORGS_MGMT",	"NO",	"NO",	"NO" },
 			{ "FOREMAN", "TRN_MGMT",	"R",	"NO",	"NO" },
 			{ "FOREMAN", "ACCOUNTS_MGMT","NO",	"NO",	"NO" },
+			{ "FOREMAN", "REPORTS_MGMT", "R",	"R",	"NO" },
 			
 			{ "BOSS", "BORROW",			"R",	"RW",	"NO" },
 			{ "BOSS", "CHANGESTATUS",	"RW",	"RW",	"NO" },
@@ -278,6 +281,7 @@ public class AccessRightsFacade extends DataFacade {
 			{ "BOSS", "ORGS_MGMT",		"RW",	"RW",	"NO" },
 			{ "BOSS", "TRN_MGMT",		"R",	"R",	"NO" },
 			{ "BOSS", "ACCOUNTS_MGMT",	"NO",	"NO",	"NO" },
+			{ "BOSS", "REPORTS_MGMT", 	"R",	"R",	"NO" },
 			
 			{ "ADMIN", "BORROW",		"R",	"R",	"NO" },
 			{ "ADMIN", "CHANGESTATUS",	"R",	"R",	"NO" },
@@ -287,6 +291,7 @@ public class AccessRightsFacade extends DataFacade {
 			{ "ADMIN", "ORGS_MGMT",		"RW",	"RW",	"NO" },
 			{ "ADMIN", "TRN_MGMT",		"RW",	"RW",	"NO" },
 			{ "ADMIN", "ACCOUNTS_MGMT",	"RW",	"RW",	"NO" },
+			{ "ADMIN", "REPORTS_MGMT", 	"R",	"R",	"R" },
 			
 	};
 	

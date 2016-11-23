@@ -10,6 +10,7 @@ import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.access.SecurityContext;
 import com.c2point.tools.ui.msg.MessagesView;
+import com.c2point.tools.ui.reports.ReportsView;
 import com.c2point.tools.ui.repositoryview.RepositoryManagementView;
 import com.c2point.tools.ui.settings.SettingsView;
 import com.c2point.tools.ui.tools.history.ToolsHistoryManagementView;
@@ -113,7 +114,7 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 			layout.addComponent( transButton );
 		}
 		
-//		layout.addComponent( reportButton );
+		layout.addComponent( reportButton );
 
 		if ( context.hasViewPermissionMgmt( FunctionalityType.ORGS_MGMT )
 			||
@@ -135,7 +136,8 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
             public void buttonClick( ClickEvent event ) {
 				
 				logger.debug( "Home button pressed!" );
-				otherButtonPressed();
+//				otherButtonPressed();
+				temporalTests();
                 
             }
         });
@@ -183,7 +185,7 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
             public void buttonClick( ClickEvent event ) {
 				
 				logger.debug( "Reports button pressed!" );
-				otherButtonPressed();
+				reportButtonPressed();
                 
             }
         });
@@ -348,6 +350,19 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 		mainSplit.setSecondComponent( new ToolsHistoryManagementView());
     	
     }
+    
+    private void reportButtonPressed() {
+    	
+		try {
+			mainSplit.removeComponent( mainSplit.getSecondComponent());
+		} catch( Exception e ) {
+			
+		}
+    	
+		mainSplit.setSecondComponent( new ReportsView());
+
+    }
+    
     private void settingsButtonPressed(){
 
 		try {
@@ -360,7 +375,8 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 		
     }
     
-    private void otherButtonPressed(){
+    @SuppressWarnings("unused")
+	private void otherButtonPressed(){
 
 		try {
 			mainSplit.removeComponent( mainSplit.getSecondComponent());
@@ -384,6 +400,10 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 ///		t.setWidth( "100%" );
 		
 		return notImplementedView;
+    	
+    }
+
+    private void temporalTests() {
     	
     }
 }

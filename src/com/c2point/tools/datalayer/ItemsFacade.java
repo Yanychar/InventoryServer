@@ -332,6 +332,7 @@ public class ItemsFacade extends DataFacade {
 		
 		newItem.setSerialNumber( item.getSerialNumber());
 		newItem.setBarcode( item.getBarcode());
+		newItem.setComments( item.getComments());
 		
 		newItem.setPersonalFlag( item.isPersonalFlag());
 

@@ -10,6 +10,7 @@ import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.ui.listeners.FilterListener;
+import com.c2point.tools.ui.listeners.PrintNowListener;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
@@ -36,11 +37,18 @@ public class FilterToolbar extends HorizontalLayout {
 	private TextField			searchText;
 
 	private ComboBox			statusFilter;
+	private Button				printButton;
+	private PrintNowListener 	printButtonListener;
+	
 
 	public FilterToolbar( FilterListener filterListener, AbstractModel model ) {
+		this( filterListener, model, null );
+	}
+	public FilterToolbar( FilterListener filterListener, AbstractModel model, PrintNowListener printButtonListener ) {
 		super();
 	
 		this.filterListener = filterListener;
+		this.printButtonListener = printButtonListener;
 		
 		initUI();
 	}
@@ -115,6 +123,24 @@ public class FilterToolbar extends HorizontalLayout {
 
 		initStatusFilter();
 
+		// Print button
+        printButton = new Button();
+    	printButton.setCaption( (( InventoryUI )UI.getCurrent()).getResourceStr( "general.button.print" ));
+//    	printButton.addStyleName( Runo.BUTTON_BIG );
+//    	printButton.addStyleName( Runo.BUTTON_DEFAULT );
+		
+    	printButton.addClickListener( new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if ( printButtonListener != null )
+					printButtonListener.printNow();
+			}
+    		
+    	});
+    	
+		
+		
 		addComponent( searchIcon );
 		addComponent( searchText );
 		addComponent( deleteIcon );
@@ -126,6 +152,11 @@ public class FilterToolbar extends HorizontalLayout {
 		
 		Label glue = new Label( "" );
 		addComponent( glue );
+		
+		if ( printButtonListener != null ) {
+			addComponent( printButton );
+		}
+		
 		setExpandRatio( glue,  1.0f );
 
 	}
@@ -183,5 +214,5 @@ public class FilterToolbar extends HorizontalLayout {
 
 		filterListener.filterWasChanged( strArray, ( ItemStatus )statusFilter.getValue() );
 	}
-	
+
 }

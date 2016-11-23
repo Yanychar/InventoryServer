@@ -9,15 +9,19 @@ import org.apache.logging.log4j.Logger;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Tool;
+import com.c2point.tools.ui.AbstractModel.EditModeType;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
+import com.c2point.tools.ui.repositoryview.ChangeItemAttributesDlg;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
@@ -32,6 +36,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -128,12 +133,80 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			}
 		});
 		
+		itemsTable.addItemClickListener( new ItemClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				
+				if ( toProcess( event ) && event.getItem().getItemProperty( "data" ).getValue() instanceof ToolItem ) {
+					if ( logger.isDebugEnabled()) logger.debug( "Click shall be processed! Table item clicked: " + event.getItem().getItemProperty( "name" ).getValue());
+					
+					handleActions(( ToolItem )event.getItem().getItemProperty( "data" ).getValue());
+					
+				} else {
+					if ( logger.isDebugEnabled()) logger.debug( "Click done. No processing" );
+				}
+				
+			}
+			
+			
+			
+		});
+		
 		this.addComponent( getToolbar());
 		this.addComponent( itemsTable );
 		
 		this.setExpandRatio( itemsTable, 1.0f );
 	}
 
+	
+	private Object clickedId = null;
+	private int clickedCounter = 0;
+	
+	private void endClickHandlingProcess() {
+		clickedCounter = 0;
+	}
+	private boolean toProcess( ItemClickEvent event ) {
+
+		boolean bRes = false;
+		
+		if ( event.isDoubleClick()) {
+			// We pass doubleclick completely!
+			return bRes;
+		}
+		if ( clickedId != event.getItemId()) {
+
+			// New item clicked. Select it but do nothing
+			clickedCounter = 1;
+			clickedId = event.getItemId();
+			
+		} else {
+			// Item has been selected already
+
+			if ( clickedCounter < 1 ) {
+				clickedCounter = 1;
+			}
+			
+			if ( clickedCounter == 1 ) {
+				// Second click opens dialog or starts other actions
+				bRes = true;
+				
+			} else {
+				// This is more than 2nd click. Do nothing 
+			}
+			clickedCounter++;
+			
+		}
+		
+		return bRes;
+	}
+	private void handleActions( ToolItem item ) {
+
+		editTool( EditModeType.EDIT );
+		
+	}
+	
 	
 	@Override
 	public void wasAdded(ToolItem item) {
@@ -710,6 +783,32 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 	}	
 
+	private void editButtonPressed( ToolItem item ) {
+		logger.debug( "Edit button was pressed to add new Tool/ToolItem. Edit Tool: " + item.getTool().getName() );
+
+		itemsTable.setValue( item.getId());
+		
+		editTool( EditModeType.EDIT );
+	}
+	
+	private void editTool( EditModeType editMode) {
+
+		ToolItemEditDlg editDlg = new ToolItemEditDlg( model, editMode ) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dlgClosed() {
+
+				logger.debug( "ToolsEditDlg Dialog has been closed!" );
+				endClickHandlingProcess();
+				
+			}
+		};
+
+		UI.getCurrent().addWindow( editDlg );
+		
+	}
+	
 	private void addButtonPressed() {
 		
 		logger.debug( "Add button was pressed to add new Tool/ToolItem" );
@@ -726,7 +825,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 		model.setSelectedItem( newItem );
 		
-		model.initiateAdd();
+		editTool( EditModeType.ADD );
 			
 	}
 	
@@ -744,16 +843,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 		model.setSelectedItem( newItem );
 		
-		model.initiateCopy();
-		
-	}
-	
-	private void editButtonPressed( ToolItem item ) {
-		logger.debug( "Edit button was pressed to add new Tool/ToolItem. Edit Tool: " + item.getTool().getName() );
-
-		itemsTable.setValue( item.getId());
-		
-		model.initiateEdit();
+		editTool( EditModeType.COPY );
 		
 	}
 	
@@ -765,6 +855,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		model.initiateDelete();
 		
 	}
-	
+
+
 	
 }

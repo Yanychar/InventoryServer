@@ -69,5 +69,11 @@
 		
 		<dependency org="org.vaadin.ui" name="NumberField" rev="0.1.3" />
 		
+		<!-- iText (PDF) -->
+		<dependency org="com.itextpdf" name="kernel" rev="7.0.1"/>
+		<dependency org="com.itextpdf" name="io" rev="7.0.1"/>
+		<dependency org="com.itextpdf" name="layout" rev="7.0.1"/>
+		
+		
 	</dependencies>
 </ivy-module>
