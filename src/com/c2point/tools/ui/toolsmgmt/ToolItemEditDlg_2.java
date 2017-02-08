@@ -354,6 +354,15 @@ public class ToolItemEditDlg_2 extends AbstractDialog {
 		initModels( tool );
 		initCategories( tool );
 		
+		if ( tool != null ) {
+			
+			nameText.setValue( 
+				tool.getName()
+				+ "\n"
+				+ tool.getToolInfo()
+			);
+		}
+		
 	}
 
 
