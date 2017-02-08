@@ -13,8 +13,7 @@
   </Appenders>
   <Loggers>
 
-    <Logger name="com.c2point.tools.ui.reports" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
-    <Logger name="com.c2point.tools.ui.printpdf" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
+    <Logger name="com.c2point.tools.ui.toolsmgmt" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
       
 <!--
     <Logger name="com.c2point.tools.ui"					level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
@@ -31,6 +30,7 @@
     <Logger name="com.c2point.tools.ui.toolsmgmt" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
     <Logger name="com.c2point.tools.ui.transactions" 	level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
     <Logger name="com.c2point.tools.ui.upload" 			level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
+
 -->
 
 

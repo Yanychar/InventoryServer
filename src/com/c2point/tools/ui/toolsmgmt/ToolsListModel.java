@@ -203,12 +203,6 @@ public class ToolsListModel extends AbstractModel {
 		return ToolsFacade.getInstance().getTools( getSelectedOrg());
 	}
 
-	public void setToolCode( Tool tool ) {
-
-		ToolsFacade.getInstance().setUniqueCode( tool, getSelectedOrg());
-		
-	}
-
 	public ToolItem addItem() {
 		return addItem( this.selectedItem );
 	}

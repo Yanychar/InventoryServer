@@ -48,7 +48,7 @@ public class Tool extends SimplePojo {
 	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( Tool.class.getName());
 	
-	private String		code;
+//	private String		code;
 	private String		name;
 
 	@Column(name="description")
@@ -74,9 +74,38 @@ public class Tool extends SimplePojo {
 		
 	}
 
-	public String getCode() { return code; }
-	public void setCode( String code ) { this.code = code; }
+	public boolean contentDifferent( Tool tool ) {
+		
+		boolean res = true;
 
+//		if ( StringUtils.equalsIgnoreCase( this.getCode(), tool.getCode()))
+			if ( StringUtils.equalsIgnoreCase( this.getName(), tool.getName()))
+				if ( StringUtils.equalsIgnoreCase( this.getToolInfo(), tool.getToolInfo()))
+					if ( StringUtils.equalsIgnoreCase( this.getCategory().getName(), tool.getCategory().getName()))
+						if ( StringUtils.equalsIgnoreCase( this.getManufacturer().getName(), tool.getManufacturer().getName()))
+								if ( StringUtils.equalsIgnoreCase( this.getModel(), tool.getModel()))	
+									res = false;
+		return res;
+	}
+	
+	public Tool copy() {
+		
+		Tool newTool = new Tool( this.getOrg());
+
+//		newTool.setCode( this.getCode());
+		newTool.setManufacturer( this.getManufacturer());
+		newTool.setModel( this.getModel());
+		newTool.setName( this.getName());
+		newTool.setToolInfo( this.getToolInfo());
+		newTool.setCategory( this.getCategory());
+		
+		return newTool;
+	}
+	
+/*	
+	private String getCode() { return code; }
+	private void setCode( String code ) { this.code = code; }
+*/
 	
 	public String getName() { return name; }
 	public void setName( String name ) { this.name = name; }
@@ -109,7 +138,7 @@ public class Tool extends SimplePojo {
 	
 	@Override
 	public String toString() {
-		return "Tool [code=" + code + ", name=" + name + ", description="
+		return "Tool [id=" + id + ", name=" + name + ", description="
 				+ toolInfo + ", category=" + category + ", manufacturer="
 				+ manufacturer + ", model=" + model + "]";
 	}

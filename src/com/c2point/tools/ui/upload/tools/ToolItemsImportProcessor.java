@@ -251,7 +251,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 			
 			resTool.setManufacturer( manufacturer );
 			resTool.setModel( nextLine [ 4 ] );
-			setupCode( resTool, nextLine [ 5 ] );
+//			setupCode( resTool, nextLine [ 5 ] );
 			resTool.setName( nextLine [ 6 ] );
 			resTool.setToolInfo( nextLine [ 7 ] );
 	
@@ -404,20 +404,6 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		return addedItem;
 	}
 
-	private void setupCode( Tool tool, String code ) {
-		
-		if ( tool != null ) {
-			
-			if ( code != null && code.length() > 0 ) {
-				tool.setCode( code );
-			} else {
-				
-				ToolsFacade.getInstance().setUniqueCode( tool, model.getSelectedOrg());
-				
-			}
-		}
-	}
-	
 	private Category handleCategory( String[] nextLine ) {
 
 		Category category = catHolder.findOrAddCategory( nextLine, 0 );

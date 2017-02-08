@@ -242,7 +242,6 @@ public class DetailsView extends VerticalLayout implements TransactionsModelList
 		
 		
 		getLabelFromGrid( "<b>" + StringUtils.defaultString( trn.getTool().getFullName()) + "</b>", 	  1, 4 );
-		getLabelFromGrid( "<b>" + StringUtils.defaultString( trn.getToolItem().getTool().getCode()) + "</b>",	  1, 5 );
 		getLabelFromGrid( "<b>" + StringUtils.defaultString( trn.getToolItem().getSerialNumber()) + "</b>", 	  1, 6 );
 		getLabelFromGrid( "<b>" + StringUtils.defaultString( trn.getToolItem().getBarcode()) + "</b>", 1, 7 );
 		

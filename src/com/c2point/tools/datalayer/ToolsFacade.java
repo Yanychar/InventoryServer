@@ -227,6 +227,7 @@ public class ToolsFacade extends DataFacade {
 		
 	}
 
+/*	
 	public void setUniqueCode( Tool tool, Organisation org ) {
 
 		boolean useToolCode = SettingsFacade.getInstance().getBoolean( org, "useToolCode", false );
@@ -259,7 +260,7 @@ public class ToolsFacade extends DataFacade {
 			tool.setCode( newCode );
 		}
 	}
-
+*/
 	
 	private boolean equal( Tool t1, Tool t2 ) {
 		
@@ -269,28 +270,16 @@ public class ToolsFacade extends DataFacade {
 		if ( t1 == null && t2 == null ) return true;
 		
 		if ( t1 != null && t2 != null ) {
-			// Code
-			//	  Old code :  tool.getCode().trim().compareToIgnoreCase( searchTool.getCode().trim()) == 0
-			res = 
-				StringUtils.defaultString( t1.getCode()).trim()
-					.compareToIgnoreCase( StringUtils.defaultString( t2.getCode()).trim()) == 0;
-			
-			
+
 			// Manufacturer
 			//	Old code :  tool.getManufacturer().getId() == searchTool.getManufacturer().getId()
-			if ( res ) {
-				boolean resManuf = false;
-				if ( t1.getManufacturer() == null && t2.getManufacturer() == null ) {
-					resManuf = true;
-				} else if ( t1.getManufacturer() != null && t2.getManufacturer() != null ) {
-					// ID of manufacturer shall be checked only
-					resManuf = t1.getManufacturer().getId() == t2.getManufacturer().getId();
-				}
-				
-				res = res && resManuf; 
-				
+			if ( t1.getManufacturer() == null && t2.getManufacturer() == null ) {
+				res = true;
+			} else if ( t1.getManufacturer() != null && t2.getManufacturer() != null ) {
+				// ID of manufacturer shall be checked only
+				res = t1.getManufacturer().getId() == t2.getManufacturer().getId();
 			}
-
+			
 			// Model
 			//	Old code :  tool.getModel().trim().compareToIgnoreCase( searchTool.getModel().trim()) == 0
 			res = res &&

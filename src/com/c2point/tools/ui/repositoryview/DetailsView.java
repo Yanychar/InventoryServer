@@ -231,7 +231,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 				if ( this.shownItem.getTool() != null ) {
 					
 					toolText.setValue( this.shownItem.getTool().getName());
-					code.setValue( this.shownItem.getTool().getCode());
+//					code.setValue( this.shownItem.getTool().getCode());
 					toolInfo.setValue( this.shownItem.getTool().getToolInfo());
 	
 					category.setValue( shownItem.getTool().getCategory() != null 

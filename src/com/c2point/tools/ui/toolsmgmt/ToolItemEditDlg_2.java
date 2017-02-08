@@ -2,60 +2,32 @@ package com.c2point.tools.ui.toolsmgmt;
 
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.datalayer.SettingsFacade;
-import com.c2point.tools.entity.organisation.Organisation;
-import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.entity.repository.ItemStatus;
-import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.ui.AbstractDialog;
 import com.c2point.tools.ui.CustomGridLayout;
 import com.c2point.tools.ui.AbstractModel.EditModeType;
-import com.c2point.tools.ui.util.CaptionedHLabel;
-import com.c2point.tools.ui.util.DoubleField;
-import com.c2point.tools.ui.util.IntegerField;
-import com.c2point.tools.ui.util.StyledLabel;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.shared.ui.combobox.FilteringMode;
-import com.vaadin.shared.ui.datefield.Resolution;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.AbstractTextField;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.VerticalLayout;
 
 public class ToolItemEditDlg_2 extends AbstractDialog {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger( ToolItemEditDlg_2.class.getName());
 
-	private ToolsListModel		model;
+	private ToolsListModel	model;
+	private Tool			editedTool = null;
 	
 	/* New variant of Tool selection */
 	private	CheckBox		editToolFlag;
@@ -304,9 +276,9 @@ public class ToolItemEditDlg_2 extends AbstractDialog {
 				if ( selectedValue != null && selectedValue instanceof String ) {
 					logger.debug( "New Tool Name entered." );
 					
-					Tool tool = ( Tool )modelSelect.getValue();
-					if ( tool != null ) {
-						tool.setName(( String )selectedValue );
+//					editedTool = ( Tool )modelSelect.getValue();
+					if ( editedTool != null ) {
+						editedTool.setName(( String )selectedValue );
 					}
 						
 				}
@@ -327,8 +299,13 @@ public class ToolItemEditDlg_2 extends AbstractDialog {
 				if ( selectedValue != null ) {
 					if ( selectedValue instanceof Category ) {
 						logger.debug( "Category selected: " + selectedValue ); 
+						editedTool.setCategory(( Category )selectedValue );
 					} else if ( selectedValue instanceof String ) {
 						logger.debug( "New Category entered. Need to add '" + selectedValue + "' Category" );
+
+						Category cnewCat = new Category(( String )selectedValue );
+						editedTool.setCategory(( Category )selectedValue );
+						
 						
 					} else {
 						logger.error( "Value returned by selection is wrong. Type: " + selectedValue.getClass().getSimpleName() );
@@ -343,23 +320,22 @@ public class ToolItemEditDlg_2 extends AbstractDialog {
 	
 	private void dataToView() {
 
-		Tool tool = null;
-		
 		if ( model.getSelectedItem() != null ) {
-			tool = model.getSelectedItem().getTool();
+			
+			editedTool = model.getSelectedItem().getTool().copy();
 			
 		}
 
-		initManufacturers( tool );
-		initModels( tool );
-		initCategories( tool );
+		initManufacturers( editedTool );
+		initModels( editedTool );
+		initCategories( editedTool );
 		
-		if ( tool != null ) {
+		if ( editedTool != null ) {
 			
 			nameText.setValue( 
-				tool.getName()
+					editedTool.getName()
 				+ "\n"
-				+ tool.getToolInfo()
+				+ editedTool.getToolInfo()
 			);
 		}
 		
@@ -369,6 +345,20 @@ public class ToolItemEditDlg_2 extends AbstractDialog {
 	private boolean viewToData() {
 
 		boolean res = false;
+/*		
+		editedTool.setManufacturer( tool.getName()))
+			if ( StringUtils.equalsIgnoreCase( this.getToolInfo(), tool.getToolInfo()))
+				if ( StringUtils.equalsIgnoreCase( this.getCategory().getName(), tool.getCategory().getName()))
+					if ( StringUtils.equalsIgnoreCase( this.getCode(), tool.getManufacturer().getName()))
+							if ( StringUtils.equalsIgnoreCase( this.getModel(), tool.getModel()))	
+*/		
+		if ( editedTool.contentDifferent( model.getSelectedItem().getTool())) {
+			
+			model.getSelectedItem().setTool( editedTool );
+			
+			res = true;
+		}
+		
 
 		return res;
 	}
@@ -397,6 +387,7 @@ public class ToolItemEditDlg_2 extends AbstractDialog {
 		modelSelect.setEnabled( canBeEdited );
 		nameText.setEnabled( canBeEdited );
 		catSelect.setEnabled( canBeEdited );
+		
 		
 	}
 
@@ -513,7 +504,8 @@ public class ToolItemEditDlg_2 extends AbstractDialog {
 
 	private void modelChanged( Tool tool ) {
 
-		nameText.setValue( StringUtils.defaultString( tool.getName()));
+		editedTool = tool;
+		nameText.setValue( StringUtils.defaultString( editedTool.getName()));
 		
 	}
 	
@@ -561,10 +553,10 @@ public class ToolItemEditDlg_2 extends AbstractDialog {
 
 				if ( viewToData()) {
 				
-					if ( model.addToolAndItem() != null ) {
+//					if ( model.addToolAndItem() != null ) {
 						logger.debug( "Tool And Item were added" );
 						close();
-					}
+//					}
 				}
 				
 				break;
@@ -582,10 +574,10 @@ public class ToolItemEditDlg_2 extends AbstractDialog {
 				
 				if ( viewToData()) {
 				
-					if ( model.updateItem() != null ) {
+//					if ( model.updateItem() != null ) {
 						logger.debug( "Item was edited" );
 						close();
-					}
+//					}
 	
 				}
 				

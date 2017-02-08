@@ -13,7 +13,7 @@ import com.c2point.tools.entity.tool.Category;
 public class ToolItemStub {
 	
 	private long	id;
-	private String	code;
+//	private String	code;
 	private String	name;
 	private String 	description;
 	private String 	manufacturer;
@@ -44,7 +44,7 @@ public class ToolItemStub {
 	public ToolItemStub( ToolItem item ) {
 		
 		setId( item.getId());
-		setCode( item.getTool().getCode());
+//		setCode( item.getTool().getCode());
 		setName( item.getTool().getName());
 		setDescription( item.getTool().getToolInfo());
 		try {
@@ -76,10 +76,10 @@ public class ToolItemStub {
 
 	public long getId() { return id; }
 	public void setId(long id) { this.id = id; }
-
+/*
 	public String getCode() { return code;}
 	public void setCode(String code) { this.code = code; }
-
+*/
 	public String getName() { return name; }
 	public void setName(String name) { this.name = name; }
 	
@@ -160,7 +160,7 @@ public class ToolItemStub {
 	public String toString() {
 		
 		String output = 
-				"ToolItemStub[" + getId() + ", '" + getCode() + "', " + getName() + ", quantity="+getQuantity()+"]"
+				"ToolItemStub[" + getId() + /*", '" + getCode() + */"', " + getName() + ", quantity="+getQuantity()+"]"
 				+ ( getDescription() != null ? "\n  Description: "+getDescription() : "" )
 				+ ( getManufacturer() != null ? "\n Manufacturer: " + getManufacturer() : "" )
 				+ ( getModel() != null ? "\n Model: " + getModel() : "" )

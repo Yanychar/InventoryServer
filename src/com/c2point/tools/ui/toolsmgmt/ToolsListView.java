@@ -814,7 +814,6 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 		Tool	 newTool = new Tool( model.getSelectedOrg());
 		//	Set code, category, org
-		model.setToolCode( newTool );
 		newTool.setCategory( model.getSelectedCategory());
 
 		ToolItem newItem = new ToolItem( newTool, model.getSessionOwner(), model.getSessionOwner());

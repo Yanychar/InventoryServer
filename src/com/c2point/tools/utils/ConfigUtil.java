@@ -8,8 +8,6 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.entity.organisation.Organisation;
-
 public class ConfigUtil {
 	private static Logger logger = LogManager.getLogger( ConfigUtil.class.getName());
 

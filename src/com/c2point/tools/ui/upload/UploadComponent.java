@@ -13,6 +13,7 @@ import com.vaadin.ui.Upload;
 
 public class UploadComponent extends Upload  { // implements StartedListener, SucceededListener, FailedListener, ProgressListener {
 	private static final long serialVersionUID = 1L;
+	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( UploadComponent.class.getName());
 
 	private FileReceiver uploadReceiver;

@@ -6,7 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.c2point.tools.datalayer.SettingsFacade;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
@@ -17,22 +16,11 @@ import com.c2point.tools.ui.listeners.EditInitiationListener;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
 import com.c2point.tools.ui.util.DoubleField;
 import com.c2point.tools.ui.util.IntegerField;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.AbstractTextField;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Window.CloseEvent;
-import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -52,7 +40,6 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 	private ToolsListModel	model;
 	
 	private TextField 		toolText;
-	private TextField		code;
 	private TextArea 		toolInfo;
 	private ComboBox		category;
 	private ComboBox		manufacturer;
@@ -102,12 +89,6 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		toolText.setNullRepresentation( "" );
 		toolText.setImmediate( true );
 		
-		code = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.code" ));
-		code.setRequired(true);
-		code.setRequiredError( model.getApp().getResourceStr( "toolsmgmt.view.error.fieldempty" ));
-		code.setNullRepresentation( "" );
-		code.setImmediate( true );
-
 		toolInfo = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.toolinfo" ));
 		toolInfo.setNullRepresentation( "" );
 		toolInfo.setRows( 3 );
@@ -186,10 +167,6 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		takuu = new IntegerField( "Guarantee (months)" + ":" );
 		takuu.setupMaxValue( 120 );
 
-		if ( SettingsFacade.getInstance().getBoolean( model.getSelectedOrg(), "allowToolCode", false )) {
-			addComponent( code );
-		}
-		
 		addComponent( manufacturer );
 		addComponent( toolModel );
 		addComponent( toolText );
@@ -302,7 +279,6 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		
 		if ( allowUpdateAll ) {
 			toolText.setReadOnly( false );
-			code.setReadOnly( false );
 			toolInfo.setReadOnly( false );
 			category.setReadOnly( false );
 			manufacturer.setReadOnly( false );
@@ -323,7 +299,6 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			
 		} else {
 			toolText.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD );
-			code.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD ); // ( mode == EditMode.COPY || mode == EditMode.VIEW );
 			toolInfo.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD ); //( mode == EditMode.COPY || mode == EditMode.VIEW );
 			category.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD ); 
 			manufacturer.setReadOnly( model.getEditMode() != ToolsListModel.EditModeType.ADD);
@@ -403,7 +378,6 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			if ( this.shownItem.getTool() != null ) {
 				
 				toolText.setValue( this.shownItem.getTool().getName());
-				code.setValue( this.shownItem.getTool().getCode());
 				toolInfo.setValue( this.shownItem.getTool().getToolInfo());
 
 				Category tmpCat = shownItem.getTool().getCategory();
@@ -476,7 +450,6 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 			toolText.setValue( "" );
 			manufacturer.setValue( null );
 			toolModel.setValue( "" );
-			code.setValue( "" );
 			toolInfo.setValue( "" );
 			category.setValue( null );
 
@@ -498,286 +471,6 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		
 	}
 
-	private boolean viewToData() {
-
-		boolean res = false;
-		
-		if ( this.shownItem != null ) {
-			
-			if ( validateAll()) {
-				if ( model.getEditMode() == ToolsListModel.EditModeType.ADD ) {
-					
-					shownItem.getTool().setName( toolText.getValue());
-					shownItem.getTool().setCode( code.getValue());
-					shownItem.getTool().setToolInfo( toolInfo.getValue());
-					shownItem.getTool().setCategory(( Category ) category.getValue());
-					shownItem.getTool().setManufacturer(( Manufacturer ) manufacturer.getValue() );
-					shownItem.getTool().setModel( toolModel.getValue());
-					
-					
-				} else if ( model.getEditMode() == ToolsListModel.EditModeType.EDIT ) {
-					
-					shownItem.getTool().setCode( code.getValue());
-					shownItem.getTool().setToolInfo( toolInfo.getValue());
-					shownItem.getTool().setCategory(( Category ) category.getValue());
-				}
-	
-				shownItem.setPersonalFlag( personalFlag.getValue());
-				
-				shownItem.setCurrentUser(( OrgUser )currentUser.getValue());
-				shownItem.setStatus(( ItemStatus ) status.getValue());
-				shownItem.setReservedBy(( OrgUser )reservedBy.getValue());
-				
-				shownItem.setSerialNumber( serialNumber.getValue());
-				shownItem.setBarcode( barcode.getValue());
-				shownItem.setComments( comments.getValue());
-				
-				shownItem.setBuyTime( buyDate.getValue());
-				shownItem.setMaintenance( nextMaintenance.getValue());
-				shownItem.setPrice( price.getDoubleValueNoException());
-				shownItem.setTakuu( takuu.getIntegerValueNoException());
-
-				
-				res = true;
-			}
-		}
-
-		return res;
-	}
-
-	private boolean validateAll() {
-		
-		boolean res = 
-				validate( buyDate )
-				&& validate( nextMaintenance )
-				&& validate( price )
-				&& validate( takuu );
-		
-		return res;
-	}
-	
-	private boolean validate( @SuppressWarnings("rawtypes") AbstractField field ) {
-		boolean res = false;
-		
-		field.setValidationVisible( false );
-		try {
-			field.validate();
-			res = true;
-		} catch (InvalidValueException e) {
-			field.setValidationVisible(true);
-			if ( field instanceof AbstractTextField )
-				(( AbstractTextField )field ).selectAll();
-			else 
-				field.focus();
-		}			
-		
-		return res;
-		
-	}
-	
-	private boolean categoryCBinited = false;
-	private  void initCategoryComboBox( Category selectedCat ) {
-		
-		if ( !categoryCBinited ) {
-			for ( Category cat : model.getCategories()) {
-				
-				addCategory( cat, category, 1 );
-				
-			}
-	
-			category.addValueChangeListener( new ValueChangeListener() {
-				private static final long serialVersionUID = 1L;
-	
-				@Override
-				public void valueChange( ValueChangeEvent event ) {
-					
-					
-				}
-				
-			});
-		
-			categoryCBinited = true;
-		}
-		
-		category.setValue( selectedCat );
-	}
-	private void addCategory( Category cat, ComboBox combo, int level ) {
-
-		String caption = "";
-		
-		if ( cat != null && combo != null ) {
-			
-			if ( category.getItem( cat ) == null ) {
-				category.addItem( cat );
-/*			
-			switch ( level ) {
-				case 1:
-					caption = ""; 
-					break;
-				case 2:
-					caption = "\u2503 \u2523"; 
-					break;
-				case 3:
-					caption = "\u2503   \u2523"; 
-					break;
-				default:
-					caption = "\u2503     \u2523"; 
-					break;
-			}
-*/			
-				caption = caption + cat.getName(); 
-	 
-				category.setItemCaption( cat, caption );
-			}
-			
-			if ( cat.getChilds() != null && cat.getChilds().size() > 0 ) {
-				
-				int newLevel = level + 1;
-				
-				for ( Category catChild : cat.getChilds()) {
-					
-					addCategory( catChild, combo, newLevel );
-					
-				}
-			}
-			
-		}
-	}
-
-	private boolean manufacturerCBinited = false;
-	private  void initManufacturerComboBox( Manufacturer selectedMan ) {
-
-		if ( !manufacturerCBinited ) {
-			
-			for ( Manufacturer m : model.getManufacturers()) {
-				
-				manufacturer.addItem( m );
-				manufacturer.setItemCaption( m, m.getName());
-				
-			}
-	
-			manufacturer.addValueChangeListener( new ValueChangeListener() {
-				private static final long serialVersionUID = 1L;
-	
-				@Override
-				public void valueChange( ValueChangeEvent event ) {
-					
-					
-				}
-				
-			});
-
-			manufacturerCBinited = true;
-		}
-		
-		manufacturer.setValue( selectedMan );
-		
-	}
-
-	private boolean userCBinited = false;
-	private  void initUserComboBox( OrgUser selectedUser ) {
-
-		if ( !userCBinited ) {
-			for ( OrgUser user : model.getUsers()) {
-				
-				currentUser.addItem( user );
-				currentUser.setItemCaption( user, user.getLastAndFirstNames());
-				
-			}
-		
-			currentUser.addValueChangeListener( new ValueChangeListener() {
-				private static final long serialVersionUID = 1L;
-		
-				@Override
-				public void valueChange( ValueChangeEvent event ) {
-					
-					
-				}
-				
-			});
-			
-			userCBinited = true;
-		}
-		
-		currentUser.setValue( selectedUser );
-	
-	}
-
-	private boolean statusCBinited = false;
-	private  void initStatusComboBox( ItemStatus selectedStatus ) {
-
-		if ( !statusCBinited ) {
-			status.addItem( ItemStatus.UNKNOWN );
-			
-			boolean freeAllowed = SettingsFacade.getInstance().getBoolean( model.getSelectedOrg(), "FreeStatusAllowed", false );
-			if ( freeAllowed ) {
-				status.addItem( ItemStatus.FREE );
-			}
-			
-			status.addItem( ItemStatus.INUSE );
-			status.addItem( ItemStatus.BROKEN );
-			status.addItem( ItemStatus.REPAIRING );
-			status.addItem( ItemStatus.STOLEN );
-			status.addItem( ItemStatus.RESERVED );
-	
-			status.setItemCaption( ItemStatus.UNKNOWN, ItemStatus.UNKNOWN.toString( model.getApp().getSessionData().getBundle()));
-			if ( freeAllowed ) {
-				status.setItemCaption( ItemStatus.FREE, ItemStatus.FREE.toString( model.getApp().getSessionData().getBundle()));
-			}
-			status.setItemCaption( ItemStatus.INUSE, ItemStatus.INUSE.toString( model.getApp().getSessionData().getBundle()));
-			status.setItemCaption( ItemStatus.BROKEN, ItemStatus.BROKEN.toString( model.getApp().getSessionData().getBundle()));
-			status.setItemCaption( ItemStatus.REPAIRING, ItemStatus.REPAIRING.toString( model.getApp().getSessionData().getBundle()));
-			status.setItemCaption( ItemStatus.STOLEN, ItemStatus.STOLEN.toString( model.getApp().getSessionData().getBundle()));
-			status.setItemCaption( ItemStatus.RESERVED, ItemStatus.RESERVED.toString( model.getApp().getSessionData().getBundle()));
-			
-			status.addValueChangeListener( new ValueChangeListener() {
-				private static final long serialVersionUID = 1L;
-		
-				@Override
-				public void valueChange( ValueChangeEvent event ) {
-					
-					
-				}
-				
-			});
-			
-			statusCBinited = true;
-		}
-		
-		status.setValue( selectedStatus );
-	
-	}
-	
-	private boolean reservedCBinited = false;
-	private void initReservedComboBox( OrgUser selectedUser ) {
-
-		if ( !reservedCBinited ) {
-			for ( OrgUser user : model.getUsers()) {
-				
-				reservedBy.addItem( user );
-				reservedBy.setItemCaption( user, user.getLastAndFirstNames());
-				
-			}
-		
-			reservedBy.addValueChangeListener( new ValueChangeListener() {
-				private static final long serialVersionUID = 1L;
-		
-				@Override
-				public void valueChange( ValueChangeEvent event ) {
-					
-					
-				}
-				
-			});
-			
-			reservedCBinited = true;
-			
-		}
-
-		reservedBy.setValue( selectedUser );
-		
-	}
-	
 	@Override
 	public void initiateAdd() {
 /*
@@ -838,65 +531,6 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		
 		UI.getCurrent().addWindow( editDlg );
 	}
-	
-	private void editSavePressed() {
-
-		switch ( model.getEditMode()) {
-			case ADD:
-
-				if ( viewToData()) {
-				
-					if ( addToolAndItem( DetailsView.this.shownItem ) != null ) {
-	
-						model.setViewMode();
-					}
-				}
-				
-				break;
-			case COPY:
-				if ( viewToData()) {
-				
-					if ( addToolItem( DetailsView.this.shownItem ) != null ) {
-	
-						model.setViewMode();
-					}
-				}
-				
-				break;
-			case EDIT:
-				
-				if ( viewToData()) {
-				
-					if ( updateToolItem( DetailsView.this.shownItem ) != null ) {
-	
-						model.setViewMode();
-					}
-	
-	//				model.setViewMode();
-				}
-				
-				break;
-			case VIEW:
-
-				updateFields( true );
-				
-//				initCategoryComboBox( model.getSelectedCategory());
-				
-				initUserComboBox( this.shownItem.getCurrentUser());
-				initStatusComboBox( this.shownItem.getStatus());
-				initReservedComboBox( this.shownItem.getReservedBy());
-
-				model.setEditMode();
-				break;
-			default:
-				break;
-		}
-
-		updateButtons();
-		updateFields();
-		
-	}
-	
 	
 	@Override
 	public void initiateDelete() {
@@ -973,68 +607,6 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 
 		});
 
-	}
-
-	private ToolItem addToolAndItem( ToolItem item ) {
-		
-		ToolItem addedItem = model.addToolAndItem( item );
-		
-		if ( addedItem == null ) {
-			// Failed to update
-			String template = model.getApp().getResourceStr( "general.error.add.header" );
-			Object[] params = { item.getTool().getName() };
-			template = MessageFormat.format( template, params );
-
-			Notification.show( template, Notification.Type.ERROR_MESSAGE );
-			
-		} else {
-
-//			currentWasSet( null );
-			
-		}
-
-		return addedItem;
-	}
-	
-	private ToolItem addToolItem( ToolItem item ) {
-		
-		ToolItem addedItem = model.addItem( item );
-		
-		if ( addedItem == null ) {
-			// Failed to update
-			String template = model.getApp().getResourceStr( "general.error.add.header" );
-			Object[] params = { item.getTool().getName() };
-			template = MessageFormat.format( template, params );
-
-			Notification.show( template, Notification.Type.ERROR_MESSAGE );
-			
-		} else {
-
-//			currentWasSet( null );
-			
-		}
-
-		return addedItem;
-	}
-	
-	private ToolItem updateToolItem( ToolItem item ) {
-
-		// Update Tool Item
-		ToolItem updatedItem = model.updateItem( item );
-
-		// Check result of update
-		if ( updatedItem == null ) {
-			// Failed to update
-			String template = model.getApp().getResourceStr( "general.error.update.header" );
-			Object[] params = { item.getTool().getName() };
-			template = MessageFormat.format( template, params );
-
-			Notification.show( template, Notification.Type.ERROR_MESSAGE );
-			
-		} 
-		
-		return updatedItem;
-		
 	}
 
 	private Component getSeparator() {
