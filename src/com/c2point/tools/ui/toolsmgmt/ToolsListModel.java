@@ -1,6 +1,7 @@
 package com.c2point.tools.ui.toolsmgmt;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -208,6 +209,10 @@ public class ToolsListModel extends AbstractModel {
 		
 	}
 
+	public ToolItem addItem() {
+		return addItem( this.selectedItem );
+	}
+	
 	public ToolItem addItem( ToolItem addedItem ) {
 		
 		ToolItem newItem = null;
@@ -229,21 +234,24 @@ public class ToolsListModel extends AbstractModel {
 		
 	}
 	
-	public ToolItem addToolAndItem( ToolItem addedItem ) {
+	public ToolItem addToolAndItem( ) {
+		return addToolAndItem( this.selectedItem );
+	}
+	public ToolItem addToolAndItem( ToolItem item  ) {
 		
 		Tool 		newTool = null;
 		ToolItem 	newItem = null;			
 		
 		// Add to DB
-		if ( addedItem != null && addedItem.getTool() != null ) {
+		if (  item != null && item.getTool() != null ) {
 		
-			newTool = ToolsFacade.getInstance().add( addedItem.getTool());
+			newTool = ToolsFacade.getInstance().add( item.getTool());
 			
 			if ( newTool != null ) {
 			
-				addedItem.setTool( newTool );
+				item.setTool( newTool );
 			
-				newItem = addItem( addedItem );			
+				newItem = addItem( item );			
 			
 				if ( newItem != null ) {
 					
@@ -258,14 +266,17 @@ public class ToolsListModel extends AbstractModel {
 		
 	}
 	
-	public ToolItem updateItem( ToolItem updatedItem ) {
+	public ToolItem updateItem() {
+		return updateItem( this.selectedItem );
+	}
+	public ToolItem updateItem( ToolItem item ) {
 		
 		ToolItem newItem = null;
 		
 		// Update DB
-		if ( updatedItem != null ) {
+		if ( item != null ) {
 
-			newItem = ItemsFacade.getInstance().update( updatedItem );
+			newItem = ItemsFacade.getInstance().update( item );
 			
 			if ( newItem != null ) {
 				
@@ -346,6 +357,20 @@ public class ToolsListModel extends AbstractModel {
 	         }
 	     }
 		
+	}
+
+	public Manufacturer addManufacturer( String manufacturerName ) {
+
+		Manufacturer result = ItemsFacade.getInstance().addManufacturer( manufacturerName );
+		
+		return result;
+	}
+
+	public List<Tool> getTools( Manufacturer manuf ) {
+
+		List<Tool> result = ToolsFacade.getInstance().searchTools( selectedOrg, manuf );
+
+		return result;
 	}
 
 }

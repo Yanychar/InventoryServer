@@ -33,7 +33,15 @@ import com.c2point.tools.entity.organisation.Organisation;
 	@NamedQuery( name = "countAllOrgTools", 
 			query = "SELECT COUNT( tool.id ) FROM Tool tool " +
 				"WHERE tool.org = :org"
-),
+	),
+	@NamedQuery( name = "listToolsByManufacturer", 
+			query = "SELECT tool FROM Tool tool " +
+					"WHERE " 
+					+ "tool.deleted = false AND "
+					+ "tool.org = :org AND " 
+					+ "tool.manufacturer.name = :name "
+					+ "ORDER BY tool.name ASC"
+	),
 })
 public class Tool extends SimplePojo {
 
@@ -55,7 +63,14 @@ public class Tool extends SimplePojo {
 	@ManyToOne
 	private Organisation org;
 
-	public Tool() {
+	protected Tool() {
+		
+	}
+
+	public Tool( Organisation org ) {
+		this();
+		
+		setOrg( org );
 		
 	}
 

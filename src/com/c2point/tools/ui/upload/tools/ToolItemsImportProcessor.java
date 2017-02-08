@@ -127,9 +127,10 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		
 		// 2. Validate number of columns
 		if ( nextLine.length != columnPatterns.length ) {
-			logger.debug( "    Validation failed: wrong number of fields: " + nextLine.length + ". Should be " + columnPatterns.length ); 
+			logger.error( "    Validation failed: wrong number of fields: " + nextLine.length + ". Should be " + columnPatterns.length ); 
 			// Number of columns in string is wrong!
-			return ProcessedStatus.VALIDATION_FAILED;
+			setProcessedObject( new Integer( columnPatterns.length ));
+			return ProcessedStatus.WRONG_FIELDS_COUNT;
 		}
 		
 		// 3. validate each column
@@ -147,7 +148,8 @@ public class ToolItemsImportProcessor extends FileProcessor {
 								+ "Matches: " + Pattern.matches( columnPatterns[ i ].getPattern(), nextLine[ i ] )
 					);//+ "': " + Pattern.matches( pattern, str ));
 				
-				return ProcessedStatus.VALIDATION_FAILED;
+				setProcessedObject( new Integer( i ));
+				return ProcessedStatus.WRONG_FIELD_FORMAT;
 				
 			}
 
@@ -161,9 +163,9 @@ public class ToolItemsImportProcessor extends FileProcessor {
 		if ( nextLine[ 0 ] == null || nextLine[ 0 ].length() == 0 ) {
 
 			if ( nextLine[ 6 ] != null && nextLine[ 6 ].length() != 0 ) {
-				logger.debug( "    Validation failed: Top Category for Tool is not specified but Tool is specified" );
+				logger.debug( "    Validation failed: Category for Tool is not specified but Tool is specified" );
 			
-				return ProcessedStatus.VALIDATION_FAILED;
+				return ProcessedStatus.NO_CAT_SPECIFIED;
 			}
 			
 		}
@@ -245,7 +247,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 			 manufacturer != null && nextLine[ 4 ] != null && nextLine[ 4 ].length() != 0
 		) {
 			
-			resTool = new Tool();
+			resTool = new Tool( model.getSelectedOrg());
 			
 			resTool.setManufacturer( manufacturer );
 			resTool.setModel( nextLine [ 4 ] );
@@ -255,7 +257,6 @@ public class ToolItemsImportProcessor extends FileProcessor {
 	
 			resTool.setCategory( category );
 			
-			resTool.setOrg( model.getSelectedOrg());
 	
 			logger.debug( "Created " + resTool );
 
@@ -494,7 +495,7 @@ public class ToolItemsImportProcessor extends FileProcessor {
 				
 				if ( nextLine[ i ] != null && nextLine[ i ].length() > 0 ) {
 					
-					this.tmpRes = ProcessedStatus.FAILED;
+					this.tmpRes = ProcessedStatus.WRONG_FIELD_FORMAT;
 					break;
 				}
 			}

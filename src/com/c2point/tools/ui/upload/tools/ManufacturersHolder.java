@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.entity.tool.Manufacturer;
 
@@ -73,9 +72,7 @@ public class ManufacturersHolder {
 
 	private Manufacturer add( String manufacturerName ) {
 
-		Manufacturer result = null;
-		
-		result = DataFacade.getInstance().insert( new Manufacturer( manufacturerName ) );
+		Manufacturer result = ItemsFacade.getInstance().addManufacturer( manufacturerName );
 
 		if ( result != null )
 			

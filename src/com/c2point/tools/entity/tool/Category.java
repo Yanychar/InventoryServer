@@ -107,35 +107,6 @@ public class Category extends SimplePojo {
 	public Organisation getOrg() { return org; }
 	public void setOrg( Organisation org ) { this.org = org; }
 
-	public boolean belongedTo( Category parentOrItself ) {
-		
-		if ( parentOrItself == null ) {
-			if ( logger.isDebugEnabled()) logger.debug( "Parent is NULL ==>> category belonged!" );
-
-			return true;
-			
-		}
-		
-		if ( parentOrItself != null && this.getId() == parentOrItself.getId()) {
-				// If THIS is a Parent
-			if ( logger.isDebugEnabled()) logger.debug( "We came from parent to child through branch ==>> category belonged to!" );
-			
-			return true;
-		}
-		
-		List<Category> descendants = parentOrItself.getChilds();
-		if ( descendants != null && descendants.size() > 0 ) {
-			
-			for ( Category descendant : descendants ) {
-				if ( this.belongedTo( descendant )) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	
 	public String toString( boolean withChilds ) {
 		
 		return toString( withChilds, 0 );

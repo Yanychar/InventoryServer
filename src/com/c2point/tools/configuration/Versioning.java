@@ -1,8 +1,4 @@
-package com.c2point.tools;
-
-import java.io.File;
-
-import com.vaadin.server.VaadinService;
+package com.c2point.tools.configuration;
 
 /*
  *   versions:
@@ -26,28 +22,15 @@ import com.vaadin.server.VaadinService;
  * 
  */
 
-public class Configuration {
+public class Versioning {
 
 	private static int major_version = 1;
 	private static int mid_version = 1;
 	private static int minor_version = 0;
-	
-	private static String	SYSTEM_CONFIG_DIR = "config";
-	private static String	SYSTEM_CONFIG_FILE = "config.properties";
-	
 	
 	public static String getVersion() {
 		
 		return major_version + "." + mid_version + "." + minor_version;
 	}
 	
-	public static String getSystemConfigFileName() { 
-		
-		return 
-			  VaadinService.getCurrent().getBaseDirectory() 
-			+ File.separator 
-			+ SYSTEM_CONFIG_DIR
-			+ File.separator 
-			+ SYSTEM_CONFIG_FILE;
-	}
 }

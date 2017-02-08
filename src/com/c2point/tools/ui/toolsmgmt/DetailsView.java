@@ -186,13 +186,13 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener, 
 		takuu = new IntegerField( "Guarantee (months)" + ":" );
 		takuu.setupMaxValue( 120 );
 
-		addComponent( toolText );
-		addComponent( manufacturer );
-		addComponent( toolModel );
-		
 		if ( SettingsFacade.getInstance().getBoolean( model.getSelectedOrg(), "allowToolCode", false )) {
 			addComponent( code );
 		}
+		
+		addComponent( manufacturer );
+		addComponent( toolModel );
+		addComponent( toolText );
 		
 		addComponent( toolInfo );
 		addComponent( category );

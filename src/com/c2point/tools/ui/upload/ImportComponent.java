@@ -115,6 +115,17 @@ public class ImportComponent implements StartedListener, SucceededListener, Fail
 			case FAILED:
 				writeLog( "  Line " + lineNumber + ": Failed to process:  " + showObject( status, processedObject ));
 				break;
+			
+			case WRONG_FIELDS_COUNT:
+				writeLog( "  Line " + lineNumber + ": Wrong number of fields in the table. Should be " + showObject( status, processedObject ));
+				break;
+			case WRONG_FIELD_FORMAT:
+				writeLog( "  Line " + lineNumber + ": Wrong format of field. Field No. " + showObject( status, processedObject ));
+				break;
+			case NO_CAT_SPECIFIED:
+				writeLog( "  Line " + lineNumber + ": Category is not specified" );
+				break;
+
 			case VALIDATION_FAILED:
 				writeLog( "  Line " + lineNumber + ": Failed to validate:  " + showObject( status, processedObject ));
 				break;
@@ -207,6 +218,10 @@ public class ImportComponent implements StartedListener, SucceededListener, Fail
 				OrgUser user = ( OrgUser )processedObject;
 
 				resp = user.getLastAndFirstNames();
+				
+			} else if ( processedObject instanceof Integer ) {
+
+				resp = processedObject.toString();
 				
 			} else {
 				

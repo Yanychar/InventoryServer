@@ -51,12 +51,11 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.VerticalLayout;
 
-public class ToolItemEditDlg extends AbstractDialog {
+public class ToolItemEditDlg_2 extends AbstractDialog {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LogManager.getLogger( ToolItemEditDlg.class.getName());
+	private static Logger logger = LogManager.getLogger( ToolItemEditDlg_2.class.getName());
 
 	private ToolsListModel		model;
-//	private ToolItem 			item;
 	
 	/* New variant of Tool selection */
 	private	CheckBox		editToolFlag;
@@ -66,28 +65,10 @@ public class ToolItemEditDlg extends AbstractDialog {
 	private TextArea		nameText;
 	private ComboBox		catSelect;
 
-	// ToolItem fields
-	private	IntegerField	quantity;
-
-	private TextField		barcode;
-	private ComboBox		statusBox;
-	private ComboBox		currentUser;
-	private CheckBox		personalFlag;
-
-	private TextField		serialNumber;
-	
-	private PopupDateField	buyDate;
-	private PopupDateField	nextMaintenance;
-	private DoubleField		price;
-	private IntegerField	takuu;
-
-	private TextArea 		comments;
-	
-	public ToolItemEditDlg( ToolsListModel model, EditModeType editModeType ) {
+	public ToolItemEditDlg_2( ToolsListModel model, EditModeType editModeType ) {
 		super();
 		
 		this.model = model;
-//		this.item = model.getSelectedItem();
 		this.model.setEditMode( editModeType );
 			
 		initUI();
@@ -145,59 +126,6 @@ public class ToolItemEditDlg extends AbstractDialog {
 		catSelect.setNewItemsAllowed( false );
 		catSelect.setImmediate( true );
 		
-		quantity = new IntegerField();
-		quantity.setNullSettingAllowed( false );
-		quantity.setNullRepresentation( "1" );
-		quantity.setWidth( "3em" );
-		
-		barcode = new TextField();
-		barcode.setInputPrompt( "Set barcode..." );
-		barcode.setNullRepresentation( "" );
-		barcode.setImmediate( true );
-
-		statusBox = new ComboBox();
-		statusBox.setInputPrompt( "Select Status..." );
-		statusBox.setFilteringMode( FilteringMode.CONTAINS );
-		statusBox.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
-		statusBox.setNullSelectionAllowed( false );
-		statusBox.setInvalidAllowed( false );
-		statusBox.setImmediate( true );
-		
-		currentUser = new ComboBox();
-		currentUser.setInputPrompt( "Select user..." );
-		currentUser.setFilteringMode( FilteringMode.CONTAINS );
-		currentUser.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
-		currentUser.setNullSelectionAllowed( false );
-		currentUser.setInvalidAllowed( false );
-		currentUser.setImmediate( true );
-
-		personalFlag = new CheckBox();
-		personalFlag.setImmediate( true );
-		
-		serialNumber = new TextField();
-		serialNumber.setInputPrompt( "Set serial number ..." );
-		serialNumber.setNullRepresentation( "" );
-		serialNumber.setImmediate( true );
-		
-		buyDate = new PopupDateField();
-		buyDate.setDateFormat( "dd.MM.yyyy" );
-		
-		nextMaintenance = new PopupDateField();
-		nextMaintenance.setDateFormat( "MM.yyyy" );
-		nextMaintenance.setResolution( Resolution.MONTH);
-		
-		price = new DoubleField();
-		price.setLocale( model.getApp().getSessionData().getLocale());
-		price.setMinValue( 0. );		
-		
-		takuu = new IntegerField();
-		takuu.setupMaxValue( 120 );
-
-		comments = new TextArea();
-		comments.setNullRepresentation( "" );
-		comments.setRows( 3 );
-		comments.setImmediate( true );
-		
 		subContent.addField( "Edit Tool model:", editToolFlag );
 		subContent.addField( "Manufacturer:", manufSelect );
 		subContent.addField( "Model:", modelSelect );
@@ -208,17 +136,6 @@ public class ToolItemEditDlg extends AbstractDialog {
 		
 		subContent.addSeparator();
 
-		subContent.addField( "Quantity:", quantity );
-		subContent.addField( "Barcode:", barcode );
-		subContent.addField( "Status:", statusBox );
-		subContent.addField( "User:", currentUser );
-		subContent.addField( "Personal tool?", personalFlag );
-		subContent.addField( "Serial number:", serialNumber );
-		subContent.addField( "Bought:", buyDate );
-		subContent.addField( "Price:", price );
-		subContent.addField( "Takuu (mm):", takuu );
-		subContent.addField( "Next Maintenance:", nextMaintenance );
-		subContent.addField( "Comment:", comments );
 		
 		
 		
@@ -239,22 +156,12 @@ public class ToolItemEditDlg extends AbstractDialog {
 		getChangesCollector().addField( modelSelect );
 		getChangesCollector().addField( nameText );
 		getChangesCollector().addField( catSelect );
-		getChangesCollector().addField( quantity );
-		getChangesCollector().addField( barcode );
-		getChangesCollector().addField( statusBox );
-		getChangesCollector().addField( currentUser );
-		getChangesCollector().addField( personalFlag );
-		getChangesCollector().addField( serialNumber );
-		getChangesCollector().addField( buyDate );
-		getChangesCollector().addField( price );
-		getChangesCollector().addField( takuu );
-		getChangesCollector().addField( nextMaintenance );
-		getChangesCollector().addField( comments );
 		
-		updateFields();
+		// Update Tools editable flag
+		canToolBeEdited( model.getEditMode() == EditModeType.ADD );
 		
-//		updateFields( true );
-
+		// Add field changes listener
+		
 		addToolFieldsListeners();
 		
 	}
@@ -285,11 +192,12 @@ public class ToolItemEditDlg extends AbstractDialog {
 	private void addToolFieldsListeners() {
 		
 		editToolFlag.addValueChangeListener( new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				
-				updateFields();
+				canToolBeEdited();
 			}
 			
 		});
@@ -441,110 +349,45 @@ public class ToolItemEditDlg extends AbstractDialog {
 			tool = model.getSelectedItem().getTool();
 			
 		}
-/*
-		if ( tool == null ) {
-			logger.error( "TOOL is null for ToolItem passed to ToolItemDlg!" );
-			return;
-		}
-*/
+
 		initManufacturers( tool );
 		initModels( tool );
 		initCategories( tool );
-		initUsers();
-		initStatuses();
 		
-		if ( model.getSelectedItem() != null ) {
-			quantity.setValue( model.getSelectedItem().getQuantity());
-			barcode.setValue( model.getSelectedItem().getBarcode());
-			statusBox.setValue( model.getSelectedItem().getStatus());
-
-			currentUser.setValue( model.getSelectedItem().getCurrentUser());
-			personalFlag.setValue( model.getSelectedItem().isPersonalFlag());
-			serialNumber.setValue( model.getSelectedItem().getSerialNumber());
-			buyDate.setValue( model.getSelectedItem().getBuyTime() != null ? 
-								model.getSelectedItem().getBuyTime().toDate() : null );
-			price.setValue( model.getSelectedItem().getPrice());
-			takuu.setValue( model.getSelectedItem().getTakuu());
-			nextMaintenance.setValue( model.getSelectedItem().getMaintenance() != null ? model.getSelectedItem().getMaintenance().toDate() : null );
-			comments.setValue( model.getSelectedItem().getSerialNumber());
-			
-		}
-		
-		
-			
 	}
 
 
 	private boolean viewToData() {
 
 		boolean res = false;
-		
-		if ( model.getSelectedItem() != null ) {
-/*			
-			if ( validateAll()) {
-				if ( model.getEditMode() == ToolsListModel.EditModeType.ADD ) {
-					
-					item.getTool().setCode( code.getValue());
-					item.getTool().setName( toolName.getValue());
-					item.getTool().setManufacturer(( Manufacturer ) mnftrSelect.getValue() );
-					item.getTool().setModel( toolModel.getValue());
-					item.getTool().setToolInfo( toolInfo.getValue());
-					item.getTool().setCategory(( Category ) categorySelect.getValue());
-					
-				} else if ( model.getEditMode() == ToolsListModel.EditModeType.EDIT ) {
-					
-					item.getTool().setToolInfo( toolInfo.getValue());
-					item.getTool().setCategory(( Category ) categorySelect.getValue());
-					
-				}
-	
-				item.setPersonalFlag( personalFlag.getValue());
-				
-				item.setCurrentUser(( OrgUser )currentUser.getValue());
-				item.setStatus(( ItemStatus ) status.getValue());
-				item.setReservedBy(( OrgUser )reservedBy.getValue());
-				
-				item.setSerialNumber( serialNumber.getValue());
-				item.setBarcode( barcode.getValue());
-				item.setComments( comments.getValue());
-				
-				item.setBuyTime( buyDate.getValue());
-				item.setMaintenance( nextMaintenance.getValue());
-				item.setPrice( price.getDoubleValueNoException());
-				item.setTakuu( takuu.getIntegerValueNoException());
-
-				
-				res = true;
-			}
-*/			
-		}
 
 		return res;
 	}
 
-	private void updateFields() {
-		updateFields( false );
-	}
+	private void canToolBeEdited() {
 	
-	private void updateFields( boolean initial ) {
+		// Swith editable flag. Not initial state
+		canToolBeEdited( editToolFlag.getValue(), false );
+	}
+	private void canToolBeEdited( boolean canBeEdited ) {
 		
-		boolean editable = false;
+		// Initially set up flag
+		canToolBeEdited( canBeEdited, true );
+	}
+	private void canToolBeEdited( boolean canBeEdited, boolean initial ) {
+		
 		if ( initial ) {
-			editable = model.getEditMode() == EditModeType.ADD;
-			editToolFlag.setValue( editable );
-			editToolFlag.setEnabled( !editable );
+			// If initially allowed to edit than cannot be changed
+			editToolFlag.setValue( canBeEdited );
+			editToolFlag.setEnabled( !canBeEdited );
 			
 			
-		} else {
-			// Update fields status during interactions
-			editable = editToolFlag.getValue();
-			
-		}
+		} 
 
-		manufSelect.setEnabled( editable );
-		modelSelect.setEnabled( editable );
-		nameText.setEnabled( editable );
-		catSelect.setEnabled( editable );
+		manufSelect.setEnabled( canBeEdited );
+		modelSelect.setEnabled( canBeEdited );
+		nameText.setEnabled( canBeEdited );
+		catSelect.setEnabled( canBeEdited );
 		
 	}
 
@@ -552,31 +395,32 @@ public class ToolItemEditDlg extends AbstractDialog {
 		
 		Manufacturer manufacturer = ( tool != null ? tool.getManufacturer() : null );
 		
-		if ( model.getEditMode() == EditModeType.ADD ) {
-			
-			for ( Manufacturer tmpMan : model.getManufacturers()) {
+		boolean selectMan = model.getEditMode() != EditModeType.ADD;
+		switch ( model.getEditMode()) {
+			case ADD:
+			case COPY:
+			case EDIT:
+				// Add manufacturers and select specified if possible
+				for ( Manufacturer tmpMan : model.getManufacturers()) {
+					
+					addOrUpdateManufacturer( tmpMan, manufacturer != null && selectMan && tmpMan.getId() == manufacturer.getId());
+				}
 				
-				addOrUpdateManufacturer( tmpMan );
-			}
-			
-			
-		} else if ( model.getEditMode() == EditModeType.EDIT ) {
- 
-			for ( Manufacturer tmpMan : model.getManufacturers()) {
+				// Select Tool Manufacturer
+//				if ( manufacturer != null ) manufSelect.setValue( manufacturer );
+				break;
+			case VIEW:
+			default:
+				// Select Tool Manufacturer
+				if ( manufacturer != null ) {
+					addOrUpdateManufacturer( manufacturer, true );
+				}
 				
-				addOrUpdateManufacturer( tmpMan );
-			}
-			// Select Tool Manufacturer
-			if ( manufacturer != null ) manufSelect.setValue( manufacturer );
-		
-		} else {
-			
-			if ( manufacturer != null ) { 
-				addOrUpdateManufacturer( manufacturer, true );
+				// Disable editing
 				manufSelect.setReadOnly( true );
-			}
-
+				break;
 		}
+		
 	}
 	
 	private void addOrUpdateManufacturer( Manufacturer man ) {
@@ -615,7 +459,7 @@ public class ToolItemEditDlg extends AbstractDialog {
 		
 		if ( tool != null ) {
 
-			initModels( tool != null ? tool.getManufacturer() : null );
+			initModels( tool.getManufacturer());
 			modelSelect.setValue( tool );
 
 		}
@@ -700,47 +544,6 @@ public class ToolItemEditDlg extends AbstractDialog {
 		
 	}
 
-	private void initUsers() {
-		
-		for ( OrgUser u : model.getUsers()) {
-			
-			addOrUpdateUser( u );
-
-		}
-		
-	}
-
-	private void addOrUpdateUser( OrgUser user ) {
-
-		Item item = currentUser.getItem( user );
-		
-		if ( item == null ) {
-			// Item NOT found. shall be added
-			currentUser.addItem( user );
-		}
-		
-		currentUser.setItemCaption( user, user.getLastAndFirstNames());
-		
-	}
-
-	private void initStatuses() {
-
-		boolean freeAllowed = SettingsFacade.getInstance().getBoolean( model.getSelectedOrg(), "FreeStatusAllowed", false );
-		
-		for ( ItemStatus status: ItemStatus.values()) {
-
-			if ( !freeAllowed && status != ItemStatus.FREE ) {
-				// Do not add if free status is not allowed
-				continue;
-			}
-			statusBox.addItem( status );
-			// TODO  take from resources
-			statusBox.setItemCaption( status, status.toString( model.getApp().getSessionData().getBundle()));
-
-		}
-		
-	}
-	
 	@Override
 	public void okPressed() {
 

@@ -528,5 +528,12 @@ public class ItemsFacade extends DataFacade {
 		
 	}
 
+	public Manufacturer addManufacturer( String manufacturerName ) {
+
+		Manufacturer result = DataFacade.getInstance().insert( new Manufacturer( manufacturerName ) );
+
+		return result;
+	}
+	
 	
 }

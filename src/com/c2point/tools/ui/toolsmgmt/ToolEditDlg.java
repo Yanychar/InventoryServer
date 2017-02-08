@@ -128,11 +128,14 @@ public class ToolEditDlg extends AbstractDialog {
 //		description.setReadOnly( true );
 		description.setImmediate( true );
 		
-		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" ), name );
-		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.code" ), code );
+		if ( SettingsFacade.getInstance().getBoolean( model.getSelectedOrg(), "allowToolCode", false )) {
+			subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.code" ), code );
+		}
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.category" ), category );
+		subContent.addSeparator();
 		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.manufacturer" ), manuf );
 		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.model" ), toolModel );
-		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.category" ), category );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" ), name );
 		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.toolinfo" ), description );
 		
 		subContent.addSeparator();

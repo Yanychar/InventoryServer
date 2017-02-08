@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.Configuration;
+import com.c2point.tools.configuration.Configuration;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.settings.AllProperties;
 import com.c2point.tools.entity.settings.OrgProperties;

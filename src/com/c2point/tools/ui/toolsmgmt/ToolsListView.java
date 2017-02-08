@@ -11,7 +11,6 @@ import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.ui.AbstractModel.EditModeType;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
-import com.c2point.tools.ui.repositoryview.ChangeItemAttributesDlg;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
@@ -793,7 +792,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 	
 	private void editTool( EditModeType editMode) {
 
-		ToolItemEditDlg editDlg = new ToolItemEditDlg( model, editMode ) {
+		ToolItemEditDlg_2 editDlg = new ToolItemEditDlg_2( model, editMode ) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -813,11 +812,10 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 		logger.debug( "Add button was pressed to add new Tool/ToolItem" );
 		
-		Tool	 newTool = new Tool();
+		Tool	 newTool = new Tool( model.getSelectedOrg());
 		//	Set code, category, org
 		model.setToolCode( newTool );
 		newTool.setCategory( model.getSelectedCategory());
-		newTool.setOrg( model.getSelectedOrg());
 
 		ToolItem newItem = new ToolItem( newTool, model.getSessionOwner(), model.getSessionOwner());
 		// Set tool, user as session owner, status, personal flag

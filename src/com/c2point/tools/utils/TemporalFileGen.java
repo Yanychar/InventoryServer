@@ -26,13 +26,21 @@ public class TemporalFileGen {
 		return createTempFile( null, null );
 	}
 	
+	public static File createTempFile( String suffix ) {
+		return createTempFile( null, suffix );
+	}
+	
 	public static File createTempFile( String prefix, String suffix ) {
 
 		File file = null;
 		
 		if ( StringUtils.isEmpty( prefix )) prefix = "temp";
-		if ( StringUtils.isEmpty( suffix )) suffix = ".tmp";
+		if ( StringUtils.isEmpty( suffix )) suffix = "tmp";
 
+		if ( !StringUtils.startsWith( suffix.trim(), "." )) {
+			suffix = "." + suffix.trim();
+		}
+		
 		try {
     		
     		file = File.createTempFile( prefix, suffix ); 

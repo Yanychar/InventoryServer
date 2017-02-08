@@ -5,8 +5,8 @@ import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.Configuration;
 import com.c2point.tools.InventoryUI;
+import com.c2point.tools.configuration.Versioning;
 import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.access.SecurityContext;
 import com.c2point.tools.ui.msg.MessagesView;
@@ -394,7 +394,7 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 		
 		notImplementedView.setSizeFull();
 		
-		Label ttt = new Label( "Version: " + Configuration.getVersion(), ContentMode.HTML );
+		Label ttt = new Label( "Version: " + Versioning.getVersion(), ContentMode.HTML );
 		
 		notImplementedView.addComponent( ttt );
 ///		t.setWidth( "100%" );

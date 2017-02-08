@@ -82,11 +82,7 @@ public abstract class FileProcessor {
 
 				fireProcessed( getProcessedObject(), result, processed );
 				
-				if (   result == ProcessedStatus.FAILED 
-						|| result == ProcessedStatus.VALIDATION_FAILED
-						|| result == ProcessedStatus.PERSON_NOT_FOUND
-						|| result == ProcessedStatus.TOOL_ITEM_EXIST
-						|| result == ProcessedStatus.EXIST ) {
+				if (   result.isFailure()) {
 
 					errRecNumbers.add( processed );
 					

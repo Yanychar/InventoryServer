@@ -99,7 +99,7 @@ public class PersonnelImportProcessor extends FileProcessor {
 		if ( nextLine.length != columnPatterns.length ) {
 			logger.debug( "    Validation failed: wrong number of fields: " + nextLine.length + ". Should be " + columnPatterns.length ); 
 			// Number of columns in string is wrong!
-			return ProcessedStatus.VALIDATION_FAILED;
+			return ProcessedStatus.WRONG_FIELDS_COUNT;
 		}
 		
 		// 3. validate each column
@@ -117,7 +117,7 @@ public class PersonnelImportProcessor extends FileProcessor {
 								+ "Matches: " + Pattern.matches( columnPatterns[ i ].getPattern(), nextLine[ i ] )
 					);//+ "': " + Pattern.matches( pattern, str ));
 				
-				return ProcessedStatus.VALIDATION_FAILED;
+				return ProcessedStatus.WRONG_FIELD_FORMAT;
 				
 			}
 

@@ -28,7 +28,7 @@ public abstract class AbstractPdfForm {
 	}
 	public AbstractPdfForm() {
 		
-		outputFile = TemporalFileGen.createTempFile();
+		outputFile = TemporalFileGen.createTempFile( "pdf" );
 
 		docCreator = new PdfDocCreator( outputFile.getAbsolutePath()).create();
 

@@ -16,6 +16,7 @@ import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.tool.Category;
+import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.transactions.TransactionOperation;
 import com.vaadin.ui.UI;
@@ -74,7 +75,7 @@ public class ToolsFacade extends DataFacade {
 	}
 
 	
-	public Collection<Tool> getTools( Organisation org ) {
+	public List<Tool> getTools( Organisation org ) {
 		
 		if ( org == null )
 			throw new IllegalArgumentException( "Valid Organisation cannot be null when add Tool!" );
@@ -102,7 +103,7 @@ public class ToolsFacade extends DataFacade {
 		
 	}
 
-	public Collection<Tool> searchTools( Organisation org, Category category ) {
+	public List<Tool> searchTools( Organisation org, Category category ) {
 		
 		if ( org == null && category == null )
 			throw new IllegalArgumentException( "Valid Organisation and/or Category cannot be null when add Tool!" );
@@ -128,6 +129,39 @@ public class ToolsFacade extends DataFacade {
 		}
 			
 		return results;
+		
+	}
+	
+	public List<Tool> searchTools( Organisation org, Manufacturer manuf ) {
+
+		if ( org == null  )
+			throw new IllegalArgumentException( "Valid Organisation cannot be null when add Tool!" );
+
+		
+		String manufacturerName = ( manuf != null ? manuf.getName() : null );
+		
+		EntityManager em = DataFacade.getInstance().createEntityManager();
+		
+		TypedQuery<Tool> query = null;
+		List<Tool> results = new ArrayList<Tool>();
+
+		try {
+			
+			query = em.createNamedQuery( "listToolsByManufacturer", Tool.class )
+				.setParameter( "org", org )
+				.setParameter( "name", manufacturerName );
+	
+			results = query.getResultList();
+			
+			
+		} catch ( IllegalArgumentException e ) {
+			logger.error( e );
+		} finally {
+			em.close();
+		}
+			
+		return results;
+		
 		
 	}
 

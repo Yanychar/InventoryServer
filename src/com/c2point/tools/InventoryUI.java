@@ -2,6 +2,8 @@ package com.c2point.tools;
 
 import javax.servlet.http.Cookie;
 
+import com.c2point.tools.configuration.Configuration;
+import com.c2point.tools.configuration.DBupdate;
 import com.c2point.tools.entity.SessionData;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.MainView;
@@ -29,8 +31,8 @@ public class InventoryUI extends UI implements LoginListener {
 	@Override
 	protected void init(VaadinRequest request) {
 
-//		TmsConfiguration.readConfiguration(); // this );
-//		TmsDBUpdate.updateTmsDatabase();
+		Configuration.readConfiguration(); // this );
+//		DBupdate.updateDatabase();
 		
 		sessionData = new SessionData();
 		
