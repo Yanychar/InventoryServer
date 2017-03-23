@@ -1,15 +1,13 @@
-package com.c2point.tools.ui;
+package com.c2point.tools.ui.util;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
-import com.c2point.tools.ui.util.HorizontalSeparator;
 
 public class CustomGridLayout extends GridLayout {
 	private static final long serialVersionUID = 1L;

@@ -8,9 +8,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.repository.ItemStatus;
-import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.ui.listeners.FilterListener;
 import com.c2point.tools.ui.listeners.PrintNowListener;
+import com.c2point.tools.ui.util.AbstractModel;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.FieldEvents.TextChangeEvent;

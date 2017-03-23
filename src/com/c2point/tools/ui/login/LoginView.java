@@ -11,7 +11,7 @@ import com.c2point.tools.datalayer.TransactionsFacade;
 import com.c2point.tools.email.EmailSender;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.ui.AbstractMainView;
+import com.c2point.tools.ui.util.AbstractMainView;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.ui.Alignment;

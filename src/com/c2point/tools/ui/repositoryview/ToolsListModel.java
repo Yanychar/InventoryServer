@@ -18,10 +18,10 @@ import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.entity.tool.Tool;
-import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.ui.listeners.CategoryChangedListener;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
 import com.c2point.tools.ui.printpdf.ToolsListForm;
+import com.c2point.tools.ui.util.AbstractModel;
 
 public class ToolsListModel extends AbstractModel {
 

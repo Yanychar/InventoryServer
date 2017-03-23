@@ -1,4 +1,4 @@
-package com.c2point.tools.ui;
+package com.c2point.tools.ui.util;
 
 import javax.swing.event.EventListenerList;
 

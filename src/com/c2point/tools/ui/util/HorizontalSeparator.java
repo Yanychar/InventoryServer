@@ -12,7 +12,7 @@ public class HorizontalSeparator extends Label {
 		
 		setWidth( "100%" );
 		
-		setHeight( "10px");
+		setHeight( "20px");
 		
 		setImmediate( true );
 

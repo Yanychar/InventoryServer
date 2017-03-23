@@ -3,7 +3,7 @@ package com.c2point.tools.ui.settings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.ui.AbstractMainView;
+import com.c2point.tools.ui.util.AbstractMainView;
 import com.vaadin.ui.TabSheet;
 
 public class SettingsTabSheet extends TabSheet implements TabSheet.SelectedTabChangeListener {

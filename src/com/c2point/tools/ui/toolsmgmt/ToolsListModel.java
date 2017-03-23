@@ -17,9 +17,8 @@ import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.entity.tool.Tool;
-import com.c2point.tools.ui.AbstractModel;
-import com.c2point.tools.ui.listeners.EditInitiationListener;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
+import com.c2point.tools.ui.util.AbstractModel;
 
 public class ToolsListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( ToolsListModel.class.getName());
@@ -55,10 +54,11 @@ public class ToolsListModel extends AbstractModel {
 		listenerList.add( ToolItemChangedListener.class, listener);
 	}
 	
+/*	
 	public void addListener( EditInitiationListener listener ) {
 		listenerList.add( EditInitiationListener.class, listener);
 	}
-	
+*/	
 	protected void fireAdded( ToolItem item ) {
 		Object[] listeners = listenerList.getListenerList();
 
@@ -238,26 +238,39 @@ public class ToolsListModel extends AbstractModel {
 		
 		// Add to DB
 		if (  item != null && item.getTool() != null ) {
-		
-			newTool = ToolsFacade.getInstance().add( item.getTool());
-			
-			if ( newTool != null ) {
-			
-				item.setTool( newTool );
-			
-				newItem = addItem( item );			
-			
-				if ( newItem != null ) {
-					
-					fireAdded( newItem );
+
+			// If New Tool than add Tool firstly
+			if ( item.getTool().getId() <=0 ) {
+
+				newTool = ToolsFacade.getInstance().add( item.getTool());
 				
+				if ( newTool != null ) {
+				
+					item.setTool( newTool );
+				} else {
+					logger.error( "Couldn't add new Tool: " + item.getTool());
+					return null;
 				}
 			}
 			
+			// Now Add ToolItem
+			newItem = addItem( item );			
+			
+			if ( newItem != null ) {
+				
+				fireAdded( newItem );
+			
+			}
+			
+			
+		} else {
+			// Missing Tool and/or ToolItem. Nothing to add/edit 
+			logger.error( "Cannot add Tool or ToolItem. Something is NULL!" );
 		}
 		
-		return newItem;
 		
+		return newItem;
+
 	}
 	
 	public ToolItem updateItem() {
@@ -295,7 +308,7 @@ public class ToolsListModel extends AbstractModel {
 			
 			if ( newItem != null ) {
 				
-				fireDeleted( newItem );
+				fireDeleted( deletedItem );
 			
 			} 
 			
@@ -305,61 +318,6 @@ public class ToolsListModel extends AbstractModel {
 		
 	}
 
-	public void initiateAdd() {
-		
-		Object[] listeners = listenerList.getListenerList();
-
-	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == EditInitiationListener.class) {
-	    		(( EditInitiationListener )listeners[ i + 1 ] ).initiateAdd();
-	         }
-	     }
-		
-	}
-
-	public void initiateCopy() {
-		
-		Object[] listeners = listenerList.getListenerList();
-
-	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == EditInitiationListener.class) {
-	    		(( EditInitiationListener )listeners[ i + 1 ] ).initiateCopy();
-	         }
-	     }
-		
-	}
-
-	public void initiateEdit() {
-		
-		Object[] listeners = listenerList.getListenerList();
-
-	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == EditInitiationListener.class) {
-	    		(( EditInitiationListener )listeners[ i + 1 ] ).initiateEdit();
-	         }
-	     }
-		
-	}
-
-	public void initiateDelete() {
-		
-		Object[] listeners = listenerList.getListenerList();
-
-	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == EditInitiationListener.class) {
-	    		(( EditInitiationListener )listeners[ i + 1 ] ).initiateDelete();
-	         }
-	     }
-		
-	}
-
-	public Manufacturer addManufacturer( String manufacturerName ) {
-
-		Manufacturer result = ItemsFacade.getInstance().addManufacturer( manufacturerName );
-		
-		return result;
-	}
-
 	public List<Tool> getTools( Manufacturer manuf ) {
 
 		List<Tool> result = ToolsFacade.getInstance().searchTools( selectedOrg, manuf );
@@ -367,4 +325,22 @@ public class ToolsListModel extends AbstractModel {
 		return result;
 	}
 
+/*
+	public ToolItem copyItem() {
+		
+		ToolItem 
+		
+		return newItem( null );
+	}
+
+	public ToolItem copyTool( ) {
+		
+		return newItem( null );
+	}
+
+	public ToolItem newTool() {
+		
+		return newItem( null );
+	}
+*/	
 }

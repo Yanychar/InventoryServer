@@ -10,7 +10,7 @@ import com.c2point.tools.datalayer.MsgFacade;
 import com.c2point.tools.entity.msg.Message;
 import com.c2point.tools.entity.msg.MessageStatus;
 import com.c2point.tools.entity.msg.MessageType;
-import com.c2point.tools.ui.AbstractModel;
+import com.c2point.tools.ui.util.AbstractModel;
 
 public class MessagingModel extends AbstractModel {
 

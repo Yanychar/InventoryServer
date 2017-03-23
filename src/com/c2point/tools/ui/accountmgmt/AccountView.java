@@ -1,12 +1,15 @@
 package com.c2point.tools.ui.accountmgmt;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.AuthenticationFacade;
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.ui.AbstractModel;
-import com.c2point.tools.ui.ChangesCollector;
+import com.c2point.tools.entity.tool.Manufacturer;
 import com.c2point.tools.ui.personnelmgmt.StuffListModel;
+import com.c2point.tools.ui.util.AbstractModel;
+import com.c2point.tools.ui.util.ChangesCollector;
 import com.c2point.tools.utils.PasswordGenerator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -22,6 +25,7 @@ import com.vaadin.ui.Window;
 
 public class AccountView extends Window {
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = LogManager.getLogger( AccountView.class.getName());
 
 	private StuffListModel		model;
 	private ChangesCollector	changesCollector = new ChangesCollector();
@@ -273,27 +277,39 @@ public class AccountView extends Window {
 
 	private void generateUserName( OrgUser user ) {
 		
+		int DEFAULT_NAME_LENGTH = 8;  // Will be 8 or 9
+		
 		if ( user != null ) {
 			
 			String newName =  
-			    StringUtils.defaultString( user.getLastName()).trim()
-			  + StringUtils.defaultString( user.getFirstName()).trim();
+			    StringUtils.defaultString( user.getLastName()).trim().toLowerCase()
+			  + StringUtils.defaultString( user.getFirstName()).trim().toLowerCase();
 			
-			newName = newName.toLowerCase().substring( 0,  8 );   
+			// Make username length 8 or 9
+			int size = newName.length();
+			
+			if ( size == DEFAULT_NAME_LENGTH - 1 ) {
+				newName = newName.concat( ".x" );
+			} else if ( size < DEFAULT_NAME_LENGTH ) {
+				newName = newName.concat( "." ).concat( StringUtils.repeat( 'x', DEFAULT_NAME_LENGTH - size - 1 ));
+			} else {  // In this case lenght >= DEFAULT_NAME_LENGTH
+				newName = newName.toLowerCase().substring( 0,  8 );   
+			}
+			logger.debug( "Normalized name (before checking for existance): " + newName );
 			
 			int count = 1;
-			while( AuthenticationFacade.getInstance().findByUserName( newName ) != null ) {
+			String ext = "";
+			while( AuthenticationFacade.getInstance().findByUserName( newName.concat( ext )) != null ) {
 
-				newName =  
-					    StringUtils.defaultString( user.getLastName()).trim()
-					  + StringUtils.defaultString( user.getFirstName()).trim();
-				
-				newName = newName.toLowerCase().substring( 0,  8 )   
-					  + "." + Integer.toString( count );
-				
-				count++;
+				ext = "." + Integer.toString( count++ );
 				
 			};
+			
+			if ( count > 1 ) {
+				// Means name shall be changed by adding ext
+				newName = newName.concat( ext );
+			}
+			logger.debug( "Normalized name (AFTER checking for existance): " + newName );
 			
 			usrname.setValue( newName );
 			

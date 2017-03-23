@@ -3,6 +3,8 @@ package com.c2point.tools.entity.tool;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,5 +42,23 @@ public class Manufacturer extends SimplePojo {
 
 	public String getDescription() { return description; }
 	public void setDescription( String description ) { this.description = description; }
+	
+	public String toString() {
+		
+		return getId() + ", '" + getName() + "'";
+	}
+	
+	public boolean equals( Object other ) {
+		boolean bRes = false;
+		
+		Manufacturer otherMan = ( Manufacturer )other;
+		
+		if ( other != null && StringUtils.compareIgnoreCase( this.name, otherMan.getName()) == 0 ) {
+			
+			bRes = true;
+		}
+		
+		return bRes;
+	}
 	
 }

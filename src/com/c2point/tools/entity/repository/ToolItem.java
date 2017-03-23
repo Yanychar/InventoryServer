@@ -246,5 +246,11 @@ public class ToolItem extends SimplePojo {
 		
 		return ( getTool() != null ? getTool().getFullName() : "" );
 	}
+
+	public String getShortName() { 
 		
+		return ( getTool() != null ? getTool().getShortName() : "" );
+	}
+		
+	
 }

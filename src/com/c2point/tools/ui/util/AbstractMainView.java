@@ -1,4 +1,4 @@
-package com.c2point.tools.ui;
+package com.c2point.tools.ui.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

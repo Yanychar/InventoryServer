@@ -7,10 +7,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.OrganisationFacade;
 import com.c2point.tools.entity.organisation.Organisation;
-import com.c2point.tools.ui.AbstractMainView;
 import com.c2point.tools.ui.upload.ImportComponent;
 import com.c2point.tools.ui.upload.UploadComponent;
 import com.c2point.tools.ui.upload.tools.ToolItemsImportProcessor;
+import com.c2point.tools.ui.util.AbstractMainView;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.shared.ui.combobox.FilteringMode;

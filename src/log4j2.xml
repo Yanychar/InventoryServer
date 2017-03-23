@@ -13,7 +13,8 @@
   </Appenders>
   <Loggers>
 
-    <Logger name="com.c2point.tools.ui.toolsmgmt" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
+    <Logger name="com.c2point.tools.ui.accountmgmt" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
+    <Logger name="com.c2point.tools.ui.toolsmgmt.ToolItemEditDlg" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
       
 <!--
     <Logger name="com.c2point.tools.ui"					level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>

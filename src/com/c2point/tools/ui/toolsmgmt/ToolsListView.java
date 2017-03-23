@@ -1,16 +1,19 @@
 package com.c2point.tools.ui.toolsmgmt;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Tool;
-import com.c2point.tools.ui.AbstractModel.EditModeType;
 import com.c2point.tools.ui.listeners.ToolItemChangedListener;
+import com.c2point.tools.ui.util.AbstractModel.EditModeType;
+import com.c2point.tools.ui.util.BoldLabel;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
@@ -28,11 +31,13 @@ import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -46,6 +51,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 	private static int BUTTON_WIDTH = 25;
 	
 	protected HorizontalLayout	toolBarLayout;
+	private CheckBox			deletedFilter;
 	private ComboBox			categoryFilter;
 	private TextField			searchText;
 
@@ -53,6 +59,9 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 	
 	private ToolsListModel		model;
 	private Table				itemsTable;
+
+	protected HorizontalLayout	statusBarLayout;
+	private Label				counterLabel;
 	
 	
 	
@@ -155,6 +164,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 		this.addComponent( getToolbar());
 		this.addComponent( itemsTable );
+		this.addComponent( getStatusbar());
 		
 		this.setExpandRatio( itemsTable, 1.0f );
 	}
@@ -200,12 +210,6 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 		return bRes;
 	}
-	private void handleActions( ToolItem item ) {
-
-		editTool( EditModeType.EDIT );
-		
-	}
-	
 	
 	@Override
 	public void wasAdded(ToolItem item) {
@@ -218,7 +222,8 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 		// set correct selection
 		itemsTable.setValue( item.getId());
-		
+
+		updateCounter();
 	}
 
 	@Override
@@ -254,6 +259,8 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		else
 			itemsTable.setValue( itemsTable.firstItemId());
 		
+		updateCounter();
+
 	}
 
 	@Override
@@ -264,7 +271,9 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		initCategoryFilter();
 		
 		dataFromModel();
-		
+	
+		updateCounter();
+	
 	}
 
 	@Override
@@ -466,6 +475,8 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			if ( itemsTable != null && itemsTable.getContainerDataSource() instanceof Container.Ordered ) {
 				itemsTable.setValue( found ? itemsTable.firstItemId() : null );
 			}
+		
+			updateCounter();
 			
 		}
 		
@@ -505,6 +516,37 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		return chain;
 	}
 
+	protected Component getStatusbar() {
+		
+		// Add search field
+		if ( statusBarLayout == null ) {
+
+			statusBarLayout = new HorizontalLayout();
+			
+			statusBarLayout.setWidth( "100%");
+			statusBarLayout.setMargin( new MarginInfo( false, false, false, false ));
+	
+			counterLabel = new BoldLabel();
+			counterLabel.setWidth( null );
+
+				
+			
+			Label glue = new Label( "" );
+			statusBarLayout.addComponent( glue );
+			statusBarLayout.setExpandRatio( glue,  1.0f );
+			statusBarLayout.addComponent( counterLabel );
+
+		}
+		
+		return statusBarLayout;
+	}
+
+	private void updateCounter() {
+		
+		int counter = itemsTable.size();
+		counterLabel.setValue( Integer.toString( counter ));
+	}
+	
 	private void initCategoryFilter() {
 
 		deleteCatFilterChangedListener();
@@ -541,6 +583,8 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 				public void valueChange( ValueChangeEvent event ) {
 					
 					model.setSelectedCategory(( Category )categoryFilter.getValue());
+					
+					updateCounter();
 					
 				}
 				
@@ -782,47 +826,21 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 	}	
 
-	private void editButtonPressed( ToolItem item ) {
-		logger.debug( "Edit button was pressed to add new Tool/ToolItem. Edit Tool: " + item.getTool().getName() );
-
-		itemsTable.setValue( item.getId());
-		
-		editTool( EditModeType.EDIT );
-	}
-	
-	private void editTool( EditModeType editMode) {
-
-		ToolItemEditDlg_2 editDlg = new ToolItemEditDlg_2( model, editMode ) {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void dlgClosed() {
-
-				logger.debug( "ToolsEditDlg Dialog has been closed!" );
-				endClickHandlingProcess();
-				
-			}
-		};
-
-		UI.getCurrent().addWindow( editDlg );
-		
-	}
-	
 	private void addButtonPressed() {
 		
 		logger.debug( "Add button was pressed to add new Tool/ToolItem" );
 		
-		Tool	 newTool = new Tool( model.getSelectedOrg());
+//		Tool	 newTool = new Tool( model.getSelectedOrg());
 		//	Set code, category, org
-		newTool.setCategory( model.getSelectedCategory());
+//		newTool.setCategory( model.getSelectedCategory());
 
-		ToolItem newItem = new ToolItem( newTool, model.getSessionOwner(), model.getSessionOwner());
+		ToolItem newItem = new ToolItem( null, model.getSessionOwner(), model.getSessionOwner());
 		// Set tool, user as session owner, status, personal flag
 		// Done in constructor
 		
-		model.setSelectedItem( newItem );
+//		model.setSelectedItem( newItem );
 		
-		editTool( EditModeType.ADD );
+		editTool( newItem, EditModeType.ADD );
 			
 	}
 	
@@ -838,21 +856,99 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		newItem.setPrice( item.getPrice());
 		newItem.setTakuu( item.getTakuu());
 		
-		model.setSelectedItem( newItem );
+//		model.setSelectedItem( newItem );
 		
-		editTool( EditModeType.COPY );
+		editTool( newItem, EditModeType.COPY );
 		
 	}
-	
-	private void deleteButtonPressed( final ToolItem item ) {
-		logger.debug( "Deletebutton was pressed to add new Tool/ToolItem. Delete Tool/ToolItem: " + item.getTool().getName() );
+
+	private void editButtonPressed( ToolItem item ) {
+		logger.debug( "Edit button was pressed to add new Tool/ToolItem. Edit Tool: " + item.getTool().getName() );
 
 		itemsTable.setValue( item.getId());
 		
-		model.initiateDelete();
+		editTool( EditModeType.EDIT );
+	}
+	
+	
+	private void deleteButtonPressed( final ToolItem item ) {
+		logger.debug( "Deletebutton was pressed to delete Tool/ToolItem. Delete Tool/ToolItem: " + item.getTool().getName() );
+
+		itemsTable.setValue( item.getId());
+
+		// Confirm removal
+		String template = model.getApp().getResourceStr( "toolsmgmt.confirm.item.delete" );
+		Object[] params = { item.getTool().getShortName() };
+		template = MessageFormat.format( template, params );
+		
+		ConfirmDialog.show( model.getApp(),
+				model.getApp().getResourceStr( "confirm.general.header" ),
+				template,
+				model.getApp().getResourceStr( "general.button.ok" ),
+				model.getApp().getResourceStr( "general.button.cancel" ),
+				new ConfirmDialog.Listener() {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void onClose( ConfirmDialog dialog ) {
+						if ( dialog.isConfirmed()) {
+							
+							ToolItem delItem = model.delete( item );
+							if ( delItem != null) {
+
+								String template = model.getApp().getResourceStr( "toolsmgmt.notify.item.delete" );
+								Object[] params = { delItem.getTool().getShortName() };
+								template = MessageFormat.format( template, params );
+
+								Notification.show( template );
+
+							} else {
+								// Failed to delete
+								String template = model.getApp().getResourceStr( "toolsmgmt.errors.item.delete" );
+								Object[] params = { item.getTool().getShortName() };
+								template = MessageFormat.format( template, params );
+
+								Notification.show( template, Notification.Type.ERROR_MESSAGE );
+								
+							}
+
+
+						}
+					}
+
+		});
+		
 		
 	}
 
+	private void handleActions( ToolItem item ) {
+
+		editTool( EditModeType.VIEW );
+		
+	}
+	
+	private void editTool( EditModeType editMode ) {
+		
+		editTool( model.getSelectedItem(), editMode );
+	}
+	private void editTool( ToolItem item, EditModeType editMode ) {
+
+		ToolItemEditDlg editDlg = new ToolItemEditDlg( model, item, editMode ) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dlgClosed() {
+
+				logger.debug( "ToolsEditDlg Dialog has been closed!" );
+				endClickHandlingProcess();
+				
+			}
+		};
+
+		UI.getCurrent().addWindow( editDlg );
+		
+	}
+	
 
 	
 }

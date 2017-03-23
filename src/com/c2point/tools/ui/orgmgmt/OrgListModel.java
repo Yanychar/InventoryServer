@@ -13,8 +13,8 @@ import com.c2point.tools.datalayer.UsersFacade;
 import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.ui.listeners.OrgChangedListener;
+import com.c2point.tools.ui.util.AbstractModel;
 
 public class OrgListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( OrgListModel.class.getName());

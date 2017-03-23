@@ -93,6 +93,7 @@ public class Tool extends SimplePojo {
 		Tool newTool = new Tool( this.getOrg());
 
 //		newTool.setCode( this.getCode());
+		newTool.setId( this.getId());
 		newTool.setManufacturer( this.getManufacturer());
 		newTool.setModel( this.getModel());
 		newTool.setName( this.getName());
@@ -129,8 +130,21 @@ public class Tool extends SimplePojo {
 
 		String str = 
 				  StringUtils.defaultString( getName()) + " "
-				+ ( getManufacturer() != null ? StringUtils.defaultString( getManufacturer().getName()) + " " : "" ) 
-				+ StringUtils.defaultString( getModel())
+				+ getShortName()
+		;
+		
+		return str;
+	}
+	
+	public String getShortName() { 
+
+		String str = 
+				  StringUtils.defaultString( 
+						  StringUtils.defaultString( getManufacturer() != null ? 
+								  						getManufacturer().getName() : 
+								  						null )) 
+				+ " "
+				+ StringUtils.defaultString( StringUtils.defaultString( getModel()))
 		;
 		
 		return str;

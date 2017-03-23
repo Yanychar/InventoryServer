@@ -6,8 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.ui.ListWithSearchComponent;
 import com.c2point.tools.ui.listeners.StuffChangedListener;
+import com.c2point.tools.ui.util.ListWithSearchComponent;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;

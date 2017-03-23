@@ -17,7 +17,7 @@ import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.transactions.BaseTransaction;
-import com.c2point.tools.ui.AbstractModel;
+import com.c2point.tools.ui.util.AbstractModel;
 
 public class ToolsHistoryListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( ToolsHistoryListModel.class.getName());

@@ -1,4 +1,4 @@
-package com.c2point.tools.ui;
+package com.c2point.tools.ui.util;
 
 import com.c2point.tools.ui.buttonbar.ButtonBar;
 import com.c2point.tools.ui.buttonbar.ButtonPressListener;
@@ -12,7 +12,9 @@ public abstract class AbstractDialog extends Window implements ButtonPressListen
 	private static final long serialVersionUID = 1L;
 
 	private ButtonBar 				buttonBar = null;
-	private FieldsChangeCollector	changesCollector = null;
+	
+	public static int 					MAX_CHANGE_COLLECTORS = 5;
+	private FieldsChangeCollector []	changesCollector = new FieldsChangeCollector [ MAX_CHANGE_COLLECTORS ];
 	
 	public AbstractDialog() {
 		super();
@@ -47,14 +49,28 @@ public abstract class AbstractDialog extends Window implements ButtonPressListen
 	}
 
 	protected FieldsChangeCollector getChangesCollector() {
-		if ( changesCollector == null ) {
-			changesCollector = new FieldsChangeCollector();
-			
-		}
 
-		return changesCollector;
+		return getChangesCollector( 0 );
 	}
 	
+	protected FieldsChangeCollector getChangesCollector( int i ) {
+		
+		FieldsChangeCollector res = null;
+		
+		if ( i < MAX_CHANGE_COLLECTORS && i >= 0 ) {
+			
+			// Create collector if it was not created
+			if ( changesCollector[ i ] == null ) {
+				changesCollector[ i ] = new FieldsChangeCollector();
+			}
+			// Return collector
+			res = changesCollector[ i ];
+		}
+
+		return res;
+	}
+	
+
 	public abstract void okPressed();
 	public abstract void cancelPressed();
 

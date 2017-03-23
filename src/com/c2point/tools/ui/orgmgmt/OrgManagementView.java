@@ -3,7 +3,7 @@ package com.c2point.tools.ui.orgmgmt;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.ui.AbstractMainView;
+import com.c2point.tools.ui.util.AbstractMainView;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;

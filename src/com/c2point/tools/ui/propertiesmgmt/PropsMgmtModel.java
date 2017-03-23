@@ -5,9 +5,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.SettingsFacade;
 import com.c2point.tools.entity.organisation.Organisation;
-import com.c2point.tools.ui.AbstractModel;
-import com.c2point.tools.ui.ChangesCollector;
 import com.c2point.tools.ui.listeners.PropertiesListener;
+import com.c2point.tools.ui.util.AbstractModel;
+import com.c2point.tools.ui.util.ChangesCollector;
 
 public class PropsMgmtModel extends AbstractModel {
 	@SuppressWarnings("unused")

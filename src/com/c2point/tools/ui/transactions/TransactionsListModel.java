@@ -10,7 +10,7 @@ import com.c2point.tools.datalayer.TransactionsFacade;
 import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.transactions.BaseTransaction;
-import com.c2point.tools.ui.AbstractModel;
+import com.c2point.tools.ui.util.AbstractModel;
 
 public class TransactionsListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( TransactionsListModel.class.getName());

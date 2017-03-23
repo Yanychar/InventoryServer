@@ -3,7 +3,7 @@ package com.c2point.tools.ui.repositoryview;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.c2point.tools.ui.AbstractMainView;
+import com.c2point.tools.ui.util.AbstractMainView;
 import com.vaadin.ui.HorizontalSplitPanel;
 
 public class RepositoryManagementView extends AbstractMainView {

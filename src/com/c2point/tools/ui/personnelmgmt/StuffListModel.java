@@ -1,6 +1,7 @@
 package com.c2point.tools.ui.personnelmgmt;
 
 import java.util.Collection;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,9 +13,9 @@ import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.ui.AbstractModel;
 import com.c2point.tools.ui.listeners.EditInitiationListener;
 import com.c2point.tools.ui.listeners.StuffChangedListener;
+import com.c2point.tools.ui.util.AbstractModel;
 
 public class StuffListModel extends AbstractModel {
 	private static Logger logger = LogManager.getLogger( StuffListModel.class.getName());

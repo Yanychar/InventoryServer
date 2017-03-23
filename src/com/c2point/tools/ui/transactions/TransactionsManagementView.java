@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Collection;
 
 import com.c2point.tools.entity.transactions.BaseTransaction;
-import com.c2point.tools.ui.AbstractMainView;
+import com.c2point.tools.ui.util.AbstractMainView;
 import com.vaadin.ui.HorizontalSplitPanel;
 
 public class TransactionsManagementView extends AbstractMainView implements TransactionsModelListener {
