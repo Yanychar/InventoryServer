@@ -225,15 +225,6 @@ public class StuffListModel extends AbstractModel {
 		
 	}
 
-	
-	private void setUserCode( OrgUser user ) {
-		
-		// Code will be set by UsersFacade
-		UsersFacade.getInstance().setUniqueCode( user );
-		
-	}
-
-	
 	public boolean saveAccount( String newName, String newPwd ) {
 		
 		boolean bRes = false;

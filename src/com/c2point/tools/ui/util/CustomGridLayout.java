@@ -111,4 +111,15 @@ public class CustomGridLayout extends GridLayout {
 		return lb;
 	}
 	
+	protected BoldLabel addLabelValueComponent( String labelCaption ) {
+		
+		BoldLabel resComp = new BoldLabel();
+
+		addField( labelCaption, resComp );
+		
+		return resComp;
+	}
+
+
+	
 }

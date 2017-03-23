@@ -99,38 +99,29 @@ public class DetailsView extends CustomGridLayout implements ToolItemChangedList
 		
 		
 		
-		manufacturer = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.manufacturer" ));
-		toolModel = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.model" ));
-		toolText = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" ));
-		category = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.category" ));
+		manufacturer = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.manufacturer" ) +":" );
+		toolModel = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.model" ) +":" );
+		toolText = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" + ":" ));
+		category = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.category" + ":" ));
 		addSeparator();
 		
-		status = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.status" ));
-		currentUser = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.user" ));
-		barcode = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.barcode" ));
+		status = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.status" ) +":" );
+		currentUser = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.user" ) +":" );
+		barcode = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.barcode" ) +":" );
 		addSeparator();
 
-		personalFlag = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.personalflag" ));
-		serialNumber = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.sn" ));
+		personalFlag = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.personalflag" ) +":" );
+		serialNumber = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.sn" ) +":" );
 		buyDate = addLabelValueComponent( "Bought" + ":" );
 		nextMaintenance = addLabelValueComponent( "Next Maintenance" + ":" );
 		price = addLabelValueComponent( "Price" + ":" );
 		takuu = addLabelValueComponent( "Guarantee (months)" + ":" );
-		comments = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" ));
+		comments = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" + ":" ));
 		
 		addSeparator();
 		
 	}
 	
-	private BoldLabel addLabelValueComponent( String labelCaption ) {
-		
-		BoldLabel resComp = new BoldLabel();
-
-		addField( labelCaption, resComp );
-		
-		return resComp;
-	}
-
 	public ToolsListModel getModel() { return model; }
 	public void setModel( ToolsListModel model ) { this.model = model; }
 

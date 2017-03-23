@@ -98,7 +98,7 @@ public class ChangeItemAttributesDlg extends AbstractDialog {
 
 		fillStatusField();
 
-		comments = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" ));
+		comments = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" + ":" ));
 		comments.setNullRepresentation( "" );
 		comments.setRows( 3 );
 		comments.setColumns( 60 );

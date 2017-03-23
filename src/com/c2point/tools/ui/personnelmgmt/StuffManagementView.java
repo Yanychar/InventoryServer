@@ -13,7 +13,6 @@ import com.c2point.tools.ui.upload.personnel.PersonnelImportProcessor;
 import com.c2point.tools.ui.util.AbstractMainView;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -21,7 +20,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 
 public class StuffManagementView extends AbstractMainView {

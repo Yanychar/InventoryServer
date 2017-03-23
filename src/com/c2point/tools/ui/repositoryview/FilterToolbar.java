@@ -110,7 +110,7 @@ public class FilterToolbar extends HorizontalLayout {
 		
 		
 
-		Label statusFilterLabel = new Label( (( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.filter.label.status" ));
+		Label statusFilterLabel = new Label( (( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.filter.label.status" ) + ":" );
 		statusFilterLabel.setWidth( null );
 
 		statusFilter = new ComboBox();

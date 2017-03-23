@@ -53,7 +53,7 @@ public class ViewSelectorComponent extends Panel {
 		content.setSpacing( true );
 		content.setMargin( true );
 		
-		viewSelector = new OptionGroup( model.getApp().getResourceStr( "trnsmgmt.label.viewtype" ));
+		viewSelector = new OptionGroup( model.getApp().getResourceStr( "trnsmgmt.label.viewtype" ) + ":" );
 		viewSelector.addStyleName( "horizontalgroup" );
 		viewSelector.setWidth( "100%" );
 		viewSelector.setImmediate(true); 
@@ -93,9 +93,9 @@ public class ViewSelectorComponent extends Panel {
 		HorizontalLayout dateLine = new HorizontalLayout();
 		dateLine.setSpacing( true ); // and spacing between components		
 
-		dateLine.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.from")));
+		dateLine.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.from" ) + ":" ));
 		dateLine.addComponent( startDF );
-		dateLine.addComponent( new Label( "  " + model.getApp().getResourceStr( "trnsmgmt.label.to")));
+		dateLine.addComponent( new Label( "  " + model.getApp().getResourceStr( "trnsmgmt.label.to" ) + ":" ));
 		dateLine.addComponent( endDF );
 		
 		content.addComponent( viewSelector );
@@ -170,10 +170,10 @@ public class ViewSelectorComponent extends Panel {
 		
 		switch ( model.getViewMode()) {
 			case PERSONNEL:
-				str = model.getApp().getResourceStr( "trnsmgmt.label.select.personnel");
+				str = model.getApp().getResourceStr( "trnsmgmt.label.select.personnel" ) + ":";
 				break;
 			case TOOLS:
-				str = model.getApp().getResourceStr( "trnsmgmt.label.select.tool");
+				str = model.getApp().getResourceStr( "trnsmgmt.label.select.tool" ) + ":";
 				break;
 		}
 		

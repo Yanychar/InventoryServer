@@ -78,7 +78,7 @@ public class ToolsListForm extends AbstractPdfForm {
     	table.addHeaderCell( "No." );
     	table.addHeaderCell( this.getResourceBundle().getString( "toolsmgmt.list.header.tool" ));
     	table.addHeaderCell( this.getResourceBundle().getString( "toolsmgmt.list.header.status" ));
-    	table.addHeaderCell( this.getResourceBundle().getString( "toolsmgmt.view.label.barcode" ));
+    	table.addHeaderCell( this.getResourceBundle().getString( "toolsmgmt.view.label.barcode" ) +":" );
     	
     }
     
