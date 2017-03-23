@@ -39,6 +39,10 @@ public class TransactionToResourceEncoder {
 		{ "TOOLITEM", "DELETE", "trn.item.delete" },
 		{ "TOOLITEM", "NEWSTATUS", "trn.item.newstatus" },
 		{ "TOOLITEM", "USERCHANGED", "trn.item.transfer" },
+
+		{ "MANUFACTURER", "ADD", "trn.manufacturer.add" },
+		{ "MANUFACTURER", "EDIT", "trn.manufacturer.edit" },
+		{ "MANUFACTURER", "DELETE", "trn.manufacturer.delete" },
 		
 	};
 	

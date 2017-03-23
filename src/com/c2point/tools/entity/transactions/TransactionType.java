@@ -9,5 +9,6 @@ public enum TransactionType {
 	CATEGORY,
 	TOOL,
 	TOOLITEM,
-	ACCESSRIGHTS	
+	ACCESSRIGHTS,
+	MANUFACTURER
 }

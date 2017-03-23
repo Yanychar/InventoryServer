@@ -16,7 +16,8 @@ public enum ItemStatus {
 	BROKEN( 3 ),	//
 	REPAIRING( 4 ),
 	STOLEN( 5 ),
-	RESERVED( 6 );
+	RESERVED( 6 ),
+	REMOVED( 7 );
 	
 	
 	private static Logger logger = LogManager.getLogger( ItemStatus.class.getName());
