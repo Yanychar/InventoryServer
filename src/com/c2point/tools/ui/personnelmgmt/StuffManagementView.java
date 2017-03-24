@@ -57,7 +57,7 @@ public class StuffManagementView extends AbstractMainView {
 		initStuffView();
 
 		HorizontalSplitPanel hzSplit = new HorizontalSplitPanel();
-		hzSplit.setSplitPosition( 65, Unit.PERCENTAGE );
+		hzSplit.setSplitPosition( 55, Unit.PERCENTAGE );
 		hzSplit.setSizeFull();
 		hzSplit.setLocked( false );
 

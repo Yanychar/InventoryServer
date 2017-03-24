@@ -40,7 +40,6 @@ public class StuffListModel extends AbstractModel {
 		
 		setupAccess( FunctionalityType.USERS_MGMT, this.selectedOrg );
 		
-		accountUpdated = false;
 	}
 	
 	public void initModel() {
@@ -54,10 +53,6 @@ public class StuffListModel extends AbstractModel {
 		listenerList.add( StuffChangedListener.class, listener);
 	}
 
-	public void addListener( EditInitiationListener listener ) {
-		listenerList.add( EditInitiationListener.class, listener);
-	}
-	
 	
 	protected void fireAdded( OrgUser user ) {
 		Object[] listeners = listenerList.getListenerList();
@@ -197,13 +192,6 @@ public class StuffListModel extends AbstractModel {
 		
 	}
 	
-	public void clearAccessRights( OrgUser user ) {
-
-		AccessRightsFacade.getInstance().clearAccessRights( user );
-		
-	}
-	
-	
 	public OrgUser delete( OrgUser deletedUser ) {
 		
 		OrgUser newUser = null;
@@ -225,6 +213,13 @@ public class StuffListModel extends AbstractModel {
 		
 	}
 
+	public void clearAccessRights( OrgUser user ) {
+
+		AccessRightsFacade.getInstance().clearAccessRights( user );
+		
+	}
+	
+	
 	public boolean saveAccount( String newName, String newPwd ) {
 		
 		boolean bRes = false;
@@ -337,29 +332,5 @@ public class StuffListModel extends AbstractModel {
 		return bRes;
 	}
 */
-	
-	public void initiateEdit() {
-		
-		Object[] listeners = listenerList.getListenerList();
-
-	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == EditInitiationListener.class) {
-	    		(( EditInitiationListener )listeners[ i + 1 ] ).initiateEdit();
-	         }
-	     }
-		
-	}
-
-	public void initiateDelete() {
-		
-		Object[] listeners = listenerList.getListenerList();
-
-	    for ( int i = listeners.length-2; i >= 0; i -= 2) {
-	    	if ( listeners[ i ] == EditInitiationListener.class) {
-	    		(( EditInitiationListener )listeners[ i + 1 ] ).initiateDelete();
-	         }
-	     }
-		
-	}
 	
 }
