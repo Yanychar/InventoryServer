@@ -3,7 +3,6 @@ package com.c2point.tools.entity.authentication;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -16,8 +15,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -36,13 +33,10 @@ import com.c2point.tools.entity.person.OrgUser;
 })
 public class Account extends SimplePojo {
 	
+	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( Account.class.getName()); 
 
 	public enum AccountStateType { Active, Blocked, MustBeChanged };
-	
-	
-	private static final int 		PSW_LENGTH = 10;
-	private static final char [] 	CHAR_TO_DELETE = { '0', 'o', 'O', 'l', 'I', '1' };
 	
 	private String 					usrName;
 	private String 					pwd;
@@ -68,7 +62,9 @@ public class Account extends SimplePojo {
 		
 		setUsrName( usrName );
 		setPwd( pwd );
-		setUser( user );
+		
+		addUser( user );
+		
 		setState( AccountStateType.Active );
 
 		this.uniqueSessionID = null;
@@ -79,6 +75,11 @@ public class Account extends SimplePojo {
 	}
 	public Account() {
 		this( "", "", null );
+	}
+
+	public Account( Account account ) {
+		
+		this( account.getUsrName(), account.getPwd(), null );
 	}
 
 	public String getUsrName() { return usrName; }
@@ -96,7 +97,7 @@ public class Account extends SimplePojo {
 		return normalize();
 		
 	}
-	public void setUsers( Collection<OrgUser> users ) { this.users = users; }
+	protected void setUsers( Collection<OrgUser> users ) { this.users = users; }
 
 	
 	/*
@@ -129,12 +130,16 @@ public class Account extends SimplePojo {
 		return retList;
 	}
 	
-	private void setUser( OrgUser user ) {
+	public void addUser( OrgUser user ) {
 		
-		if ( user != null ) {
+		if ( users == null ) {
 			users = new ArrayList<OrgUser>();
+		}
+		
+		if ( user != null && !users.contains( user )) { 
 				
 			users.add( user );
+			
 			user.setAccount( this );
 		}
 
@@ -143,38 +148,6 @@ public class Account extends SimplePojo {
 	public AccountStateType getState() { return state; }
 	public void setState( AccountStateType state ) { this.state = state; }
 	
-	public static String generateNewPassword() {
-		
-		String password = "";
-		boolean generate = true;
-		
-		while( generate ) {
-			password = RandomStringUtils.randomAlphanumeric( PSW_LENGTH * 2 );
-			
-			// what shall be removed: 0oOlI1
-			if ( StringUtils.containsAny( password, CHAR_TO_DELETE )) {
-				// Delete chars
-				for ( char c : CHAR_TO_DELETE ) {
-					password = StringUtils.remove( password, c );
-				}
-			}
-			
-			// Check that length is required. Cut or select next passord
-			if ( password.length() >= PSW_LENGTH ) {
-				password = StringUtils.left( password, PSW_LENGTH );
-				
-				generate = false;
-			}
-
-			logger.debug( "Generated password: '" + password + "'" );
-			
-		}
-		
-		
-		
-		return password;
-	}
-
 	public String getUniqueSessionID() { return uniqueSessionID; }
 	protected void setUniqueSessionID( String uniqueSessionID ) { this.uniqueSessionID = uniqueSessionID; }
 	

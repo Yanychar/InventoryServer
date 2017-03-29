@@ -70,7 +70,16 @@ public class OrgUser extends Person {
 	public void setOrganisation( Organisation organisation ) { this.organisation = organisation; }
 	
 	public Account getAccount() { return account; }
-	public void setAccount( Account account ) { this.account = account; }
+	public void setAccount( Account account ) { 
+		this.account = account;
+	}
+
+	public void addAccount( Account account ) { 
+
+		account.addUser( this );
+		
+		
+	}
 
 	public AccessGroups getAccessGroup() { return this.accessGroup; }
 	public void setAccessGroup( AccessGroups accessGroup ) { this.accessGroup = accessGroup; }

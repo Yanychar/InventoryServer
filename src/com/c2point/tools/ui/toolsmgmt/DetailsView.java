@@ -101,8 +101,8 @@ public class DetailsView extends CustomGridLayout implements ToolItemChangedList
 		
 		manufacturer = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.manufacturer" ) +":" );
 		toolModel = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.model" ) +":" );
-		toolText = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" + ":" ));
-		category = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.category" + ":" ));
+		toolText = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" ) + ":" );
+		category = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.category" ) + ":" );
 		addSeparator();
 		
 		status = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.status" ) +":" );
@@ -116,7 +116,7 @@ public class DetailsView extends CustomGridLayout implements ToolItemChangedList
 		nextMaintenance = addLabelValueComponent( "Next Maintenance" + ":" );
 		price = addLabelValueComponent( "Price" + ":" );
 		takuu = addLabelValueComponent( "Guarantee (months)" + ":" );
-		comments = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" + ":" ));
+		comments = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" ) + ":" );
 		
 		addSeparator();
 		

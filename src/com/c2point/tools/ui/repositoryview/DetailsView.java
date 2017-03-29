@@ -63,22 +63,22 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 		this.setSpacing( true );
 		this.setMargin( true );
 
-		toolText = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" + ":" ));
+		toolText = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" ) + ":" );
 		toolText.setNullRepresentation( "" );
 		toolText.setImmediate( true );
 		
-		code = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.code" + ":" ));
+		code = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.code" ) + ":" );
 		code.setRequired(true);
 		code.setRequiredError( model.getApp().getResourceStr( "toolsmgmt.view.error.fieldempty" ));
 		code.setNullRepresentation( "" );
 		code.setImmediate( true );
 
-		toolInfo = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.toolinfo" + ":" ));
+		toolInfo = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.toolinfo" ) + ":" );
 		toolInfo.setNullRepresentation( "" );
 		toolInfo.setRows( 3 );
 		toolInfo.setImmediate( true );
 		
-		category = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.category" + ":" ));
+		category = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.category" ) + ":" );
 		category.setNullRepresentation( "" );
 		category.setImmediate( true );
 
@@ -112,7 +112,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 		barcode.setNullRepresentation( "" );
 		barcode.setImmediate( true );
 
-		comments = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" + ":" ));
+		comments = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" ) + ":" );
 		comments.setNullRepresentation( "" );
 		comments.setRows( 3 );
 		comments.setImmediate( true );

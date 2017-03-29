@@ -1,39 +1,30 @@
 package com.c2point.tools.ui.personnelmgmt;
 
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.LocalDate;
 
-import com.c2point.tools.datalayer.SettingsFacade;
+import com.c2point.tools.entity.access.AccessGroups;
+import com.c2point.tools.entity.access.FunctionalityType;
+import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.entity.repository.ItemStatus;
-import com.c2point.tools.entity.repository.ToolItem;
-import com.c2point.tools.entity.tool.Category;
-import com.c2point.tools.entity.tool.Manufacturer;
-import com.c2point.tools.entity.tool.Tool;
+import com.c2point.tools.ui.accountmgmt.AccountEditDlg;
+import com.c2point.tools.ui.changescollecor.ChangesListener;
 import com.c2point.tools.ui.util.AbstractDialog;
 import com.c2point.tools.ui.util.CustomGridLayout;
-import com.c2point.tools.ui.util.DoubleField;
-import com.c2point.tools.ui.util.IntegerField;
 import com.c2point.tools.ui.util.AbstractModel.EditModeType;
 import com.c2point.tools.utils.lang.Locales;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.combobox.FilteringMode;
-import com.vaadin.shared.ui.datefield.Resolution;
-import com.vaadin.ui.AbstractSelect.NewItemHandler;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.PopupDateField;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.VerticalLayout;
@@ -49,7 +40,7 @@ public class StuffEditDlg extends AbstractDialog {
 	// User data
 	private TextField		firstName;
 	private TextField		lastName;
-	private TextField		birthday;
+	private DateField		birthday;
 
 	/*	Address fields	*/
 	private TextField		street;
@@ -62,6 +53,9 @@ public class StuffEditDlg extends AbstractDialog {
 	private TextField		phone;
 	
 	private ComboBox		accessGroup;
+
+	private TextField		usrName;
+	private Button			accountButon;
 	
 	public StuffEditDlg( StuffListModel model, OrgUser user, EditModeType editModeType ) {
 		super();
@@ -83,10 +77,12 @@ public class StuffEditDlg extends AbstractDialog {
 		setCaption( getHeader());
 		setModal( true );
 		setClosable( true );
+//		setWidth( "35%" );
 
 		CustomGridLayout subContent = new CustomGridLayout();
 		subContent.setMargin( true );
 		subContent.setSpacing( true );
+		subContent.setWidthUndefined();
 
 		center();
 		
@@ -100,10 +96,11 @@ public class StuffEditDlg extends AbstractDialog {
 		lastName.setNullRepresentation( "" );
 		lastName.setImmediate( true );
 
-		birthday = new TextField();
+		birthday = new DateField();
 		birthday.setRequired( false );
-//		birthday.set.setDateFormat( "dd.MM.yyyy" );
-		birthday.setNullRepresentation( "" );
+		birthday.setDateFormat( "dd.MM.yyyy" );
+//		birthday.setTextFieldEnabled( true );
+		birthday.setWidth( "15ex" );
 		birthday.setImmediate(true);
 
 		street = new TextField();
@@ -112,23 +109,27 @@ public class StuffEditDlg extends AbstractDialog {
 
 		pobox = new TextField();
 		pobox.setNullRepresentation( "" );
+		pobox.setWidth( "8ex" );
 		pobox.setImmediate(true);
 
 		index = new TextField();
 		index.setNullRepresentation( "" );
+		index.setWidth( "8ex" );
 		index.setImmediate(true);
 
 		city = new TextField();
 		city.setNullRepresentation( "" );
 		city.setImmediate(true);
 		
-		country = new ComboBox( "", Locales.getISO3166Container());
+		country = new ComboBox();
+		country.setContainerDataSource( Locales.getISO3166Container());		
 		country.setInputPrompt( "No country selected" );
 		country.setItemCaptionPropertyId( Locales.iso3166_PROPERTY_NAME);
 		country.setItemCaptionMode( ItemCaptionMode.PROPERTY);
-		country.setItemIconPropertyId( Locales.iso3166_PROPERTY_FLAG);
+//		country.setItemIconPropertyId( Locales.iso3166_PROPERTY_FLAG);
 		country.setFilteringMode( FilteringMode.CONTAINS );
 		country.setImmediate( true );
+		country.setWidth( "30ex" );
 
 		email = new TextField();
 		email.setRequired(true);
@@ -140,7 +141,7 @@ public class StuffEditDlg extends AbstractDialog {
 		phone.setNullRepresentation( "" );
 		phone.setImmediate(true);
 
-		accessGroup = new ComboBox( "", Locales.getISO3166Container());
+		accessGroup = new ComboBox();
 
 		accessGroup.setFilteringMode( FilteringMode.OFF );
 		accessGroup.setInputPrompt( "No group selected" );
@@ -153,6 +154,11 @@ public class StuffEditDlg extends AbstractDialog {
 		accessGroup.setValidationVisible( true );
 		accessGroup.setImmediate( true );
 
+		usrName = new TextField();
+		phone.setImmediate(true);
+		
+		accountButon = new Button( "Change Account" );
+		accountButon.setImmediate(true);
 		
 		
 		
@@ -164,7 +170,7 @@ public class StuffEditDlg extends AbstractDialog {
 		/*	Address fields	*/
 		subContent.addField( model.getApp().getResourceStr( "personnel.caption.street" ) + ":", street );
 		subContent.addField( model.getApp().getResourceStr( "personnel.caption.pobox" ) + ":", pobox );
-		subContent.addField( model.getApp().getResourceStr( "personnel.caption.index" ) + ":", index );
+		subContent.addField( model.getApp().getResourceStr( "personnel.caption.postcode" ) + ":", index );
 		subContent.addField( model.getApp().getResourceStr( "personnel.caption.city" ) + ":", city );
 		subContent.addField( model.getApp().getResourceStr( "personnel.caption.country" ) + ":", country );
 		subContent.addSeparator();
@@ -173,7 +179,15 @@ public class StuffEditDlg extends AbstractDialog {
 		subContent.addField( model.getApp().getResourceStr( "general.caption.phone" ) + ":", phone );
 		subContent.addSeparator();
 		subContent.addField( model.getApp().getResourceStr( "personnel.caption.group" ) + ":", accessGroup );
+		subContent.addSeparator();
 		
+		subContent.addField( model.getApp().getResourceStr( "login.username" ) + ":", usrName );
+		
+		if ( model.isEditMode() 
+				&& 
+			 model.getSecurityContext().hasEditPermission( FunctionalityType.ACCOUNTS_MGMT, model.getSelectedOrg())) {
+			subContent.addLastInLineField( accountButon );
+		}
 		
 		VerticalLayout vl = new VerticalLayout();
 		
@@ -182,17 +196,29 @@ public class StuffEditDlg extends AbstractDialog {
 		vl.addComponent( subContent );
 		subContent.addSeparator();
 		
-
-	
+		
+		
+		
 		vl.addComponent( getButtonBar());
 		
 		dataToView();
 		
+		getChangesCollector().addField( firstName );
+		getChangesCollector().addField( lastName );
+		getChangesCollector().addField( birthday );
+		getChangesCollector().addField( street );
+		getChangesCollector().addField( pobox );
+		getChangesCollector().addField( index );
+		getChangesCollector().addField( city );
+		getChangesCollector().addField( country );
+		getChangesCollector().addField( email );
+		getChangesCollector().addField( phone );
+		getChangesCollector().addField( accessGroup );
 		getChangesCollector().addField( country );
 		
 		updateFields();
 		
-		addUsersFieldsListeners();
+		addListeners();
 		
 	}
 
@@ -216,8 +242,48 @@ public class StuffEditDlg extends AbstractDialog {
 		return str;
 	}
 
-	private void addUsersFieldsListeners() {
+	private void addListeners() {
 		
+		accountButon.addClickListener( new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				StuffEditDlg.this.editedUser.setFirstName( firstName.getValue());
+				StuffEditDlg.this.editedUser.setLastName( lastName.getValue());
+				
+				AccountEditDlg view = new AccountEditDlg( model, editedUser ); 
+				model.getApp().addWindow( view );
+				
+				
+				view.addCloseListener( new CloseListener() {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void windowClose(CloseEvent e) {
+
+						logger.debug( "AccountView has been closed" );
+						
+						if ( model.wasAccountChanged()) {
+							// Enable "OK" button if account was changed
+							getButtonBar().getOk().setEnabled( true );
+							
+							// Update 'Usrname' field if account was changed
+							if ( editedUser.getAccount() != null ) {
+								usrName.setReadOnly( false );
+								usrName.setValue( StringUtils.defaultString( editedUser.getAccount().getUsrName()));
+								usrName.setReadOnly( true );
+							}
+
+
+						}
+					}
+					
+				});
+			}
+			
+		});
 		
 	}
 	
@@ -225,15 +291,9 @@ public class StuffEditDlg extends AbstractDialog {
 
 		if ( editedUser != null ) {
 			
-
-	/*			
-			initManufacturers( editedTool );
-			initModels( editedTool );
-			initCategories( editedTool );
-*/			
 			firstName.setValue( StringUtils.defaultString( editedUser.getFirstName()));
 			lastName.setValue( StringUtils.defaultString( editedUser.getLastName()));
-			birthday.setValue( editedUser.getBirthday() != null ? editedUser.getBirthday().toString( "dd.MM.yyyy" ) : "" );
+			birthday.setValue( editedUser.getBirthday() != null ? editedUser.getBirthday().toDate() : null );
 
 			if ( editedUser.getAddress() != null ) {
 				street.setValue( StringUtils.defaultString( editedUser.getAddress().getStreet()));
@@ -246,7 +306,11 @@ public class StuffEditDlg extends AbstractDialog {
 			email.setValue( StringUtils.defaultString( editedUser.getEmail()));
 			phone.setValue( StringUtils.defaultString( editedUser.getPhoneNumber()));
 			
-			accessGroup.setValue( editedUser.getAccessGroup());
+			initGroups( editedUser );
+			
+			if ( editedUser.getAccount() != null ) {
+				usrName.setValue( StringUtils.defaultString( editedUser.getAccount().getUsrName()));
+			}
 
 		}
 	}
@@ -256,8 +320,45 @@ public class StuffEditDlg extends AbstractDialog {
 
 		boolean res = false;
 		
-		res = true;
-		
+		if ( this.editedUser != null ) {
+
+			this.editedUser.setFirstName( firstName.getValue());
+			this.editedUser.setLastName( lastName.getValue());
+			this.editedUser.setBirthday( birthday.getValue() != null ? new LocalDate( birthday.getValue()) : null );
+			
+			if ( this.editedUser.getAddress() == null ) {
+				this.editedUser.setAddress( new Address());
+			}
+
+			this.editedUser.getAddress().setStreet( street.getValue());
+			this.editedUser.getAddress().setPoBox( pobox.getValue());
+			this.editedUser.getAddress().setIndex( index.getValue());
+			this.editedUser.getAddress().setCity( city.getValue());
+			this.editedUser.getAddress().setCountryCode(( String )country.getValue());
+			
+			this.editedUser.setEmail( email.getValue());
+			this.editedUser.setPhoneNumber( phone.getValue());
+
+			this.editedUser.setAccessGroup(( AccessGroups )accessGroup.getValue());
+			
+			
+			
+			
+			
+			if ( !StringUtils.isBlank( this.editedUser.getLastAndFirstNames())
+					&& this.editedUser.getAccount() != null
+					&& !StringUtils.isBlank( this.editedUser.getAccount().getUsrName())
+					&& !StringUtils.isBlank( this.editedUser.getAccount().getPwd())
+							
+			) {
+
+				res = true;
+				
+			}
+			
+			
+			
+		}
 
 		return res;
 	}
@@ -277,46 +378,56 @@ public class StuffEditDlg extends AbstractDialog {
 		email.setReadOnly( disallowEdit );
 		phone.setReadOnly( disallowEdit );
 		accessGroup.setReadOnly( disallowEdit );
+		usrName.setReadOnly( true );
 		
 	}
-/*	
-	private void initStatuses( ItemStatus status ) {
-		boolean freeAllowed = SettingsFacade.getInstance().getBoolean( model.getSelectedOrg(), "FreeStatusAllowed", false );
-		
-		for ( ItemStatus tmpStatus: ItemStatus.values()) {
 
-			if ( !freeAllowed && tmpStatus == ItemStatus.FREE ) {
-				// Do not add if free status is not allowed
-				continue;
-			}
-			statusBox.addItem( tmpStatus );
+	private  void initGroups( OrgUser selectedUser ) {
+
+		accessGroup.removeAllItems();
+		
+		for ( AccessGroups group : AccessGroups.values()) {
+				
+			accessGroup.addItem( group );
+			accessGroup.setItemCaption( group, model.getApp().getResourceStr( "accessrights.group.name." + group.name().toLowerCase())); // group.name());
 			
-			statusBox.setItemCaption( tmpStatus, tmpStatus.toString( model.getApp().getSessionData().getBundle()));
+			if ( logger.isDebugEnabled()) {
+				logger.debug( "Resource name: '" + "accessrights.group.name." + group.name().toLowerCase() + "'" );
+			}
+				
+		}
 
+		if ( selectedUser != null ) {
+			accessGroup.setValue( selectedUser.getAccessGroup());
 		}
-		
-		// Select if specified
-		if ( status != null ) {
-			statusBox.setValue( status );
-		}
-		
+	
 	}
-*/	
+
 
 	@Override
 	public void okPressed() {
-/*
-		switch ( model.getEditMode()) {
-			case ADD:
-
-				if ( viewToData()) {
-				
-					if ( model.addToolAndItem( editedItem ) != null ) {
-						logger.debug( "Tool And Item were added" );
+		
+		OrgUser user;
+		
+		if ( viewToData()) {
+		
+			switch ( model.getEditMode()) {
+				case ADD:
+					user = model.add( editedUser );
+					if ( user != null ) {
+						logger.debug( "New User was added" );
+						
+						// Now Account must be added or user added to account
+						
+						
+						
+						
+						
+						
 						close();
 					} else {
-						String template = model.getApp().getResourceStr( "toolsmgmt.errors.item.add" );
-						Object[] params = { editedItem.getFullName() };
+						String template = model.getApp().getResourceStr( "personnel.errors.add" );
+						Object[] params = { editedUser.getLastAndFirstNames() };
 						template = MessageFormat.format( template, params );
 						
 						new Notification( 
@@ -326,44 +437,35 @@ public class StuffEditDlg extends AbstractDialog {
 								true 
 						).show( Page.getCurrent());
 					}
-				}
-				
-				break;
-				
-			case COPY:
-				if ( viewToData()) {
-				
-					if ( model.addItem( editedItem ) != null ) {
-						logger.debug( "Item was added to existing Tool" );
-						close();
-					} else {
-						new Notification( 
-								model.getApp().getResourceStr( "general.error.header" ),
-								model.getApp().getResourceStr( "toolsmgmt.errors.item.add" ),
-								Notification.Type.ERROR_MESSAGE, 
-								true 
-						).show( Page.getCurrent());
-					}
-				}
-			
-				break;
-			case EDIT:
-				
-				if ( viewToData()) {
-				
-					if ( model.updateItem( editedItem ) != null ) {
-						logger.debug( "Item was edited" );
-						close();
-					}
-	
-				}
-				
-				break;
-			default:
-				break;
+					
+					break;
+					
+				case EDIT:
+					
+					
+						if ( model.update( editedUser ) != null ) {
+							logger.debug( "Item was edited" );
+							close();
+						} else {
+							String template = model.getApp().getResourceStr( "personnel.errors.add" );
+							Object[] params = { editedUser.getLastAndFirstNames() };
+							template = MessageFormat.format( template, params );
+							
+							new Notification( 
+									model.getApp().getResourceStr( "general.error.header" ),
+									template,
+									Notification.Type.ERROR_MESSAGE, 
+									true 
+							).show( Page.getCurrent());
+						}
+		
+					
+					break;
+				default:
+					break;
+			}
 		}
-
-*/		
+		
 	}
 
 	@Override
@@ -380,21 +482,4 @@ public class StuffEditDlg extends AbstractDialog {
 		
 	}
 
-	/*
-	 * If Manufacturer or Model were added (not existed before) than new Tool shall be created 
-	 */
-/*
-	private Tool getNewTool() {
-		
-		Tool newTool = editedTool;
-		
-		if ( editedTool == null || editedTool.getId() > 0 ) {
-			// New Tool shall be created
-			newTool = new Tool( model.getSelectedOrg());
-			
-		}
-		
-		return newTool;
-	}
-*/	
 }

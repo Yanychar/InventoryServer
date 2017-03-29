@@ -434,7 +434,7 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 		// Set tool, user as session owner, status, personal flag
 		// Done in constructor
 		
-//		model.setSelectedItem( newItem );
+//		model.setSelectedUser( newUser );
 		
 		editUser( newUser, EditModeType.ADD );
 			

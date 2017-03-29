@@ -13,7 +13,7 @@ import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.accessrightsmgmt.AccessMgmtView;
-import com.c2point.tools.ui.accountmgmt.AccountView;
+import com.c2point.tools.ui.accountmgmt.AccountEditDlg;
 import com.c2point.tools.ui.listeners.EditInitiationListener;
 import com.c2point.tools.ui.listeners.StuffChangedListener;
 import com.c2point.tools.ui.util.ChangesCollector;
@@ -630,7 +630,7 @@ public class DetailsView_Old extends VerticalLayout implements StuffChangedListe
 	// This method call AccountView dialog
 	private void accountMgmt() {
 	
-		AccountView view = new AccountView( model ); 
+		AccountEditDlg view = new AccountEditDlg( model ); 
 		model.getApp().addWindow( view );
 		
 		view.addCloseListener( new CloseListener() {

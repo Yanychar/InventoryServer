@@ -108,7 +108,6 @@ public class TrnsListComponent extends VerticalLayout implements ToolsHistoryMod
 		
 		this.setExpandRatio( trnsTable, 1.0f );
 
-//		dataFromModel();
 		
 	}
 
@@ -159,7 +158,6 @@ public class TrnsListComponent extends VerticalLayout implements ToolsHistoryMod
 		
 		if ( item == null ) {
 
-//			if ( logger.isDebugEnabled()) logger.debug( "Tool Item will be added: " + toolItem );
 			item = trnsTable.addItem( trn.getId());
 
 		} else {
@@ -167,63 +165,11 @@ public class TrnsListComponent extends VerticalLayout implements ToolsHistoryMod
 		}
 
 		item.getItemProperty( "date" ).setValue( DateTimeFormat.forPattern("dd.MM.yyyy").print( trn.getDate()));
-		item.getItemProperty( "content" ).setValue( createTextContent( trn ));
+		item.getItemProperty( "content" ).setValue( trn.toTableItem( model.getApp().getSessionData().getBundle()));
 		item.getItemProperty( "user" ).setValue( trn.getUser().getFirstAndLastNames());
 		item.getItemProperty( "data" ).setValue( trn );
 		
 		
-	}
-	
-	private String createTextContent( BaseTransaction trn ) {
-		
-		String str;
-		
-		switch ( trn.getTrnOperation()) {
-			case ADD:
-//				str = "Added by "
-//						+ trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.add" );
-				break;
-			case DELETE:
-//				str = "Deleted by "
-//						+ trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.delete" );
-				break;
-			case EDIT:
-//				str = "Edited by "
-//						+ trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.edit" );
-				break;
-			case NEWSTATUS:
-//				str = "New status: " 
-//					+ trn.getNewStatus().toString( model.getApp().getSessionData().getBundle())
-//					+ " was given by "
-//					+ trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.newstatus" ) + ": "
-						+ trn.getNewStatus().toString( model.getApp().getSessionData().getBundle());
-				break;
-			case USERCHANGED:
-//				str = "Transferred from " 
-//					+ trn.getSourceUser().getFirstAndLastNames() 
-//					+ " to "
-//					+ trn.getDestUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.userchanged" );
-				break;
-			case OFF:
-//				str = "Wrong operation made by " + trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.wrong" );
-				break;
-			case ON:
-//				str = "Wrong operation made by " + trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.wrong" );
-				break;
-			default:
-//				str = "Unknown operation made by " + trn.getUser().getFirstAndLastNames();
-				str = model.getApp().getResourceStr( "transaction.operation.unknown" );
-				break;
-		}
-		
-		return str;
 	}
 	
 	@Override

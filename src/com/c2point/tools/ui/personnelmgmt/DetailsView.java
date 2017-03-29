@@ -1,48 +1,12 @@
 package com.c2point.tools.ui.personnelmgmt;
 
-import java.text.MessageFormat;
-import java.util.Locale;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.LocalDate;
-import org.vaadin.dialogs.ConfirmDialog;
-
-import com.c2point.tools.entity.access.AccessGroups;
-import com.c2point.tools.entity.access.FunctionalityType;
-import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.ui.accessrightsmgmt.AccessMgmtView;
-import com.c2point.tools.ui.accountmgmt.AccountView;
-import com.c2point.tools.ui.listeners.EditInitiationListener;
 import com.c2point.tools.ui.listeners.StuffChangedListener;
 import com.c2point.tools.ui.util.BoldLabel;
-import com.c2point.tools.ui.util.ChangesCollector;
-import com.c2point.tools.ui.util.AbstractModel.EditModeType;
 import com.c2point.tools.ui.util.CustomGridLayout;
-import com.c2point.tools.utils.lang.Locales;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.combobox.FilteringMode;
-import com.vaadin.shared.ui.datefield.Resolution;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Window.CloseEvent;
-import com.vaadin.ui.Window.CloseListener;
 
 public class DetailsView extends CustomGridLayout implements StuffChangedListener {
 	private static final long serialVersionUID = 1L;

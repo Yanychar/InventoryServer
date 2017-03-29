@@ -2,6 +2,7 @@ package com.c2point.tools.ui.personnelmgmt;
 
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,7 +14,6 @@ import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.organisation.Organisation;
 import com.c2point.tools.entity.person.OrgUser;
-import com.c2point.tools.ui.listeners.EditInitiationListener;
 import com.c2point.tools.ui.listeners.StuffChangedListener;
 import com.c2point.tools.ui.util.AbstractModel;
 
@@ -114,10 +114,15 @@ public class StuffListModel extends AbstractModel {
 		
 		if ( getSelectedUser() != selectedUser ) {
 			
-			this.accountUpdated = false;
+			clearAccountChanged();
 			this.selectedUser = selectedUser; 
 
-			fireSelected( selectedUser );
+			// Fire selection event if this is new user only
+			if ( selectedUser != null && selectedUser.getId() > 0 ) {
+				fireSelected( selectedUser );
+			} else {
+				fireSelected( null );
+			}
 			
 		}
 	}
@@ -128,7 +133,7 @@ public class StuffListModel extends AbstractModel {
 		if ( getSelectedOrg() != selectedOrg ) {
 			
 			this.selectedOrg = selectedOrg;
-			this.accountUpdated = false;
+			clearAccountChanged();
 			
 
 			setupAccess( FunctionalityType.USERS_MGMT, this.selectedOrg );
@@ -162,9 +167,27 @@ public class StuffListModel extends AbstractModel {
 			if ( newUser != null ) {
 				
 				fireAdded( newUser );
-			
+/*				
+				// Add account or connect  to existing one
+				
+				// 1. Find account by usrname
+				Account account = AuthenticationFacade.getInstance().findByUserName( addedUser.getAccount().getUsrName());
+
+				// 2. If not found than add new one
+				if ( account == null ) {
+					account = AuthenticationFacade.getInstance().addAccount( 
+							addedUser.getAccount().getUsrName(),
+							addedUser.getAccount().getPwd(),
+							newUser );
+
+				} else {
+				// 3. If found than select to add to it or return false to create new account
+					
+				}
+				
+				// 4. Update user with account info
+*/			
 			} 
-			
 		}
 		
 		return newUser;
@@ -220,74 +243,11 @@ public class StuffListModel extends AbstractModel {
 	}
 	
 	
-	public boolean saveAccount( String newName, String newPwd ) {
-		
-		boolean bRes = false;
-
-		OrgUser user = this.getSelectedUser();
-		
-		if ( user != null ) {
-			
-			Account account = user.getAccount();
-			
-			if ( account == null ) {
-				
-				account = new Account( newName, newPwd, user );
-				
-			} else {
-				
-				account.setUsrName( newName );
-				account.setPwd( newPwd );
-				
-			}
-			
-//			fireChanged( user );
-			bRes = true;
-			
-		}
-
-/*			
-		if ( this.shownOrg.getId() > 0 ) {
-			// This is existing record update
-			Organisation newOrg = model.update( this.shownOrg );
-			if ( newOrg == null ) {
-
-				String template = model.getApp().getResourceStr( "general.error.update.header" );
-				Object[] params = { this.shownOrg.getName() };
-				template = MessageFormat.format( template, params );
-
-				Notification.show( template, Notification.Type.ERROR_MESSAGE );
-
-			} else {
-				currentWasSet( newOrg );
-			}
-		} else {
-			// This is new record. It must be added
-			Organisation newOrg = model.add( this.shownOrg );
-			if ( newOrg == null ) {
-
-				String template = model.getApp().getResourceStr( "general.error.add.header" );
-				Object[] params = { this.shownOrg.getName() };
-				template = MessageFormat.format( template, params );
-
-				Notification.show( template, Notification.Type.ERROR_MESSAGE );
-
-			} else {
-				currentWasSet( newOrg );
-			}
-
-		}
-*/
-		
-		this.accountUpdated = this.accountUpdated || bRes;
-		
-		
-		logger.debug( "Tried to save account. Result: " + bRes );
-		return bRes;
-	}
 	
-	public boolean accountWasChanged() { return this.accountUpdated; }
-	
+	public boolean wasAccountChanged() { return this.accountUpdated; }
+	public boolean setAccountChanged() { return this.accountUpdated = true; }
+	public boolean clearAccountChanged() { return this.accountUpdated = false; }
+/*	
 	public boolean checkName( String newName ) {
 		
 		boolean bRes = false;
@@ -319,18 +279,118 @@ public class StuffListModel extends AbstractModel {
 		logger.debug( "newName was checked. Result: " + bRes );
 		return bRes;
 	}
+*/	
+	
+	/*
+	 *  Check usrname from account
+	 * Return:
+	 *	0 - account with such usrName exists and it is the same
+	 *  1 - account with such usrName exists but other than checked
+	 * -1 - account with such usrName does not exist
+	 * 
+	 */
+	public enum  CheckNameType { NO, EXIST, DUPLICATE };
+	
+	public CheckNameType checkName( String newName, OrgUser user ) {
+		
+		CheckNameType eRes = CheckNameType.EXIST;
+		
+		Account account = AuthenticationFacade.getInstance().findByUserName( newName );
+		
+		if ( account == null ) {
+			// Account with specified Usrname doesNOT exist
+			eRes = CheckNameType.NO; 
+		} else if ( user.getAccount() != null && account.getId() != user.getAccount().getId()) {
+			//There is account with the same username. 
+			eRes = CheckNameType.DUPLICATE;
+			// Try to update usrname
+				
+			
+		} else {
+			eRes = CheckNameType.EXIST;
+		}
+		
+		return eRes;
+	}
+	
+	public String updateUserName( String usrName ) {
+	
+		return AuthenticationFacade.getInstance().getModifiedName( usrName );
+	}
 	
 	
-/*	
-	public boolean checkPassword( String newPwd ) {
+	public boolean saveAccount( Account account, OrgUser persistentUser ) {
 		
-		boolean bRes = true;
+		boolean bRes = false;
+		
+		if ( account == null || persistentUser == null ) {
+			logger.error( "SaveAccount: account and/or user == null. Must be specified!" );
+			return bRes;
+		}
+		
+		if ( persistentUser.getId() <=0 ) {
+			logger.error( "SaveAccount: User is not persistent. Account cannot be managed!" );
+			return bRes;
+		}
+		
+		String usrName = account.getUsrName(); 
+		String pwd = account.getPwd();
+		
+		if ( StringUtils.isBlank( usrName ) || StringUtils.isBlank( pwd )) {
+			logger.error( "SaveAccount: UsrName and/or Password == null. Must be specified!" );
+			return bRes;
+		}
+		
+		// Existed account if any
+		Account existedAccount = persistentUser.getAccount();
+		
+		if ( existedAccount == null ) {
+			// Account does not exist. Shall be added
+			persistentUser.setAccount( account );
+			
+			
+		} else {
+			// Account exists. Shall be modified
+			
+		}
 		
 		
 		
-		logger.debug( "newPwd was checked. Result: " + bRes );
+
+			
+			
+			
+		fireChanged( persistentUser );
+		bRes = true;
+			
+
+/*			
+		if ( this.shownOrg.getId() > 0 ) {
+			// This is new record. It must be added
+			Organisation newOrg = model.add( this.shownOrg );
+			if ( newOrg == null ) {
+
+				String template = model.getApp().getResourceStr( "general.error.add.header" );
+				Object[] params = { this.shownOrg.getName() };
+				template = MessageFormat.format( template, params );
+
+				Notification.show( template, Notification.Type.ERROR_MESSAGE );
+
+			} else {
+				currentWasSet( newOrg );
+			}
+
+		}
+*/		
+//		this.accountUpdated = this.accountUpdated || bRes;
+		this.accountUpdated = true;
+		
+		
+//		logger.debug( "Tried to save account. Result: " + bRes );
 		return bRes;
 	}
-*/
+
+	
+	
 	
 }

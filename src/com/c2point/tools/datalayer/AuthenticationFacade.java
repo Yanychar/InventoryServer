@@ -7,7 +7,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,7 +16,7 @@ import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.transactions.TransactionOperation;
 import com.vaadin.ui.UI;
 
-public class AuthenticationFacade {
+public class AuthenticationFacade extends DataFacade {
 	private static Logger logger = LogManager.getLogger( AuthenticationFacade.class.getName()); 
 
 	private static int						MAX_INSTANCE_NUMBER = 4;
@@ -63,7 +62,7 @@ public class AuthenticationFacade {
 				if ( account.getPwd().compareTo( pwd ) == 0 ) {
 					account.setUniqueSessionID();
 
-					account = DataFacade.getInstance().merge( account );
+					account = merge( account );
 					
 				} else {
 					if ( logger.isDebugEnabled())
@@ -92,7 +91,7 @@ public class AuthenticationFacade {
 		// Set status logged = OFF
 		account.closeSession();
 
-		account = DataFacade.getInstance().merge( account );
+		account = merge( account );
 		if ( logger.isDebugEnabled()) logger.debug( "Session for " + account.getUser() + " closed!" );
 		
 		if ( account != null )
@@ -106,7 +105,7 @@ public class AuthenticationFacade {
 	public Account findBySessionId( String sessionId ) {
 		Account account;
 		
-		EntityManager em = DataFacade.getInstance().createEntityManager();
+		EntityManager em = createEntityManager();
 		try {
 			// Fetched Account with specify UserName. Should be one account only!!!  
 			TypedQuery<Account> q = em.createNamedQuery( "findAccountBySessionId", Account.class )
@@ -159,7 +158,7 @@ public class AuthenticationFacade {
 		
 		
 		try {
-			account = DataFacade.getInstance().insert( account );
+			account = insert( account );
 			
 			TransactionsFacade.getInstance().writeAccount( 
 					(( InventoryUI )UI.getCurrent()).getSessionOwner(), 
@@ -188,7 +187,7 @@ public class AuthenticationFacade {
 		existingAccount = user.getAccount(); 
 		
 		try {
-			DataFacade.getInstance().remove( existingAccount );
+			remove( existingAccount );
 			
 			TransactionsFacade.getInstance().writeAccount( 
 					(( InventoryUI )UI.getCurrent()).getSessionOwner(), 
@@ -207,47 +206,19 @@ public class AuthenticationFacade {
 		return existingAccount;
 		
 	}
-/*
+
+	/*
 	private void writeTransaction( Transaction tr ) {
-		tr = DataFacade.getInstance().insert( tr );
+		tr = insert( tr );
 
 		if ( logger.isDebugEnabled()) logger.debug( tr );
 	}
 */	
-	/*		
-	public Account findByUserId( OrgUser user ) {
-		
-		Account account = null;
-		
-		EntityManager em = DataFacade.getInstance().createEntityManager();
-		try {
-			// Fetched Account with specify UserName. Should be one account only!!!  
-			TypedQuery<Account> q = em.createNamedQuery( "findAccountByUsrId", Account.class )
-					.setParameter("userId", user.getId() );
-			account = q.getSingleResult();
-		} catch ( NoResultException e ) {
-			account = null;
-			if ( logger.isDebugEnabled())
-				logger.debug( "Account Not Found for OrgUser: '" + user.getFirstAndLastNames() + "'" );
-		} catch ( NonUniqueResultException e ) {
-			account = null;
-			logger.error( "It should be one account only for OrgUser: '" + user.getFirstAndLastNames() + "'" );
-		} catch ( Exception e ) {
-			account = null;
-			logger.error( e );
-		} finally {
-			em.close();
-		}
-		return account;
-		
-		
-	}
-*/		
 
 	public Account findByUserName( String usrName ) {
 		Account account;
 		
-		EntityManager em = DataFacade.getInstance().createEntityManager();
+		EntityManager em = createEntityManager();
 		try {
 			// Fetched Account with specify UserName. Should be one account only!!!  
 			TypedQuery<Account> q = em.createNamedQuery( "findAccountByUsrName", Account.class )
@@ -270,100 +241,64 @@ public class AuthenticationFacade {
 		return account;
 	}
 
-	public Account addAccountDefault( OrgUser user ) {
-		if ( user == null )
-			throw new IllegalArgumentException( "Valid OrgUser cannot be null!" );
-
-		Account account; 
-
-		// Find account record for the OrgUser
-		if ( logger.isDebugEnabled()) logger.debug( "Try to find Account for OrgUser: '" + user.getFirstAndLastNames() + "'" );
-
-//		account = findByUserId( user );
-		account = user.getAccount(); 
-		if ( account != null ) {
-			if ( logger.isDebugEnabled()) logger.debug( "Account exists already. Not necessary to create" );
+	
+	/*
+	 *  Check usrname from account
+	 * Return:
+	 *	0 - account with such usrName exists and it is the same
+	 *  1 - account with such usrName exists but other than checked
+	 * -1 - account with such usrName does not exist
+	 * 
+	 */
+	public int checkAccountName( Account account ) {
+		
+		int iRes = -1;
+		
+		Account existedAccount = findByUserName( account.getUsrName());
+		
+		if ( existedAccount == null  ) {
+			// Nothing was found. No account with such name
+			logger.debug( "Account with name '" + account.getUsrName() + "' does NOT exist" );
+			iRes = -1;
+			
+		} else if ( existedAccount.getId() == account.getId() && existedAccount.getId() > 0 ) {
+			// If id the same than account is the same 
+			logger.debug( "Account with name '" + account.getUsrName() + "' found" );
+			iRes = 0;
+			
 		} else {
-			if ( logger.isDebugEnabled()) logger.debug( "Account does not exist. Must be created" );
-			// Create FREE name and Default password password
-			String accName = getFreeUserName( user.getLastName());
-			if ( accName != null ) {
-				
-				// Necessary to add account
-				String accPwd = Account.generateNewPassword();
-				
-				account = addAccount( accName, accPwd, user );
-				if ( logger.isDebugEnabled()) logger.debug( "User account will be added: '" + accName + "'" );
-			} else {
-				if ( logger.isDebugEnabled()) logger.debug( "Cannot create new UserName!" );
-			}
-		
-		}
-		
-		return account;
-	}
-	
-	// TODO
-	// Minimum and maxlength of User Name should be in company settings
-	int min_num = 8;
-	int max_num = 11;
-	// TODO
-	// Put prefix into the company settings
-	final static String USRNAME_PREFIX = ""; //"fi";
-	
-	public String getFreeUserName( String usrName ) {
-		String retName = null;
-		
-		String tmpName;
-		if ( usrName != null ) {
-			tmpName = USRNAME_PREFIX + usrName;
-			tmpName = tmpName.toLowerCase();
-			
-			tmpName = StringUtils.replaceChars( tmpName, "ˆ÷‰ƒÂ≈", "ooaaaa" );
-//			tmpName = StringUtils.replaceChars( tmpName, "‰ƒ", "a" );
-//			tmpName = StringUtils.replaceChars( tmpName, "Â≈", "a" );
-			
-			if ( tmpName.length() < min_num ) {
-				tmpName = tmpName.concat( "123456789" ).substring( 0, min_num );
-			} else if ( tmpName.length() > max_num ) {
-				tmpName = tmpName.substring( 0, max_num );
-			}
-
-			int i = 1;
-			String searchName = new String ( tmpName );
-			EntityManager em = DataFacade.getInstance().createEntityManager();
-			TypedQuery<Account> q = em.createNamedQuery( "findAccountByUsrName", Account.class );
-			while ( true ) {
-				try {
-					q.setParameter("usrName", searchName );
-					// Fetched Account with specify UserName. Should be one account only!!!  
-					q.getSingleResult();
-				} catch ( NoResultException e ) {
-					if ( logger.isDebugEnabled()) logger.debug( "Name '" + searchName + "' is free! Will be used" );
-					retName = searchName;
-					break;
-				} catch ( NonUniqueResultException e ) {
-					logger.error( "It should be one account only for usrName: '" + searchName + "'" );
-				} catch ( Exception e ) {
-					logger.error( e );
-				}
-
-				searchName = tmpName.concat( "." + i );
-				i++;
-				
-				if ( i > 500 ) {
-					logger.error( "Cannot create unique username. " + i + " attempts were made!" );
-					searchName = null;
-					break;
-				}
-				
-			}
-			em.close();
+			// Account found. But it is different from other. Need to be used or new name to use
+			logger.debug( "Account with name '" + account.getUsrName() + "' found. But it is other than we have" );
+			iRes = 1;
 			
 		}
+			
+			
+			
+
+
 		
-		return retName;
+		return iRes;
+	}
+	
+	public String getModifiedName( String usrName ) {
+		
+		String ext = "";
+		int count = 1;
+		
+		while( AuthenticationFacade.getInstance().findByUserName( usrName.concat( ext )) != null ) {
+
+			ext = "." + Integer.toString( count++ );
+			
+		};
+		
+		logger.debug( "Normalized name (AFTER checking for existance): " + usrName.concat( ext ) );
+
+		
+		return usrName.concat( ext );
 	}
 
+
+	
 }
 

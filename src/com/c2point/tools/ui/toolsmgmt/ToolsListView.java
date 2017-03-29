@@ -363,7 +363,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			toolBarLayout.setWidth( "100%");
 			toolBarLayout.setMargin( new MarginInfo( false, true, false, true ));
 	
-			Label catFilterLabel = new Label( this.model.getApp().getResourceStr( "toolsmgmt.label.filter.category"+":" ));
+			Label catFilterLabel = new Label( this.model.getApp().getResourceStr( "toolsmgmt.label.filter.category" ) + ":" );
 			catFilterLabel.setWidth( null );
 
 			categoryFilter = new ComboBox();
