@@ -172,7 +172,7 @@ public class AccountEditDlg extends AbstractDialog {
 		String name = usrname.getValue();
 		
 		// Check that username != null and length is suitable
-		bRes = PasswordGenerator.validatePassword( name );
+		bRes = PasswordGenerator.validateUsrName( name );
 				
 		if ( bRes ) {
 			// Check the status of such usrname in Accounts DB

@@ -130,6 +130,7 @@ public class FilterToolbar extends HorizontalLayout {
 //    	printButton.addStyleName( Runo.BUTTON_DEFAULT );
 		
     	printButton.addClickListener( new ClickListener() {
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {

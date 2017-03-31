@@ -3,6 +3,7 @@ package com.c2point.tools.ui.personnelmgmt;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
@@ -11,14 +12,16 @@ import com.c2point.tools.entity.access.AccessGroups;
 import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.person.Address;
 import com.c2point.tools.entity.person.OrgUser;
+import com.c2point.tools.ui.accessrightsmgmt.AccessMgmtView;
 import com.c2point.tools.ui.accountmgmt.AccountEditDlg;
-import com.c2point.tools.ui.changescollecor.ChangesListener;
 import com.c2point.tools.ui.util.AbstractDialog;
 import com.c2point.tools.ui.util.CustomGridLayout;
 import com.c2point.tools.ui.util.AbstractModel.EditModeType;
 import com.c2point.tools.utils.lang.Locales;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractFocusable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -53,6 +56,7 @@ public class StuffEditDlg extends AbstractDialog {
 	private TextField		phone;
 	
 	private ComboBox		accessGroup;
+	private Button			accessButon;
 
 	private TextField		usrName;
 	private Button			accountButon;
@@ -133,11 +137,13 @@ public class StuffEditDlg extends AbstractDialog {
 
 		email = new TextField();
 		email.setRequired(true);
+		email.setRequiredError(model.getApp().getResourceStr( "general.error.field.empty" ));
 		email.setNullRepresentation( "" );
 		email.setImmediate(true);
 
 		phone = new TextField();
 		phone.setRequired(true);
+		phone.setRequiredError(model.getApp().getResourceStr( "general.error.field.empty" ));
 		phone.setNullRepresentation( "" );
 		phone.setImmediate(true);
 
@@ -154,10 +160,13 @@ public class StuffEditDlg extends AbstractDialog {
 		accessGroup.setValidationVisible( true );
 		accessGroup.setImmediate( true );
 
+		accessButon = new Button( model.getApp().getResourceStr( "personnel.caption.access.change" ));
+		accessButon.setImmediate(true);
+		
 		usrName = new TextField();
 		phone.setImmediate(true);
 		
-		accountButon = new Button( "Change Account" );
+		accountButon = new Button( model.getApp().getResourceStr( "personnel.caption.account.change" ));
 		accountButon.setImmediate(true);
 		
 		
@@ -179,6 +188,13 @@ public class StuffEditDlg extends AbstractDialog {
 		subContent.addField( model.getApp().getResourceStr( "general.caption.phone" ) + ":", phone );
 		subContent.addSeparator();
 		subContent.addField( model.getApp().getResourceStr( "personnel.caption.group" ) + ":", accessGroup );
+
+		if ( model.isEditMode() 
+				&& 
+			 model.getSecurityContext().hasEditPermission( FunctionalityType.ACCOUNTS_MGMT, model.getSelectedOrg())) {
+			subContent.addLastInLineField( accessButon );
+		}
+		
 		subContent.addSeparator();
 		
 		subContent.addField( model.getApp().getResourceStr( "login.username" ) + ":", usrName );
@@ -243,6 +259,32 @@ public class StuffEditDlg extends AbstractDialog {
 	}
 
 	private void addListeners() {
+		
+		accessButon.addClickListener( new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				AccessMgmtView view = new AccessMgmtView( model ); 
+				model.getApp().addWindow( view );
+				
+				view.addCloseListener( new CloseListener() {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void windowClose(CloseEvent e) {
+						
+						getChangesCollector().setChanges();
+						
+						logger.debug( "AccessMgmtView has been closed" );
+					}
+					
+				});
+			}
+			
+		});
+		
 		
 		accountButon.addClickListener( new ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -320,10 +362,10 @@ public class StuffEditDlg extends AbstractDialog {
 
 		boolean res = false;
 		
-		if ( this.editedUser != null ) {
+		if ( this.editedUser != null && validate()) {
 
-			this.editedUser.setFirstName( firstName.getValue());
-			this.editedUser.setLastName( lastName.getValue());
+			this.editedUser.setFirstName( WordUtils.capitalizeFully( firstName.getValue()));
+			this.editedUser.setLastName( WordUtils.capitalizeFully( lastName.getValue()));
 			this.editedUser.setBirthday( birthday.getValue() != null ? new LocalDate( birthday.getValue()) : null );
 			
 			if ( this.editedUser.getAddress() == null ) {
@@ -342,25 +384,40 @@ public class StuffEditDlg extends AbstractDialog {
 			this.editedUser.setAccessGroup(( AccessGroups )accessGroup.getValue());
 			
 			
-			
-			
-			
-			if ( !StringUtils.isBlank( this.editedUser.getLastAndFirstNames())
-					&& this.editedUser.getAccount() != null
-					&& !StringUtils.isBlank( this.editedUser.getAccount().getUsrName())
-					&& !StringUtils.isBlank( this.editedUser.getAccount().getPwd())
-							
-			) {
-
-				res = true;
+			res = true;
 				
-			}
-			
-			
 			
 		}
 
 		return res;
+	}
+	
+	private boolean validate() {
+		
+		boolean bRes = false;
+		
+		AbstractComponent fieldToSelect = null;
+		
+		if ( !lastName.isValid()) {
+			fieldToSelect = lastName;
+		} else if ( email.isEmpty() && phone.isEmpty()) {
+			fieldToSelect = email;
+		} else if ( !accessGroup.isValid()) {
+			fieldToSelect = accessGroup;
+		} else {
+			// Othervise data are OK to store
+			bRes = true;
+		}
+		
+		// First wrong field to set focus and to select content iif possible
+		if ( fieldToSelect != null ) {
+			if ( fieldToSelect instanceof AbstractFocusable )
+				(( AbstractFocusable )fieldToSelect ).focus();
+			if ( fieldToSelect instanceof TextField )
+				(( TextField )fieldToSelect ).selectAll();
+		}
+		
+		return bRes;
 	}
 
 	private void updateFields() {
