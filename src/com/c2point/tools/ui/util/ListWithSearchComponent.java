@@ -151,7 +151,8 @@ public class ListWithSearchComponent extends VerticalLayout {
 			
 			if ( this.addNecessary ) {
 				
-				addButton = new Button((( InventoryUI )UI.getCurrent()).getResourceStr( "personnel.caption.add" ));
+				addButton = new Button();
+				buttonCaption( addButton, (( InventoryUI )UI.getCurrent()).getResourceStr( "general.button.new" ));
 				addButton.addClickListener( new ClickListener() {
 					private static final long serialVersionUID = 1L;
 
@@ -234,6 +235,15 @@ public class ListWithSearchComponent extends VerticalLayout {
 		}
 
 		return filter;
+	}
+
+	public void buttonCaption( Button button, String caption ) {
+		
+		button.setCaption( caption );
+	}
+
+	public void addButtonCaption( String caption ) {
+		buttonCaption( addButton, caption );
 	}
 	
 }

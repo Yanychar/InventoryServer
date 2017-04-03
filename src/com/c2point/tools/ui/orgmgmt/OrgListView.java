@@ -11,6 +11,7 @@ import com.c2point.tools.ui.util.ListWithSearchComponent;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 
 public class OrgListView extends ListWithSearchComponent implements OrgChangedListener {
@@ -41,7 +42,7 @@ public class OrgListView extends ListWithSearchComponent implements OrgChangedLi
 		orgsTable = new Table();
 		
 		setContainerForSearch( orgsTable );
-		
+
 		// Configure table
 		orgsTable.setSelectable( true );
 		orgsTable.setNullSelectionAllowed( false );

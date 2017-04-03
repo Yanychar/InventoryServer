@@ -49,7 +49,6 @@ public class TrnsListComponent extends VerticalLayout implements ToolsHistoryMod
 		trnsTable = new Table() {
 			private static final long serialVersionUID = 1L;
 
-//			private SimpleDateFormat df = new SimpleDateFormat( "dd.MM.yyyy" );
 			DateTimeFormatter fmt = DateTimeFormat.forPattern( "dd.MM.yyyy" );
 						
 			@Override
@@ -62,7 +61,6 @@ public class TrnsListComponent extends VerticalLayout implements ToolsHistoryMod
 				if ( property.getType() == DateTime.class ) {
 
 					DateTime dd = ( DateTime )property.getValue();
-//					return ( dd != null ? df.format( dd ) : "" );
 					return ( dd != null ? fmt.print( dd ) : "" );
 				}	
 				
