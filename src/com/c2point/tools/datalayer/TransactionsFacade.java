@@ -174,6 +174,16 @@ public class TransactionsFacade extends DataFacade {
 		return write( trn ); 
 	}
 
+	public boolean writeToolItem( OrgUser whoDid, OrgUser owner, ToolItem item, TransactionOperation op ) {
+		
+		BaseTransaction trn = new BaseTransaction( whoDid, TransactionType.TOOLITEM, op );
+		
+		trn.setToolItem(  item );
+		trn.setDestUser( owner );
+		
+		return write( trn ); 
+	}
+
 	public boolean writeTool( OrgUser whoDid, Tool tool, TransactionOperation op ) {
 		
 		BaseTransaction trn = new BaseTransaction( whoDid, TransactionType.TOOL, op );

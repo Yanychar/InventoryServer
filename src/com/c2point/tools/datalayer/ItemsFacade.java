@@ -508,7 +508,7 @@ public class ItemsFacade extends DataFacade {
 			
 			try {
 				OrgUser whoDid = (( InventoryUI )UI.getCurrent()).getSessionOwner();
-				TransactionsFacade.getInstance().writeToolItem( whoDid, newItem, TransactionOperation.ADD );
+				TransactionsFacade.getInstance().writeToolItem( whoDid, newItem.getCurrentUser(), newItem, TransactionOperation.ADD );
 				
 			} catch ( Exception e ) {
 				logger.error( "Cannot identify who add ToolItem");
