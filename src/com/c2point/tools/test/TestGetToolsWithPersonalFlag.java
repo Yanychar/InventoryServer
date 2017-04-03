@@ -5,9 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
-
 import com.c2point.tools.resources.AuthenticateResource;
 import com.c2point.tools.resources.GetToolsResource;
 import com.c2point.tools.resources.stubs.AuthenticationStub;

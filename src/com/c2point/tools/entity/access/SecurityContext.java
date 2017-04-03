@@ -11,7 +11,6 @@ import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
 
 public class SecurityContext {
-	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger( SecurityContext.class.getName()); 
 	
 	private OrgUser user;

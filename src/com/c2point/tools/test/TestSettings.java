@@ -19,8 +19,6 @@ public class TestSettings {
 		SettingsFacade sf = SettingsFacade.getInstance();
 		
 		Organisation org_1 = new Organisation( "0001", "Org Number 1" ); 
-		Organisation org_2 = new Organisation( "0002", "Org Number 1" );
-		
 		sf.set( org_1, "param_str", "value_str" );
 		sf.set( org_1, "param_bool", true );
 		sf.set( org_1, "param_int", 1 );

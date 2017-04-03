@@ -12,9 +12,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.c2point.tools.entity.SimplePojo;
 import com.c2point.tools.entity.organisation.Organisation;
 
@@ -40,8 +37,6 @@ import com.c2point.tools.entity.organisation.Organisation;
 })
 
 public class Category extends SimplePojo {
-
-	private static Logger logger = LogManager.getLogger( Category.class.getName());
 
 	private String code;
 	private String name;

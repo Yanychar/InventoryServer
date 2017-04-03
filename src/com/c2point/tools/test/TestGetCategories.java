@@ -1,11 +1,7 @@
 
 package com.c2point.tools.test;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
-
 import com.c2point.tools.resources.AuthenticateResource;
-import com.c2point.tools.resources.stubs.AuthenticationStub;
 
 public class TestGetCategories {
 
@@ -21,7 +17,9 @@ public class TestGetCategories {
 		
 		AuthenticateResource authRes = new AuthenticateResource();
 		
-		AuthenticationStub authStub = authRes.authenticateJSON( "sev", "sev", "", "" );
+//		AuthenticationStub authStub = authRes.authenticateJSON( "sev", "sev", "", "" );
+		
+		authRes.authenticateJSON( "sev", "sev", "", "" );
 		
 		
 	}
