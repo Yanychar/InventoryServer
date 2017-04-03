@@ -34,17 +34,15 @@ public class ToolsListComponent extends ListWithSearchComponent implements Tools
 		model.addChangedListener( this );
 	}
 
-	private static String [] searchFields = {
-		"name",
-		"status",
-	};
-	
+	private String [] searchFields = null;
 	protected String [] getFieldsForSearch() {
 		
-		return searchFields;
+		if ( searchFields == null ) { 
+			searchFields = new String [] { "name", "status" };
+		}
 		
+		return searchFields;
 	}
-	
 	
 	private void initUI() {
 

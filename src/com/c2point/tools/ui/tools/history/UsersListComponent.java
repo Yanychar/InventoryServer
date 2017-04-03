@@ -34,15 +34,16 @@ public class UsersListComponent extends ListWithSearchComponent implements Tools
 		model.addChangedListener( this );
 	}
 
-	private static String [] searchFields = {
-		"name"
-	};
-	
+	private static String [] searchFields = null;
 	protected String [] getFieldsForSearch() {
 		
-		return searchFields;
+		if ( searchFields == null ) { 
+			searchFields = new String [] { "name" };
+		}
 		
+		return searchFields;
 	}
+	
 	
 	
 	private void initUI() {
