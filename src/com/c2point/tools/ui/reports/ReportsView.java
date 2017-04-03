@@ -16,6 +16,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -71,6 +72,11 @@ public class ReportsView extends VerticalLayout {
 		
 		addComponent( showButton );
 		
+		Label glue = new Label( " " );
+		glue.setHeight("100%");
+		addComponent( glue );
+		setExpandRatio( glue, 1.0f );
+		
 		
 	}
 
@@ -90,10 +96,16 @@ public class ReportsView extends VerticalLayout {
 		reportType.setImmediate( true );		
 		
 		reportType.addItem( ReportType.OWNERSHIP );		
-		reportType.addItem( ReportType.TEST );
+		reportType.addItem( ReportType.USAGE );
+		reportType.addItem( ReportType.LOST );
 		
 		reportType.setItemCaption( ReportType.OWNERSHIP, "Ownership" );
-		reportType.setItemCaption( ReportType.TEST, "Example" );		
+		reportType.setItemCaption( ReportType.USAGE, "Usage" );		
+		reportType.setItemCaption( ReportType.LOST, "Lost/Stolen" );		
+
+		reportType.setItemEnabled( ReportType.USAGE, false );		
+		reportType.setItemEnabled( ReportType.LOST, false );		
+
 		
 		reportType.addValueChangeListener( new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -153,10 +165,8 @@ public class ReportsView extends VerticalLayout {
 			case OWNERSHIP:
 				addOwnershipOptions();
 				break;
-			case TEST:
-				addTestOptions();
-				break;
 			default:
+				addTestOptions();
 				logger.error( "Wrong ReportTypepassed: " + rType );
 				break;
 			
