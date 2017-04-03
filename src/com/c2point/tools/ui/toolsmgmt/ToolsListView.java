@@ -542,7 +542,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 	private void updateCounter() {
 		
 		int counter = itemsTable.size();
-		counterLabel.setValue( Integer.toString( counter ));
+		counterLabel.setValue( "( " + Integer.toString( counter ) + " )" );
 	}
 	
 	private void initCategoryFilter() {

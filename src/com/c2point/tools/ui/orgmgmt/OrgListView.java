@@ -97,6 +97,7 @@ public class OrgListView extends ListWithSearchComponent implements OrgChangedLi
 
 		this.addComponent( getSearchBar());
 		this.addComponent( orgsTable );
+		this.addComponent( getStatusbar());
 		
 		this.setExpandRatio( orgsTable, 1.0f );
 		
@@ -113,6 +114,8 @@ public class OrgListView extends ListWithSearchComponent implements OrgChangedLi
 		
 		// set correct selection
 		orgsTable.setValue( org.getId());
+
+		updateCounter();
 		
 	}
 
@@ -146,7 +149,9 @@ public class OrgListView extends ListWithSearchComponent implements OrgChangedLi
 			orgsTable.setValue( futureId );
 		else
 			orgsTable.setValue( orgsTable.firstItemId());
-			
+
+		updateCounter();
+		
 	}
 
 	@Override
@@ -155,6 +160,8 @@ public class OrgListView extends ListWithSearchComponent implements OrgChangedLi
 		if ( logger.isDebugEnabled()) logger.debug( "OrganisationList received WholeListChanged event!" );
 		
 		dataFromModel();
+
+		updateCounter();
 		
 	}
 

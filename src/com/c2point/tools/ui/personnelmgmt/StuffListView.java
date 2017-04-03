@@ -11,7 +11,6 @@ import org.vaadin.dialogs.ConfirmDialog;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.listeners.StuffChangedListener;
 import com.c2point.tools.ui.util.AbstractModel.EditModeType;
-import com.c2point.tools.ui.util.BoldLabel;
 import com.c2point.tools.ui.util.ListWithSearchComponent;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -19,10 +18,8 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
@@ -40,9 +37,6 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 	private StuffListModel	model;
 	private Table			usersTable;
 
-	protected HorizontalLayout	statusBarLayout;
-	private Label				counterLabel;
-	
 	public StuffListView( StuffListModel model ) {
 		super( true );
 		this.model = model;
@@ -324,37 +318,6 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 		item.getItemProperty( "email" ).setValue( StringUtils.defaultString( user.getEmail()));
 		item.getItemProperty( "data" ).setValue( user );
 		
-	}
-	
-	protected Component getStatusbar() {
-		
-		// Add search field
-		if ( statusBarLayout == null ) {
-
-			statusBarLayout = new HorizontalLayout();
-			
-			statusBarLayout.setWidth( "100%");
-			statusBarLayout.setMargin( new MarginInfo( false, false, false, false ));
-	
-			counterLabel = new BoldLabel();
-			counterLabel.setWidth( null );
-
-				
-			
-			Label glue = new Label( "" );
-			statusBarLayout.addComponent( glue );
-			statusBarLayout.setExpandRatio( glue,  1.0f );
-			statusBarLayout.addComponent( counterLabel );
-
-		}
-		
-		return statusBarLayout;
-	}
-
-	private void updateCounter() {
-		
-		int counter = usersTable.size();
-		counterLabel.setValue( Integer.toString( counter ));
 	}
 	
 	@Override

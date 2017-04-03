@@ -30,11 +30,15 @@ public class ListWithSearchComponent extends VerticalLayout {
 
 	private static Logger logger = LogManager.getLogger( ListWithSearchComponent.class.getName());
 	
-	protected Container			dataSource;
+	protected	Container			dataSource;
 
-	protected HorizontalLayout	toolBarLayout;
-	protected TextField			searchText;
-	protected AbstractSelect	listComponent;
+	protected	HorizontalLayout	toolBarLayout;
+	protected	TextField			searchText;
+	protected	AbstractSelect		listComponent;
+
+	protected	HorizontalLayout	statusBarLayout;
+	private		Label				counterLabel;
+	
 	
 	protected Button			addButton;
 	protected boolean			addNecessary = false;		
@@ -208,6 +212,7 @@ public class ListWithSearchComponent extends VerticalLayout {
 			
 		}
 		
+		updateCounter();
 		
 		return found;
 	}
@@ -245,5 +250,36 @@ public class ListWithSearchComponent extends VerticalLayout {
 	public void addButtonCaption( String caption ) {
 		buttonCaption( addButton, caption );
 	}
+
+	
+	protected Component getStatusbar() {
+		
+		// Add search field
+		if ( statusBarLayout == null ) {
+
+			statusBarLayout = new HorizontalLayout();
+			
+			statusBarLayout.setWidth( "100%");
+			statusBarLayout.setMargin( new MarginInfo( true, false, true, true ));
+	
+			counterLabel = new BoldLabel();
+			counterLabel.setWidth( null );
+			
+			Label glue = new Label( "" );
+			statusBarLayout.addComponent( glue );
+			statusBarLayout.setExpandRatio( glue,  1.0f );
+			statusBarLayout.addComponent( counterLabel );
+
+		}
+		
+		return statusBarLayout;
+	}
+
+	protected void updateCounter() {
+		
+		int counter = this.listComponent.size();
+		counterLabel.setValue( "( " + Integer.toString( counter ) + " )" );
+	}
+	
 	
 }
