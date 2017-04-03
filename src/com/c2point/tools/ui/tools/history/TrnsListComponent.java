@@ -1,10 +1,14 @@
 package com.c2point.tools.ui.tools.history;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
@@ -12,6 +16,7 @@ import com.c2point.tools.entity.tool.Tool;
 import com.c2point.tools.entity.transactions.BaseTransaction;
 import com.c2point.tools.ui.tools.history.ToolsHistoryListModel.ViewMode;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.Table;
@@ -41,7 +46,30 @@ public class TrnsListComponent extends VerticalLayout implements ToolsHistoryMod
 
 		setMargin( true );
 		
-		trnsTable = new Table();
+		trnsTable = new Table() {
+			private static final long serialVersionUID = 1L;
+
+//			private SimpleDateFormat df = new SimpleDateFormat( "dd.MM.yyyy" );
+			DateTimeFormatter fmt = DateTimeFormat.forPattern( "dd.MM.yyyy" );
+						
+			@Override
+			protected String formatPropertyValue(
+								Object rowId,
+								Object colId, 
+								Property<?> property ) { 
+				
+				// Format by property type
+				if ( property.getType() == DateTime.class ) {
+
+					DateTime dd = ( DateTime )property.getValue();
+//					return ( dd != null ? df.format( dd ) : "" );
+					return ( dd != null ? fmt.print( dd ) : "" );
+				}	
+				
+				return super.formatPropertyValue(rowId, colId, property);
+							
+			}
+		};
 		
 //		setContainerForSearch( trnsTable );
 		
@@ -54,7 +82,7 @@ public class TrnsListComponent extends VerticalLayout implements ToolsHistoryMod
 		trnsTable.setImmediate( true );
 		trnsTable.setSizeFull();
 		
-		trnsTable.addContainerProperty( "date", 	String.class, null );
+		trnsTable.addContainerProperty( "date", 	DateTime.class, null );
 		trnsTable.addContainerProperty( "content", 	String.class, null );
 		trnsTable.addContainerProperty( "user", 	String.class, null );
 		trnsTable.addContainerProperty( "data", 	BaseTransaction.class, null );
@@ -164,7 +192,7 @@ public class TrnsListComponent extends VerticalLayout implements ToolsHistoryMod
 			if ( logger.isDebugEnabled()) logger.debug( "Transaction exists already. Will be modified: " + trn );
 		}
 
-		item.getItemProperty( "date" ).setValue( DateTimeFormat.forPattern("dd.MM.yyyy").print( trn.getDate()));
+		item.getItemProperty( "date" ).setValue( trn.getDate());
 		item.getItemProperty( "content" ).setValue( trn.toTableItem( model.getApp().getSessionData().getBundle()));
 		item.getItemProperty( "user" ).setValue( trn.getUser().getFirstAndLastNames());
 		item.getItemProperty( "data" ).setValue( trn );
@@ -179,6 +207,11 @@ public class TrnsListComponent extends VerticalLayout implements ToolsHistoryMod
 		
 		if ( toolItem != null ) {
 			dataFromModel( toolItem );
+			
+			trnsTable.setSortContainerPropertyId( "date" );
+			trnsTable.setSortAscending( false );
+			trnsTable.sort();
+			
 		} else {
 			trnsTable.removeAllItems();
 		}
