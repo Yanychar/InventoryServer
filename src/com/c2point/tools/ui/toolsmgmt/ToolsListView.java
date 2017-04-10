@@ -31,7 +31,6 @@ import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -51,7 +50,6 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 	private static int BUTTON_WIDTH = 25;
 	
 	protected HorizontalLayout	toolBarLayout;
-	private CheckBox			deletedFilter;
 	private ComboBox			categoryFilter;
 	private TextField			searchText;
 
@@ -365,7 +363,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			toolBarLayout.setWidth( "100%");
 			toolBarLayout.setMargin( new MarginInfo( false, true, false, true ));
 	
-			Label catFilterLabel = new Label( this.model.getApp().getResourceStr( "toolsmgmt.label.filter.category" ));
+			Label catFilterLabel = new Label( this.model.getApp().getResourceStr( "toolsmgmt.label.filter.category" ) + ":" );
 			catFilterLabel.setWidth( null );
 
 			categoryFilter = new ComboBox();
@@ -428,7 +426,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			});
 			
 			
-			addButton = new Button( model.getApp().getResourceStr( "personnel.caption.add" ));
+			addButton = new Button( model.getApp().getResourceStr( "trn.item.add" ));
 			addButton.addClickListener( new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
@@ -544,7 +542,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 	private void updateCounter() {
 		
 		int counter = itemsTable.size();
-		counterLabel.setValue( Integer.toString( counter ));
+		counterLabel.setValue( "( " + Integer.toString( counter ) + " )" );
 	}
 	
 	private void initCategoryFilter() {

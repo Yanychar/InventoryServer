@@ -30,16 +30,15 @@ public class ListWithSearchComponent extends VerticalLayout {
 
 	private static Logger logger = LogManager.getLogger( ListWithSearchComponent.class.getName());
 	
-	private static String [] searchFields = {
-			"name",
-			"code",
-	};
-	
-	protected Container			dataSource;
+	protected	Container			dataSource;
 
-	protected HorizontalLayout	toolBarLayout;
-	protected TextField			searchText;
-	protected AbstractSelect	listComponent;
+	protected	HorizontalLayout	toolBarLayout;
+	protected	TextField			searchText;
+	protected	AbstractSelect		listComponent;
+
+	protected	HorizontalLayout	statusBarLayout;
+	private		Label				counterLabel;
+	
 	
 	protected Button			addButton;
 	protected boolean			addNecessary = false;		
@@ -59,6 +58,15 @@ public class ListWithSearchComponent extends VerticalLayout {
 		
 	}
 	
+	private String [] searchFields = null;
+	protected String [] getFieldsForSearch() {
+		
+		if ( searchFields == null ) { 
+			searchFields = new String [] { "name", "code" };
+		}
+		
+		return searchFields;
+	}
 	
 /*	
 	protected ListWithSearchComponent( Container dataSource ) {
@@ -67,12 +75,6 @@ public class ListWithSearchComponent extends VerticalLayout {
 		setContainerForSearch( dataSource );
 	}
 */
-	protected String [] getFieldsForSearch() {
-		
-		return searchFields;
-		
-	}
-	
 	protected void setContainerForSearch( Container dataSource ) {
 
 		if ( dataSource instanceof Container.Filterable ) {
@@ -153,7 +155,8 @@ public class ListWithSearchComponent extends VerticalLayout {
 			
 			if ( this.addNecessary ) {
 				
-				addButton = new Button((( InventoryUI )UI.getCurrent()).getResourceStr( "personnel.caption.add" ));
+				addButton = new Button();
+				buttonCaption( addButton, (( InventoryUI )UI.getCurrent()).getResourceStr( "general.button.new" ));
 				addButton.addClickListener( new ClickListener() {
 					private static final long serialVersionUID = 1L;
 
@@ -195,12 +198,8 @@ public class ListWithSearchComponent extends VerticalLayout {
 			(( Container.Filterable )dataSource ).removeAllContainerFilters();
 		
 			if ( searchStr != null && searchStr.length() > 0 ) {
-				Filter filter = new Or(
-						new SimpleStringFilter( getFieldsForSearch()[0],	searchStr, true, false ),
-						new SimpleStringFilter( getFieldsForSearch()[1],	searchStr, true, false )
-						);
 				
-				(( Container.Filterable )dataSource ).addContainerFilter( filter );
+				(( Container.Filterable )dataSource ).addContainerFilter( concatenateFilters( searchStr ));
 				
 				
 			}
@@ -213,6 +212,7 @@ public class ListWithSearchComponent extends VerticalLayout {
 			
 		}
 		
+		updateCounter();
 		
 		return found;
 	}
@@ -220,5 +220,66 @@ public class ListWithSearchComponent extends VerticalLayout {
 	protected void addButtonHandler() {
 		
 	}
+
+	private Filter concatenateFilters( String searchStr ) {
+		
+		Filter filter = null;
+		
+		if ( getFieldsForSearch().length > 0 ) {
+			
+			filter = new SimpleStringFilter( getFieldsForSearch()[0],	searchStr, true, false );
+			
+			for ( int i = 1; i < getFieldsForSearch().length; i++ ) {
+
+				filter = new Or(
+								filter,
+								new SimpleStringFilter( getFieldsForSearch()[i],	searchStr, true, false )
+								);
+			}
+			
+		}
+
+		return filter;
+	}
+
+	public void buttonCaption( Button button, String caption ) {
+		
+		button.setCaption( caption );
+	}
+
+	public void addButtonCaption( String caption ) {
+		buttonCaption( addButton, caption );
+	}
+
+	
+	protected Component getStatusbar() {
+		
+		// Add search field
+		if ( statusBarLayout == null ) {
+
+			statusBarLayout = new HorizontalLayout();
+			
+			statusBarLayout.setWidth( "100%");
+			statusBarLayout.setMargin( new MarginInfo( true, false, true, true ));
+	
+			counterLabel = new BoldLabel();
+			counterLabel.setWidth( null );
+			
+			Label glue = new Label( "" );
+			statusBarLayout.addComponent( glue );
+			statusBarLayout.setExpandRatio( glue,  1.0f );
+			statusBarLayout.addComponent( counterLabel );
+
+		}
+		
+		return statusBarLayout;
+	}
+
+	protected void updateCounter() {
+		
+		int counter = this.listComponent.size();
+		counterLabel.setValue( "( " + Integer.toString( counter ) + " )" );
+	}
+	
 	
 }

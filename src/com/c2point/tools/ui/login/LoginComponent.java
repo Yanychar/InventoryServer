@@ -1,5 +1,6 @@
 package com.c2point.tools.ui.login;
 
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -198,9 +199,9 @@ public class LoginComponent extends CustomComponent {
 	private void refreshCaptions() {
 		getCompositionRoot().setCaption( app.getResourceStr( "login.caption" ));
 
-		user.setCaption( app.getResourceStr( "login.username" ));
-		pwd.setCaption( app.getResourceStr( "login.password" ));
-		languageSelect.setCaption( app.getResourceStr( "login.language" ));
+		user.setCaption( app.getResourceStr( "login.username" ) + ":" );
+		pwd.setCaption( app.getResourceStr( "login.password" ) + ":" );
+		languageSelect.setCaption( app.getResourceStr( "login.language" ) + ":" );
 		rememberMeButton.setCaption( app.getResourceStr( "login.rememberme" ));
 		okButton.setCaption( app.getResourceStr( "login.login" ));
 		forgotButton.setCaption( "Forgot username or password?" );

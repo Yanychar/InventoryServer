@@ -63,48 +63,48 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 		this.setSpacing( true );
 		this.setMargin( true );
 
-		toolText = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" ));
+		toolText = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" ) + ":" );
 		toolText.setNullRepresentation( "" );
 		toolText.setImmediate( true );
 		
-		code = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.code" ));
+		code = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.code" ) + ":" );
 		code.setRequired(true);
 		code.setRequiredError( model.getApp().getResourceStr( "toolsmgmt.view.error.fieldempty" ));
 		code.setNullRepresentation( "" );
 		code.setImmediate( true );
 
-		toolInfo = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.toolinfo" ));
+		toolInfo = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.toolinfo" ) + ":" );
 		toolInfo.setNullRepresentation( "" );
 		toolInfo.setRows( 3 );
 		toolInfo.setImmediate( true );
 		
-		category = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.category" ));
+		category = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.category" ) + ":" );
 		category.setNullRepresentation( "" );
 		category.setImmediate( true );
 
-		manufacturer = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.manufacturer" ));
+		manufacturer = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.manufacturer" ) +":" );
 		manufacturer.setNullRepresentation( "" );
 		manufacturer.setImmediate( true );
 
-		toolModel = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.model" ));
+		toolModel = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.model" ) +":" );
 		toolModel.setNullRepresentation( "" );
 		toolModel.setImmediate( true );
 		
-		currentUser = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.user" ));
+		currentUser = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.user" ) +":" );
 		currentUser.setNullRepresentation( "" );
 		currentUser.setImmediate( true );
 
-		personalFlag = new CheckBox( model.getApp().getResourceStr( "toolsmgmt.view.label.personalflag" ));
+		personalFlag = new CheckBox( model.getApp().getResourceStr( "toolsmgmt.view.label.personalflag" ) +":" );
 
-		status = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.status" ));
+		status = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.status" ) +":" );
 		status.setNullRepresentation( "" );
 		status.setImmediate( true );
 		
-		reservedBy = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.reservedby" ));
+		reservedBy = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.reservedby" ) +":" );
 		reservedBy.setNullRepresentation( "" );
 		reservedBy.setImmediate( true );
 
-		serialNumber = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.sn" ));
+		serialNumber = new TextField( model.getApp().getResourceStr( "toolsmgmt.view.label.sn" ) +":" );
 		serialNumber.setNullRepresentation( "" );
 		serialNumber.setImmediate( true );
 
@@ -112,7 +112,7 @@ public class DetailsView extends FormLayout implements ToolItemChangedListener {
 		barcode.setNullRepresentation( "" );
 		barcode.setImmediate( true );
 
-		comments = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" ));
+		comments = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" ) + ":" );
 		comments.setNullRepresentation( "" );
 		comments.setRows( 3 );
 		comments.setImmediate( true );

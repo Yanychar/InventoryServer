@@ -1,7 +1,6 @@
 package com.c2point.tools.ui.categoriesmgmt;
 
 import com.c2point.tools.ui.changescollecor.ChangesListener;
-import com.c2point.tools.ui.changescollecor.FieldsChangeCollector;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -76,6 +75,7 @@ public class ButtonBarExt extends HorizontalLayout implements ChangesListener {
 		
 	}
 	
+	@SuppressWarnings("unused")
 	private void addButton( ButtonType type ) {
 		
 //		Component comp = getByType( type)
@@ -84,6 +84,7 @@ public class ButtonBarExt extends HorizontalLayout implements ChangesListener {
 	}
 	
 	
+	@SuppressWarnings("unused")
 	private Component getByType( ButtonType type ) { return getByType( type, false ); }
 	private Component getByType( ButtonType type, boolean canCreate ) {
 		

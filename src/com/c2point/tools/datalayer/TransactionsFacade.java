@@ -8,6 +8,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -154,11 +155,31 @@ public class TransactionsFacade extends DataFacade {
 	/*
 	 * Transaction keeps: who made changes, tool, operation 
 	 */
+	public boolean writeManufacturer( OrgUser whoDid, String manName, TransactionOperation op ) {
+		
+		BaseTransaction trn = new BaseTransaction( whoDid, TransactionType.MANUFACTURER, op );
+		
+		trn.setMessage( StringUtils.defaultString( manName ));
+		
+		return write( trn ); 
+	}
+
+
 	public boolean writeToolItem( OrgUser whoDid, ToolItem item, TransactionOperation op ) {
 		
 		BaseTransaction trn = new BaseTransaction( whoDid, TransactionType.TOOLITEM, op );
 		
 		trn.setToolItem(  item );
+		
+		return write( trn ); 
+	}
+
+	public boolean writeToolItem( OrgUser whoDid, OrgUser owner, ToolItem item, TransactionOperation op ) {
+		
+		BaseTransaction trn = new BaseTransaction( whoDid, TransactionType.TOOLITEM, op );
+		
+		trn.setToolItem(  item );
+		trn.setDestUser( owner );
 		
 		return write( trn ); 
 	}

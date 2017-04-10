@@ -110,7 +110,7 @@ public class FilterToolbar extends HorizontalLayout {
 		
 		
 
-		Label statusFilterLabel = new Label( (( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.filter.label.status" ));
+		Label statusFilterLabel = new Label( (( InventoryUI )UI.getCurrent()).getResourceStr( "repositorymgmt.filter.label.status" ) + ":" );
 		statusFilterLabel.setWidth( null );
 
 		statusFilter = new ComboBox();
@@ -130,6 +130,7 @@ public class FilterToolbar extends HorizontalLayout {
 //    	printButton.addStyleName( Runo.BUTTON_DEFAULT );
 		
     	printButton.addClickListener( new ClickListener() {
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {

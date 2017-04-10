@@ -135,16 +135,6 @@ public class UsersFacade extends DataFacade {
 
 	public OrgUser delete( OrgUser user ) {
 		
-		user.setDeleted();
-		
-		// Delete account if one user only
-		Account account = user.getAccount();
-		if ( account != null && account.getActiveUsers().size() == 0 ) {
-			
-			account.setDeleted();
-		}
-		
-		
 		return updateOrDelete( user, true );
 	}
 
@@ -154,34 +144,72 @@ public class UsersFacade extends DataFacade {
 	}
 
 	// Internal implementation update and delete
-	public OrgUser updateOrDelete( OrgUser user, boolean delete ) {
+	private OrgUser updateOrDelete( OrgUser user, boolean delete ) {
 
-		OrgUser newUser = null;
-		
+		OrgUser editedUser = null;
+
 		if ( user == null )
 			throw new IllegalArgumentException( "Valid User cannot be null!" );
 		
 		try {
-			newUser = DataFacade.getInstance().merge( user );
+			
+			editedUser = DataFacade.getInstance().find( OrgUser.class, user.getId());
+			
 		} catch ( Exception e ) {
 			logger.error( "Failed to update OrgUser: " + user );
 			logger.error( e );
 			return null;
 		}
 
-		try {
-			OrgUser whoDid = (( InventoryUI )UI.getCurrent()).getSessionOwner();
-			TransactionsFacade.getInstance().writeUser( whoDid, newUser, TransactionOperation.EDIT );
+		if ( delete ) {
+			// Delete user and Account
+			editedUser.setDeleted();
 			
-		} catch ( Exception e ) {
-			logger.error( "Cannot identify who edited User");
+			// Delete account if one user only
+			Account account = editedUser.getAccount();
+			if ( account != null && account.getActiveUsers().size() == 0 ) {
+				
+				account.setDeleted();
+			}
+			
+		} else {
+			// Edit fields
+			
+			editedUser.setFirstName( user.getFirstName());
+			editedUser.setLastName( user.getLastName());
+			editedUser.setBirthday( user.getBirthday());
+
+			editedUser.setAddress( user.getAddress());
+			
+			editedUser.setEmail( user.getEmail());
+			editedUser.setPhoneNumber( user.getPhoneNumber());
+			editedUser.setAccessGroup( user.getAccessGroup());
+
+			editedUser.setAccount( user.getAccount());
 		}
 		
-		if ( logger.isDebugEnabled() && newUser != null ) 
-			logger.debug( "OrgUser has been updated: " + newUser );
+		
+		try {
+			editedUser = DataFacade.getInstance().merge( editedUser );
+		} catch ( Exception e ) {
+			logger.error( "Failed to update/delete OrgUser: " + user );
+			logger.error( e );
+			return null;
+		}
+
+		try {
+			OrgUser whoDid = (( InventoryUI )UI.getCurrent()).getSessionOwner();
+			TransactionsFacade.getInstance().writeUser( whoDid, editedUser, delete ? TransactionOperation.DELETE : TransactionOperation.EDIT );
+			
+		} catch ( Exception e ) {
+			logger.error( "Cannot identify who edited/deleted User");
+		}
+		
+		if ( logger.isDebugEnabled() && editedUser != null ) 
+			logger.debug( "OrgUser has been updated/deleted: " + editedUser );
 		
 		
-		return newUser;
+		return editedUser;
 		
 	}
 	

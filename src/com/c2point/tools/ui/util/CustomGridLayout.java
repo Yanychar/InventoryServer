@@ -13,7 +13,7 @@ public class CustomGridLayout extends GridLayout {
 	private static final long serialVersionUID = 1L;
 
 	public CustomGridLayout() {
-		super( 2, 1 );
+		super( 3, 1 );
 	}
 	
 	public void addField( String caption, AbstractComponent field ) {
@@ -31,6 +31,13 @@ public class CustomGridLayout extends GridLayout {
 		}
 		this.addComponent( 				  field, 1, currentRow );
 		setComponentAlignment( field, Alignment.TOP_LEFT);
+	}
+
+	public void addLastInLineField( AbstractComponent field ) {
+
+		this.addComponent( field, this.getColumns() - 1, this.getRows() - 1 );
+		setComponentAlignment( field, Alignment.TOP_LEFT);
+		
 	}
 	
 	public void addFieldFullLine( AbstractComponent field ) {
@@ -110,5 +117,16 @@ public class CustomGridLayout extends GridLayout {
 		
 		return lb;
 	}
+	
+	protected BoldLabel addLabelValueComponent( String labelCaption ) {
+		
+		BoldLabel resComp = new BoldLabel();
+
+		addField( labelCaption, resComp );
+		
+		return resComp;
+	}
+
+
 	
 }

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+
 <Configuration status="WARN">
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
@@ -13,8 +15,7 @@
   </Appenders>
   <Loggers>
 
-    <Logger name="com.c2point.tools.ui.accountmgmt" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
-    <Logger name="com.c2point.tools.ui.toolsmgmt.ToolItemEditDlg" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
+    <Logger name="com.c2point.tools"					level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
       
 <!--
     <Logger name="com.c2point.tools.ui"					level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
@@ -23,12 +24,14 @@
 	<Logger name="com.c2point.tools.resources" 			level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
 
     <Logger name="com.c2point.tools.ui" 				level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
+    <Logger name="com.c2point.tools.ui.accountmgmt" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
     <Logger name="com.c2point.tools.ui.login"			level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
     <Logger name="com.c2point.tools.ui.orgmgmt" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
     <Logger name="com.c2point.tools.ui.printpdf" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
     <Logger name="com.c2point.tools.ui.reports" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
     <Logger name="com.c2point.tools.ui.repositoryview" 	level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
     <Logger name="com.c2point.tools.ui.toolsmgmt" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
+    <Logger name="com.c2point.tools.ui.toolsmgmt.ToolItemEditDlg" 		level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
     <Logger name="com.c2point.tools.ui.transactions" 	level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
     <Logger name="com.c2point.tools.ui.upload" 			level="debug" additivity="false"> <AppenderRef ref="Console"/> </Logger>
 

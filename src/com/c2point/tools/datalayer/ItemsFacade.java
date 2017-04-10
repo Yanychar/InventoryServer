@@ -389,6 +389,7 @@ public class ItemsFacade extends DataFacade {
 		}
 		
 		newItem.setDeleted( true );
+		newItem.setStatus( ItemStatus.REMOVED );
 		
 		try {
 			newItem = DataFacade.getInstance().merge( newItem );
@@ -507,7 +508,7 @@ public class ItemsFacade extends DataFacade {
 			
 			try {
 				OrgUser whoDid = (( InventoryUI )UI.getCurrent()).getSessionOwner();
-				TransactionsFacade.getInstance().writeToolItem( whoDid, newItem, TransactionOperation.ADD );
+				TransactionsFacade.getInstance().writeToolItem( whoDid, newItem.getCurrentUser(), newItem, TransactionOperation.ADD );
 				
 			} catch ( Exception e ) {
 				logger.error( "Cannot identify who add ToolItem");
@@ -530,8 +531,24 @@ public class ItemsFacade extends DataFacade {
 
 	public Manufacturer addManufacturer( String manufacturerName ) {
 
-		Manufacturer result = DataFacade.getInstance().insert( new Manufacturer( manufacturerName ) );
-
+		Manufacturer result = null;
+		
+		try {
+			result = DataFacade.getInstance().insert( new Manufacturer( manufacturerName ) );
+		
+			try {
+				OrgUser whoDid = (( InventoryUI )UI.getCurrent()).getSessionOwner();
+				TransactionsFacade.getInstance().writeManufacturer( whoDid, manufacturerName, TransactionOperation.ADD );
+				
+			} catch ( Exception e ) {
+				logger.error( "Cannot identify who add Manufacturer ");
+			}
+		} catch ( Exception e ) {
+			logger.error( "Failed to add Manufacturer: " + manufacturerName );
+			logger.error( e );
+			return null;
+		}
+		
 		return result;
 	}
 	

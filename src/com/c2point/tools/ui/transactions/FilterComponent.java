@@ -242,9 +242,9 @@ boolean postponeUpdate;
 		HorizontalLayout dateLine = new HorizontalLayout();
 		dateLine.setSpacing( true ); // and spacing between components		
 		
-		dateLine.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.from")));
+		dateLine.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.from" ) + ":" ));
 		dateLine.addComponent( startDF );
-		dateLine.addComponent( new Label( "  " + model.getApp().getResourceStr( "trnsmgmt.label.to")));
+		dateLine.addComponent( new Label( "  " + model.getApp().getResourceStr( "trnsmgmt.label.to" ) + ":" ));
 		dateLine.addComponent( endDF );
 	
 		return dateLine; 

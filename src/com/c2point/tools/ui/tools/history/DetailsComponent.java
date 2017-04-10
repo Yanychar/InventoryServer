@@ -60,15 +60,15 @@ public class DetailsComponent extends Panel implements ToolsHistoryModelListener
 		content.setSpacing( true );
 		content.setMargin( true );
 		
-		content.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.date" )), 0, 0 );
-		content.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.who" )), 2, 0 );
+		content.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.date" ) + ":" ), 0, 0 );
+		content.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.who" ) + ":" ), 2, 0 );
 		
 		Label separator = new Label( "<hr/>", ContentMode.HTML );
 		separator.setWidth( "100%" );
 		content.addComponent( separator, 0, 1, 4, 1 );
 		
-		content.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.type" )), 0, 2 );
-		content.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.operation" )), 0, 3 );
+		content.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.type" ) + ":" ), 0, 2 );
+		content.addComponent( new Label( model.getApp().getResourceStr( "trnsmgmt.label.operation" ) + ":" ), 0, 3 );
 
 		// Now fields with variable content will be added
 		date = new Label( "", ContentMode.HTML );
@@ -148,7 +148,7 @@ public class DetailsComponent extends Panel implements ToolsHistoryModelListener
 			
 			if ( trn.getTrnOperation() == TransactionOperation.NEWSTATUS ) {
 
-				fieldName_1.setValue( model.getApp().getResourceStr( "trnsmgmt.label.status" ));
+				fieldName_1.setValue( model.getApp().getResourceStr( "trnsmgmt.label.status" ) + ":" );
 				fieldValue_1.setValue( "<b>" + trn.getNewStatus().toString( model.getApp().getSessionData().getBundle()) + "</b>" );
 				
 				fieldName_2.setValue( "" );
@@ -156,10 +156,10 @@ public class DetailsComponent extends Panel implements ToolsHistoryModelListener
 				
 			} else if ( trn.getTrnOperation() == TransactionOperation.USERCHANGED ) {
 				
-				fieldName_1.setValue( model.getApp().getResourceStr( "trnsmgmt.label.from" ));
+				fieldName_1.setValue( model.getApp().getResourceStr( "trnsmgmt.label.from" ) + ":" );
 				fieldValue_1.setValue( "<b>" + trn.getSourceUser().getFirstAndLastNames() + "</b>" );
 				
-				fieldName_2.setValue( model.getApp().getResourceStr( "trnsmgmt.label.to" ));
+				fieldName_2.setValue( model.getApp().getResourceStr( "trnsmgmt.label.to" + ":" ));
 				fieldValue_2.setValue( "<b>" + trn.getDestUser().getFirstAndLastNames() + "</b>" );
 			
 			} else {

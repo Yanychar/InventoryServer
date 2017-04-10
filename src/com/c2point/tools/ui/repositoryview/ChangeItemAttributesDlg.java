@@ -9,9 +9,6 @@ import com.c2point.tools.datalayer.SettingsFacade;
 import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
-import com.c2point.tools.ui.buttonbar.ButtonBar;
-import com.c2point.tools.ui.buttonbar.ButtonPressListener;
-import com.c2point.tools.ui.changescollecor.FieldsChangeCollector;
 import com.c2point.tools.ui.util.AbstractDialog;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -22,7 +19,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -98,7 +94,7 @@ public class ChangeItemAttributesDlg extends AbstractDialog {
 
 		fillStatusField();
 
-		comments = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" ));
+		comments = new TextArea( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" + ":" ));
 		comments.setNullRepresentation( "" );
 		comments.setRows( 3 );
 		comments.setColumns( 60 );
