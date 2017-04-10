@@ -124,7 +124,7 @@ public class LoginComponent extends CustomComponent {
 		hl.setWidth( "100%" );
 		hl.addComponent( okButton );
 		hl.addComponent( glue );
-		hl.addComponent( forgotButton );
+//		hl.addComponent( forgotButton );
 		
 		
 		VerticalLayout vl = new VerticalLayout();

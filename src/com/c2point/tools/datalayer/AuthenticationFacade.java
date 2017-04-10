@@ -85,17 +85,19 @@ public class AuthenticationFacade extends DataFacade {
 		return account;
 	}
 	
-	public boolean logout( Account account, boolean bAutomatic ) {
+	public boolean logout( OrgUser sessionOwner,  boolean bAutomatic ) {
 		boolean bRes = false;
+		
+		Account account = sessionOwner.getAccount();
 		
 		// Set status logged = OFF
 		account.closeSession();
 
 		account = merge( account );
-		if ( logger.isDebugEnabled()) logger.debug( "Session for " + account.getUser() + " closed!" );
+		if ( logger.isDebugEnabled()) logger.debug( "Session for " + sessionOwner + " closed!" );
 		
 		if ( account != null )
-			TransactionsFacade.getInstance().writeLogout( account.getUser());
+			TransactionsFacade.getInstance().writeLogout( sessionOwner );
 		
 		bRes = true;
 		

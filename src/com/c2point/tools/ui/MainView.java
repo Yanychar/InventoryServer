@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.InventoryUI;
 import com.c2point.tools.configuration.Versioning;
+import com.c2point.tools.datalayer.AuthenticationFacade;
 import com.c2point.tools.entity.access.FunctionalityType;
 import com.c2point.tools.entity.access.SecurityContext;
 import com.c2point.tools.ui.msg.MessagesView;
@@ -14,12 +15,17 @@ import com.c2point.tools.ui.reports.ReportsView;
 import com.c2point.tools.ui.repositoryview.RepositoryManagementView;
 import com.c2point.tools.ui.settings.SettingsView;
 import com.c2point.tools.ui.tools.history.ToolsHistoryManagementView;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -49,31 +55,8 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 	public void initWindow() {
 		setSizeFull();
 		setSpacing( true );
-/*		
-		HorizontalSplitPanel mainSplit  = new HorizontalSplitPanel();
-		mainSplit.setSplitPosition( 50, Unit.EX );
-		mainSplit.setSizeFull();
-		mainSplit.setLocked( false );
 
-		VerticalSplitPanel rightSplit  = new VerticalSplitPanel();
-		rightSplit.setSplitPosition( 5, Unit.EM );
-		rightSplit.setSizeFull();
-		rightSplit.setLocked( false );
-		
-		rightSplit.setFirstComponent( getInfoBar());
-		mainSplit.setSecondComponent( rightSplit );
-		
-		
-		mainSplit.setFirstComponent( getMenuBar());
-		mainSplit.setSecondComponent( rightSplit );
-
-		
-		
-		addComponent( mainSplit );
-		setExpandRatio( mainSplit, 1.0F );
-*/
-		
-		mainSplit  = new HorizontalSplitPanel();
+				mainSplit  = new HorizontalSplitPanel();
 		mainSplit.setSizeFull();
 		mainSplit.setLocked( false );
 		mainSplit.setSplitPosition( 10, Unit.PERCENTAGE );
@@ -222,23 +205,37 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 	private Component getInfoBar() {
 
 		HorizontalLayout layout = new HorizontalLayout();
+		layout.setWidth( "100%" );
+		layout.setMargin( new MarginInfo( false, true, false, false ));
+		layout.setSpacing( true );
 		
-        Button accountButton = new NativeButton( "Account" );
+        Label nameText = new Label(
+        		"<b>"
+        		+ (( InventoryUI )UI.getCurrent()).getSessionOwner().getFirstAndLastNames()
+        		+ " (" 
+        		+ (( InventoryUI )UI.getCurrent()).getSessionOwner().getOrganisation().getName()
+        		+ ")"
+        		+ "</b>",
+        		ContentMode.HTML
+        	);
+        
+        
+        Button accountButton = new Button();
+        accountButton.setIcon( VaadinIcons.COG );
+        accountButton.addStyleName( "borderless" );
         
 //        accountButton.addStyleName( "icon-" + view );
         accountButton.addClickListener( new ClickListener() {
-            /**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
             public void buttonClick( ClickEvent event ) {
-                
+				
             }
         });
         
-        Button exitButton = new NativeButton( "Exit" );
+        Button exitButton = new NativeButton( "Logout" );
+        exitButton.addStyleName( BaseTheme.BUTTON_LINK );
         
 //        exitButton.addStyleName( "icon-" + view );
         exitButton.addClickListener( new ClickListener() {
@@ -246,12 +243,23 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
 
 			@Override
             public void buttonClick( ClickEvent event ) {
-                
+                exitPressed();
             }
         });
 
+		Label glue = new Label( " " );
+//		glue.setWidth("100%");
+        
+		nameText.setSizeUndefined();
+		
+        layout.addComponent( glue );
+        layout.addComponent( nameText );
         layout.addComponent( accountButton );
         layout.addComponent( exitButton );
+
+        layout.setExpandRatio( glue, 1.0f );
+        
+        layout.setComponentAlignment( nameText, Alignment.MIDDLE_RIGHT );
 
 		
 		return layout;
@@ -406,5 +414,21 @@ public class MainView extends VerticalLayout { //implements Organisation.Propert
     private void temporalTests() {
     	
     }
+    
+    private void exitPressed() {
+    	// Log out and exit
+    	
+		logger.debug( "Logout has been selected" );
+		InventoryUI app = ( InventoryUI )UI.getCurrent();
+
+		// Logout user
+		AuthenticationFacade.getInstance().logout( app.getSessionOwner(), false );
+		// Close application
+		app.close();    	
+		// Reload Web page to get Login screen
+		Page.getCurrent().reload();
+    	
+    }
+    
 }
 
