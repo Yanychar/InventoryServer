@@ -73,7 +73,8 @@
 		<dependency org="com.itextpdf" name="kernel" rev="7.0.1"/>
 		<dependency org="com.itextpdf" name="io" rev="7.0.1"/>
 		<dependency org="com.itextpdf" name="layout" rev="7.0.1"/>
-		
+
+		<dependency org="com.vaadin" name="vaadin-icons" rev="2.0.0" />		
 		
 	</dependencies>
 </ivy-module>
