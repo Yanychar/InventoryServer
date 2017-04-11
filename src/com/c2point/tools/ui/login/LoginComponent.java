@@ -1,6 +1,5 @@
 package com.c2point.tools.ui.login;
 
-import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
 

@@ -1,5 +1,6 @@
 package com.c2point.tools.converter;
 
+// Shall be saved in UTF-8. ААА
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

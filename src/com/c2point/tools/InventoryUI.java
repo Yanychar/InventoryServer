@@ -3,7 +3,6 @@ package com.c2point.tools;
 import javax.servlet.http.Cookie;
 
 import com.c2point.tools.configuration.Configuration;
-import com.c2point.tools.configuration.DBupdate;
 import com.c2point.tools.entity.SessionData;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.ui.MainView;
