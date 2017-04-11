@@ -112,10 +112,10 @@ public class DetailsView extends CustomGridLayout implements ToolItemChangedList
 
 		personalFlag = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.personalflag" ) +":" );
 		serialNumber = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.sn" ) +":" );
-		buyDate = addLabelValueComponent( "Bought" + ":" );
-		nextMaintenance = addLabelValueComponent( "Next Maintenance" + ":" );
-		price = addLabelValueComponent( "Price" + ":" );
-		takuu = addLabelValueComponent( "Guarantee (months)" + ":" );
+		buyDate = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.bought" ) +":" );
+		nextMaintenance = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.maintenance" ) +":" );
+		price = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.price" ) +":" );
+		takuu = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.takuu" ) +":" );
 		comments = addLabelValueComponent( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" ) + ":" );
 		
 		addSeparator();
