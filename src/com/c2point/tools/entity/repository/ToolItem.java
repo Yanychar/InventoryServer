@@ -159,19 +159,9 @@ public class ToolItem extends SimplePojo {
 		
 		setQuantity( 1 );
 
-// Set to FREE if FREE status available in this organisation. Othervise INUSE
-		if ( tool != null ) {
-			
-			boolean freeAllowed = SettingsFacade.getInstance().getBoolean( tool.getOrg(), "freeStatusAllowed", false );
-			
-			setStatus( freeAllowed ? ItemStatus.FREE : ItemStatus.INUSE );
-	    	
-		}
-
-		
+		setDefaultStatus();
 		setPersonalFlag( false );
 	}
-
 
 //	public Organisation getOrg() { return org; }
 //	public void setOrg( Organisation org ) { this.org = org; }
@@ -191,7 +181,7 @@ public class ToolItem extends SimplePojo {
 	public GeoLocation getLastKnownLocation() { return lastKnownLocation; }
 	public void setLastKnownLocation( GeoLocation lastKnownLocation ) { this.lastKnownLocation = lastKnownLocation; }
 
-	public ItemStatus getStatus() { return status; }
+	public ItemStatus getStatus() { return ( status != null ? status : ItemStatus.UNKNOWN ); }
 	public void setStatus( ItemStatus status ) { this.status = status; }
 	
 	public int getQuantity() { return quantity; }
@@ -252,5 +242,21 @@ public class ToolItem extends SimplePojo {
 		return ( getTool() != null ? getTool().getShortName() : "" );
 	}
 		
+	public void setDefaultStatus() {
+		// Set to FREE if FREE status available in this organisation. Othervise INUSE
+		if ( tool != null || getCurrentUser() != null || getStatus() == null || getStatus() == ItemStatus.UNKNOWN ) {
+			
+			boolean freeAllowed = ( tool != null && tool.getOrg() != null 
+					? SettingsFacade.getInstance().getBoolean( tool.getOrg(), "freeStatusAllowed", false )
+					: true );
+			
+			setStatus( freeAllowed ? ItemStatus.FREE : ItemStatus.INUSE );
+	    	
+		}
+
+				
+		
+	}
+	
 	
 }

@@ -268,11 +268,11 @@ public class ToolsListModel extends AbstractModel {
 
 	}
 	
-	public ToolItem updateItem() {
-		return updateItem( this.selectedItem );
+	public ToolItem updateToolAndItem( boolean toolModified ) {
+		return updateToolAndItem( this.selectedItem, toolModified );
 	}
-	public ToolItem updateItem( ToolItem item ) {
-		
+	public ToolItem updateToolAndItem( ToolItem item, boolean toolModified ) {
+/*		
 		ToolItem newItem = null;
 		
 		// Update DB
@@ -287,6 +287,34 @@ public class ToolsListModel extends AbstractModel {
 			} 
 			
 		}
+		
+		return newItem;
+*/
+		
+		
+		Tool 		newTool = null;
+		ToolItem 	newItem = null;			
+		
+		if (  item != null && item.getTool() != null ) {
+
+			if ( toolModified ) {
+				// Update Tool if necessary
+				newTool = ToolsFacade.getInstance().update( item.getTool());
+	
+				// Set new Tool to ToolItem
+				item.setTool( newTool );
+			}
+			
+			// Update ToolItem
+			newItem = ItemsFacade.getInstance().update( item );
+			
+			fireChanged( newItem );
+			
+		} else {
+			// Missing Tool and/or ToolItem. Nothing to add/edit 
+			logger.error( "Cannot add Tool or ToolItem. Something is NULL!" );
+		}
+		
 		
 		return newItem;
 		
