@@ -509,7 +509,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		} else {
 			
 			chain = "???";
-			logger.error( "Could not create the String with chain of categories");
+			logger.error( "Category is not specified for ToolItem in company: '" + model.getSelectedOrg().getName() + "'!" );
 		}
 		
 		return chain;
