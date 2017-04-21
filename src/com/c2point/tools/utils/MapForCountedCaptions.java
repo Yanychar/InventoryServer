@@ -9,11 +9,15 @@ public class MapForCountedCaptions extends HashMap<String, IncrementalInt> {
 		
 		IncrementalInt counter = this.get( caption );
 		
-		if ( counter == null ) {
-			put( caption, new IncrementalInt());
+		if ( caption != null ) {
+			if ( counter == null ) {
+				put( caption, new IncrementalInt());
+			} else {
+				caption = caption.concat( "   (" + counter + ")" );
+				counter.increment();
+			}
 		} else {
-			caption = caption.concat( "   (" + counter + ")" );
-			counter.increment();
+			return "";
 		}
 		
 		return caption;
