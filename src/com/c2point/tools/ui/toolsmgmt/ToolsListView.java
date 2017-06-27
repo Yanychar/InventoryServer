@@ -69,6 +69,8 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 
 		initView();
 
+		initCategoryFilter();
+		
 		model.addListener( this );
 		
 	}
@@ -217,9 +219,12 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		// Find correct Item. Start from selected one
 		// update row with data 
 		addOrUpdateItem( item );
+
+		itemsTable.sort();
 		
 		// set correct selection
 		itemsTable.setValue( item.getId());
+		itemsTable.setCurrentPageFirstItemId( item.getId());
 
 		updateCounter();
 	}
@@ -233,8 +238,11 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		// update row with data 
 		addOrUpdateItem( item );
 		
+		itemsTable.sort();
+		
 		// set correct selection
 		itemsTable.setValue( item.getId());
+		itemsTable.setCurrentPageFirstItemId( item.getId());
 		
 	}
 
@@ -266,7 +274,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		
 		if ( logger.isDebugEnabled()) logger.debug( "Tool Items List received WhleListChanged event!" );
 
-		initCategoryFilter();
+//		initCategoryFilter();
 		
 		dataFromModel();
 	
@@ -338,7 +346,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			if ( logger.isDebugEnabled()) logger.debug( "Tool Item exists already. Will be modified: " + toolItem );
 		}
 
-		item.getItemProperty( "category" ).setValue( getCategoryChain( toolItem.getTool().getCategory()));
+		item.getItemProperty( "category" ).setValue( getCategoryChain( toolItem ));
 		item.getItemProperty( "name" ).setValue( toolItem.getTool().getFullName());
 		item.getItemProperty( "status" ).setValue( toolItem.getStatus().toString( model.getApp().getSessionData().getBundle()));
 		
@@ -375,8 +383,6 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			categoryFilter.setInvalidAllowed( false );
 			categoryFilter.setImmediate(true);
 			
-//			initCategoryFilter();
-
 			Label searchIcon = new Label();
 			searchIcon.setIcon(new ThemeResource("icons/16/search.png"));
 			searchIcon.setWidth( "2em" );
@@ -484,10 +490,10 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		return found;
 	}
 
-	private String getCategoryChain( Category category ) {
+	private String getCategoryChain( ToolItem toolItem ) {
 		
+		Category tmpCategory = toolItem.getTool().getCategory();
 		String chain;
-		Category tmpCategory = category;
 		
 		if ( tmpCategory != null ) {
 			
@@ -509,7 +515,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		} else {
 			
 			chain = "???";
-			logger.error( "Category is not specified for ToolItem in company: '" + model.getSelectedOrg().getName() + "'!" );
+			logger.error( "Category is not specified for ToolItem: " + toolItem.getShortName() + " in company: '" + model.getSelectedOrg().getName() + "'!" );
 		}
 		
 		return chain;
@@ -615,16 +621,16 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 			
 			switch ( level ) {
 				case 1:
-					caption = "\u2523"; 
+//					caption = "\u2523"; 
 					break;
 				case 2:
-					caption = "\u2503 \u2523"; 
+					//					caption = "\u2503 \u2523"; 
 					break;
 				case 3:
-					caption = "\u2503   \u2523"; 
+					//					caption = "\u2503   \u2523"; 
 					break;
 				default:
-					caption = "\u2503     \u2523"; 
+					//					caption = "\u2503     \u2523"; 
 					break;
 			}
 			caption = caption + cat.getName(); 

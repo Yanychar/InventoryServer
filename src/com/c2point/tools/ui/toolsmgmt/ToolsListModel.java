@@ -233,7 +233,22 @@ public class ToolsListModel extends AbstractModel {
 		
 		// Add to DB
 		if (  item != null && item.getTool() != null ) {
-
+/*
+			// Firstly add Manuf if necessary
+			if ( item.getTool().getManufacturer().getId() <=0 ) {
+				
+				Manufacturer newMan = DataFacade.getInstance().insert( item.getTool().getManufacturer());
+				if ( newMan != null ) {
+					
+					item.getTool().setManufacturer( newMan );
+					
+				} else {
+					logger.error( "Cannot add new manufacturer!" );
+					return newItem;
+				}
+			}
+*/			
+			
 			// If New Tool than add Tool firstly
 			if ( item.getTool().getId() <=0 ) {
 

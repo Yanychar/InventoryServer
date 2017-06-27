@@ -197,7 +197,10 @@ public class AccountEditDlg extends AbstractDialog {
 			}
 		} else {
 
-			Notification.show( "Error", "Invalid Username. Length of Username shall be more than 6 characters", Type.ERROR_MESSAGE );
+			Notification.show( "Error", 
+					"Invalid Username. Length of Username shall be more than "
+				+	PasswordGenerator.getMinNameLength()
+				+	" characters", Type.ERROR_MESSAGE );
 			usrname.selectAll();
 			usrname.focus();
 			
@@ -220,7 +223,7 @@ public class AccountEditDlg extends AbstractDialog {
 			Notification.show( 
 					"Error", 
 					"Invalid Password. Length of Password shall be more than " 
-						+ PasswordGenerator.PASSWORD_LENGTH
+						+ PasswordGenerator.getMinPwdLength()
 						+ " characters",
 					Type.ERROR_MESSAGE );
 			

@@ -248,9 +248,9 @@ public class ToolItem extends SimplePojo {
 			
 			boolean freeAllowed = ( tool != null && tool.getOrg() != null 
 					? SettingsFacade.getInstance().getBoolean( tool.getOrg(), "freeStatusAllowed", false )
-					: true );
+					: false );
 			
-			setStatus( freeAllowed ? ItemStatus.FREE : ItemStatus.INUSE );
+			setStatus( freeAllowed ? ItemStatus.FREE : ItemStatus.UNKNOWN );
 	    	
 		}
 

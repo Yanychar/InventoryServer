@@ -32,6 +32,7 @@ import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.datalayer.ToolsFacade;
 import com.c2point.tools.datalayer.UsersFacade;
 import com.c2point.tools.entity.person.OrgUser;
+import com.c2point.tools.entity.repository.ItemStatus;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.Manufacturer;
@@ -310,10 +311,15 @@ public class ToolItemsImportProcessor extends FileProcessor {
 			resItem = null;
 		} else {
 			// Setup other ToolItem specific parameters:
+			
+			// ItemStatus
+			
 			//	buyTime
 			//	price
 			//	takuu
 			//	maintenanceTime
+			
+			resItem.setStatus( ItemStatus.INUSE );
 			
 			resItem.setBuyTime( createLocalDate( nextLine[ 10 ] ));
 			try {
