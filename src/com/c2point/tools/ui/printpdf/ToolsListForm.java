@@ -3,6 +3,8 @@ package com.c2point.tools.ui.printpdf;
 import java.util.Collection;
 import java.util.ResourceBundle;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.c2point.tools.entity.repository.ToolItem;
 import com.itextpdf.layout.element.Table;
 
@@ -85,9 +87,9 @@ public class ToolsListForm extends AbstractPdfForm {
     private void addItemToTable( ToolItem ti, Table table, int counter ) {
 
     	table.addCell( Integer.toString( counter ));
-    	table.addCell( ti.getFullName());
-    	table.addCell( ti.getStatus().toString( this.getResourceBundle()));
-    	table.addCell( ti.getBarcode());
+    	table.addCell( StringUtils.defaultString( ti.getFullName()));
+    	table.addCell( StringUtils.defaultString( ti.getStatus().toString( this.getResourceBundle())));
+    	table.addCell( StringUtils.defaultString( ti.getBarcode()));
 
     }
 	

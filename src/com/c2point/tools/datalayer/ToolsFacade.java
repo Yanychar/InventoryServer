@@ -169,6 +169,21 @@ public class ToolsFacade extends DataFacade {
 
 		Tool newTool = null;
 		
+		// 1. If Manufacturer is new store it firstly!
+		if( tool.getManufacturer() != null && tool.getManufacturer().getId() <= 0 ) {
+			// Store
+			try {
+				Manufacturer man = DataFacade.getInstance().insert( tool.getManufacturer());
+				tool.setManufacturer( man );
+				
+			} catch ( Exception e ) {
+				logger.error( "Failed to add Manufacturer: " + tool.getManufacturer());
+				logger.error( e );
+				return null;
+			}
+		}
+		
+		
 		if ( tool == null )
 			throw new IllegalArgumentException( "Valid Tool cannot be null!" );
 		

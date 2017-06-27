@@ -410,6 +410,7 @@ public class ToolItemEditDlg extends AbstractDialog {
 		});
 		
 		currentUser.addValueChangeListener( new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -476,7 +477,7 @@ public class ToolItemEditDlg extends AbstractDialog {
 				editedItem.getTool().setManufacturer( editedTool.getManufacturer());
 				editedItem.getTool().setModel( editedTool.getModel());
 				editedItem.getTool().setName( editedTool.getName());
-				editedItem.getTool().setToolInfo( editedTool.getToolInfo());
+				editedItem.getTool().setToolInfo( "" ); // editedTool.getToolInfo());
 				editedItem.getTool().setCategory( editedTool.getCategory());
 			}
 		}
@@ -502,14 +503,18 @@ public class ToolItemEditDlg extends AbstractDialog {
 
 	private void updateFields() {
 		
-		boolean disallowEdit = ( model.getEditMode() == EditModeType.COPY || !editToolFlag.getValue());
+		boolean disallowEditTool = ( model.getEditMode() == EditModeType.COPY || !editToolFlag.getValue());
 		
-		manufSelect.setReadOnly( disallowEdit );
-		modelSelect.setReadOnly( disallowEdit );
-		nameText.setReadOnly( disallowEdit );
-		catSelect.setReadOnly( disallowEdit );
+		manufSelect.setReadOnly( disallowEditTool );
+		modelSelect.setReadOnly( disallowEditTool );
+		nameText.setReadOnly( disallowEditTool );
+		catSelect.setReadOnly( disallowEditTool );
 		
-		disallowEdit = ( model.getEditMode() == EditModeType.VIEW );
+		if( !disallowEditTool ) {
+//			manufSelect.focus();
+		}
+		
+		boolean disallowEdit = ( model.getEditMode() == EditModeType.VIEW );
 		
 		personalFlag.setReadOnly( disallowEdit );
 		currentUser.setReadOnly( disallowEdit );
@@ -521,6 +526,11 @@ public class ToolItemEditDlg extends AbstractDialog {
 		price.setReadOnly( disallowEdit );
 		takuu.setReadOnly( disallowEdit );
 		comments.setReadOnly( disallowEdit );
+		
+		if ( !disallowEdit && disallowEditTool ) {
+			
+//			statusBox.focus();
+		}
 		
 	}
 	
@@ -779,6 +789,10 @@ public class ToolItemEditDlg extends AbstractDialog {
 
 			if ( !freeAllowed && tmpStatus == ItemStatus.FREE ) {
 				// Do not add if free status is not allowed
+				if ( status == ItemStatus.FREE ) {
+					
+					status = ( editedItem.getCurrentUser() != null ? ItemStatus.INUSE : ItemStatus.UNKNOWN );
+				}
 				continue;
 			}
 			statusBox.addItem( tmpStatus );

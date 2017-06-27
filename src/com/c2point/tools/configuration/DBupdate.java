@@ -258,7 +258,9 @@ public class DBupdate {
 		 *   - Add property string field to Organisation 
 		 *     
 		 */
+		@SuppressWarnings("unused")
 		private boolean convert_from_1_to_2() {
+			
 			boolean res = false;
 
 			String stmtStr;
@@ -275,7 +277,7 @@ public class DBupdate {
 				res = true;
 			} else {
 				logger.error( "'Organisation' table has NOT been updated successfully!" );
-				return false;
+				return res;
 			}
 			
 			// 2. Tool models move to separate table
@@ -287,7 +289,7 @@ public class DBupdate {
 
 			
 			
-			return true;
+			return res;
 		}
 		
 	}

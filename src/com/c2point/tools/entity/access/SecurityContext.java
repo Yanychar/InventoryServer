@@ -115,14 +115,18 @@ public class SecurityContext {
 	
 	public boolean canChangeToolItemIfNotOwn( FunctionalityType func, ToolItem item ) {
 		
-		boolean itemOwned = item.getCurrentUser().getId() == this.user.getId();
+		boolean bRes = false;
 		
-		if ( !itemOwned ) {
+		try {
+			boolean itemOwned = item.getCurrentUser().getId() == this.user.getId();
 			
-			return ( getPermission( func, OwnershipType.COMPANY ) == PermissionType.RW ); 
-		}
+			if ( !itemOwned ) {
+				
+				bRes = ( getPermission( func, OwnershipType.COMPANY ) == PermissionType.RW ); 
+			}
+		} catch ( Exception e ) {}
 		
-		return false;
+		return bRes;
 	}
 
 	private PermissionType getPermission( FunctionalityType func, OwnershipType ownership ) {

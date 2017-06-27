@@ -76,4 +76,7 @@ public class PasswordGenerator {
 				pwd.trim().length() >= PASSWORD_LENGTH;
 				
 	}
+	public static int getMinNameLength() { return USER_NAME_LENGTH; }
+	public static int getMinPwdLength() { return PASSWORD_LENGTH; }
+	
 }

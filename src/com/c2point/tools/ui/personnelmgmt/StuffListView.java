@@ -197,8 +197,11 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 		// update row with data 
 		addOrUpdateItem( user );
 		
+		usersTable.sort();
+		
 		// set correct selection
 		usersTable.setValue( user.getId());
+		usersTable.setCurrentPageFirstItemId( user.getId());
 		
 		updateCounter();
 		
@@ -213,8 +216,11 @@ public class StuffListView extends ListWithSearchComponent implements StuffChang
 		// update row with data 
 		addOrUpdateItem( user );
 		
+		usersTable.sort();
+		
 		// set correct selection
 		usersTable.setValue( user.getId());
+		usersTable.setCurrentPageFirstItemId( user.getId());
 		
 	}
 

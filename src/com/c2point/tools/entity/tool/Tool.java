@@ -1,7 +1,9 @@
 package com.c2point.tools.entity.tool;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -56,6 +58,7 @@ public class Tool extends SimplePojo {
 	
 	private Category 	category;
 	
+	@ManyToOne( cascade=CascadeType.MERGE, fetch=FetchType.EAGER )
 	private Manufacturer	manufacturer;
 
 	private String 		model;
