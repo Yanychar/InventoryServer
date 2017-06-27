@@ -338,6 +338,9 @@ public class ToolsListView extends VerticalLayout implements
 			return "style='color:red'";
 		case INUSE:
 			return "style='color:#FDD835'";
+		case REMOVED:
+		default:
+			break;
 
 		}
 

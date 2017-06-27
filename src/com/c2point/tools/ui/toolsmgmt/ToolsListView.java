@@ -341,6 +341,7 @@ public class ToolsListView extends VerticalLayout implements ToolItemChangedList
 		item.getItemProperty( "category" ).setValue( getCategoryChain( toolItem.getTool().getCategory()));
 		item.getItemProperty( "name" ).setValue( toolItem.getTool().getFullName());
 		item.getItemProperty( "status" ).setValue( toolItem.getStatus().toString( model.getApp().getSessionData().getBundle()));
+		
 		try {
 			item.getItemProperty( "user" ).setValue( toolItem.getCurrentUser().getLastAndFirstNames());
 		} catch ( Exception e ) {

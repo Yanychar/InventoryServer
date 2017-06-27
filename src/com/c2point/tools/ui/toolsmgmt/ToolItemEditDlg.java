@@ -20,6 +20,7 @@ import com.c2point.tools.ui.util.CustomGridLayout;
 import com.c2point.tools.ui.util.DoubleField;
 import com.c2point.tools.ui.util.IntegerField;
 import com.c2point.tools.ui.util.AbstractModel.EditModeType;
+import com.c2point.tools.utils.MapForCountedCaptions;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItemContainer;
@@ -150,7 +151,7 @@ public class ToolItemEditDlg extends AbstractDialog {
 		statusBox = new ComboBox();
 		statusBox.setInputPrompt( "Select Status..." );
 		statusBox.setFilteringMode( FilteringMode.CONTAINS );
-		statusBox.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
+//		statusBox.setItemCaptionMode( ItemCaptionMode.EXPLICIT );
 		statusBox.setNullSelectionAllowed( false );
 		statusBox.setInvalidAllowed( false );
 		statusBox.setImmediate( true );
@@ -188,27 +189,27 @@ public class ToolItemEditDlg extends AbstractDialog {
 		
 		
 		
-		if ( /*model.getEditMode() == EditModeType.ADD || */model.getEditMode() == EditModeType.EDIT ) {
-			subContent.addField( "Edit Tool model:", editToolFlag );
+		if ( model.getEditMode() == EditModeType.EDIT ) {
+			subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.edit.item" ) +":", editToolFlag );
 		}
-		subContent.addField( "Manufacturer:", manufSelect );
-		subContent.addField( "Model:", modelSelect );
-		subContent.addField( "Name:", nameText );
-		subContent.addField( "Category:", catSelect );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.manufacturer" ) +":", manufSelect );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.model" ) +":", modelSelect );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.tool" ) + ":", nameText );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.category" ) + ":", catSelect );
 		subContent.addSeparator();
 
-		subContent.addField( "Status:", statusBox );
-		subContent.addField( "User:", currentUser );
-		subContent.addField( "Barcode:", barcode );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.status" ) +":", statusBox );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.user" ) +":", currentUser );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.barcode" ) +":", barcode );
 		subContent.addSeparator();
 
-		subContent.addField( "Personal tool?", personalFlag );
-		subContent.addField( "Serial number:", serialNumber );
-		subContent.addField( "Bought:", buyDate );
-		subContent.addField( "Price:", price );
-		subContent.addField( "Takuu (mm):", takuu );
-		subContent.addField( "Next Maintenance:", nextMaintenance );
-		subContent.addField( "Comment:", comments );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.personalflag" ) +":", personalFlag );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.sn" ) +":", serialNumber );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.bought" ) +":", buyDate );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.price" ) +":", price );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.takuu" ) +":", takuu );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.maintenance" ) +":", nextMaintenance );
+		subContent.addField( model.getApp().getResourceStr( "toolsmgmt.view.label.iteminfo" ) + ":", comments );
 		
 		
 		
@@ -344,41 +345,17 @@ public class ToolItemEditDlg extends AbstractDialog {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-
-				Object selectedValue = modelSelect.getValue();
-				if ( selectedValue != null ) {
-					
-					if ( selectedValue instanceof Tool ) {
-						logger.debug( "Model selected: " + selectedValue );
-
-						modelChanged(( Tool ) selectedValue );
-						
-					} else if ( selectedValue instanceof String ) {
-						logger.debug( "New Model entered. Need to add '" + selectedValue + "' this model" );
-						
-					} else {
-						logger.error( "Value returned by selection is wrong. Type: " + selectedValue.getClass().getSimpleName() );
-					}
-					
-					
-				}
-
+				handleModelChanges( event );
 			}
 			
 		});
-		
-
 		modelSelect.setNewItemHandler( new NewItemHandler() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void addNewItem( String newModel ) {
 				// New Manufacturer shall be added
-				Tool newTool = new Tool( model.getSelectedOrg());
-				newTool.setManufacturer(( Manufacturer )manufSelect.getValue());
-				newTool.setModel( newModel );
-	
-				addModel( newTool );
+				handleNewModel( newModel );
 				
 			}
 			
@@ -427,6 +404,17 @@ public class ToolItemEditDlg extends AbstractDialog {
 						logger.error( "Value returned by selection is wrong. Type: " + selectedValue.getClass().getSimpleName() );
 					}
 				}
+				
+			}
+			
+		});
+		
+		currentUser.addValueChangeListener( new ValueChangeListener() {
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+		
+				editedItem.setDefaultStatus();
 				
 			}
 			
@@ -622,12 +610,39 @@ public class ToolItemEditDlg extends AbstractDialog {
 		}
 	}
 	
+	private void handleModelChanges( ValueChangeEvent event ) {
+	
+		Object selectedValue = modelSelect.getValue();
+		if ( selectedValue != null ) {
+			
+			if ( selectedValue instanceof Tool ) {
+				logger.debug( "Model selected: " + selectedValue );
+	
+				modelChanged(( Tool ) selectedValue );
+				
+			} else if ( selectedValue instanceof String ) {
+				logger.debug( "New Model Name entered was selected: '" + selectedValue + "'" );
+				
+			} else {
+				logger.error( "Value returned by selection is wrong. Type: " + selectedValue.getClass().getSimpleName() );
+			}
+		}		
+	}
+	
+	private void handleNewModel( String newModel ) {
+	
+		logger.debug( "New Model Name entered. New model '" + newModel + "' must be added" );
+		Tool newTool = new Tool( model.getSelectedOrg());
+		newTool.setManufacturer(( Manufacturer )manufSelect.getValue());
+		newTool.setModel( newModel );
+	
+		addModel( newTool );
+	}
 	
 	private void initModels( Tool tool ) {
 		
 		BeanItemContainer<Tool> modelContainer = new BeanItemContainer<>( Tool.class );
 		modelSelect.setContainerDataSource( modelContainer );
-		modelSelect.setItemCaptionPropertyId( "model" );
 
 		if ( tool != null ) {
 
@@ -653,11 +668,12 @@ public class ToolItemEditDlg extends AbstractDialog {
 			
 		}
 	}
+	
+	private MapForCountedCaptions modelsMap = new MapForCountedCaptions();
 	private void initModels( Manufacturer manuf ) {
 		
 		List<Tool> toolsList;
 		
-		modelSelect.removeAllItems();
 		if ( manuf != null ) {
 
 
@@ -666,11 +682,21 @@ public class ToolItemEditDlg extends AbstractDialog {
 				toolsList = model.getTools( manuf );
 	
 				if ( toolsList != null && toolsList.size() > 0 ) {
+
 					@SuppressWarnings("unchecked")
 					BeanItemContainer<Tool> modelContainer = ( BeanItemContainer<Tool> ) modelSelect.getContainerDataSource();
 				
-					modelContainer.addAll( toolsList );
+
+ 					modelContainer.removeAllItems();
+ 					modelsMap.clear();
+
+					for ( Tool tool : toolsList ) {
+
+						addModelInternal( modelContainer, tool );
+						
+					}
 					modelContainer.sort(new Object[] { "model" }, new boolean[] { true });
+					
 					
 				}				
 			} else {
@@ -688,7 +714,8 @@ public class ToolItemEditDlg extends AbstractDialog {
 		@SuppressWarnings("unchecked")
 		BeanItemContainer<Tool> modelContainer = ( BeanItemContainer<Tool> ) modelSelect.getContainerDataSource();
 		
-		modelContainer.addBean( tool );
+		addModelInternal( modelContainer, tool );
+
 		modelContainer.sort(new Object[] { "model" }, new boolean[] { true });	
 		
 		if ( tool != null ) 
@@ -696,6 +723,13 @@ public class ToolItemEditDlg extends AbstractDialog {
 		
 	}
 
+	private void addModelInternal( BeanItemContainer<Tool> modelContainer, Tool tool ) {
+
+		modelContainer.addBean( tool );
+		modelSelect.setItemCaption( tool, modelsMap.getUnicCaption( tool.getModel()));
+		
+	}
+	
 	
 	private void modelChanged( Tool tool ) {
 
@@ -848,7 +882,7 @@ public class ToolItemEditDlg extends AbstractDialog {
 				
 				if ( viewToData()) {
 				
-					if ( model.updateItem( editedItem ) != null ) {
+					if ( model.updateToolAndItem( editedItem, getChangesCollector( 1 ).wasItChanged() ) != null ) {
 						logger.debug( "Item was edited" );
 						close();
 					}

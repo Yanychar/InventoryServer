@@ -197,6 +197,38 @@ public class ToolsFacade extends DataFacade {
 		
 	}
 
+	public Tool update( Tool tool ) {
+
+		Tool newTool = null;
+		
+		if ( tool == null )
+			throw new IllegalArgumentException( "Valid Tool cannot be null!" );
+		
+		try {
+			newTool = DataFacade.getInstance().merge( tool );
+			
+		} catch ( Exception e ) {
+			logger.error( "Failed to edit Tool: " + tool );
+			logger.error( e );
+			return null;
+		}
+		
+		try {
+			OrgUser whoDid = (( InventoryUI )UI.getCurrent()).getSessionOwner();
+			TransactionsFacade.getInstance().writeTool( whoDid, newTool, TransactionOperation.EDIT );
+			
+		} catch ( Exception e ) {
+			logger.error( "Cannot identify who edit Tool");
+		}
+
+		if ( logger.isDebugEnabled() && newTool != null ) 
+			logger.debug( "Tool has been edited: " + newTool );
+		
+		
+		return newTool;
+		
+	}
+
 	public long count( Organisation org ) {
 		
 		long result = 0;
