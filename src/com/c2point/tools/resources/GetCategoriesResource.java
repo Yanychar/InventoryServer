@@ -10,11 +10,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.CategoriesFacade;
-import com.c2point.tools.entity.authentication.Account;
+import com.c2point.tools.entity.authentication.Session;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.resources.stubs.CategoriesStub;
 
@@ -39,21 +40,23 @@ public class GetCategoriesResource extends BaseResource {
 			
 		}
 
-		Account account = findAccount( sessionId );
+		Session session = findSession( sessionId );
 
-		if ( account == null ) {
+		if ( session == null ) {
 			if ( logger.isDebugEnabled()) {
-				logger.debug( "  FAILED because account not found");
-				logger.debug( "... end GetCategoriesResource.getJSON()");
+				logger.debug( "  FAILED because session not found");
+				logger.debug( "... end GetCategoriesResource.get()");
 			}
-			throw new WebApplicationException( Response.Status.NOT_FOUND );
+			
+			throw new WebApplicationException( Response.Status.UNAUTHORIZED );
 		}
+		if ( logger.isDebugEnabled()) logger.debug( "  Session was found" );
 		
 		// Fetch categories
 		List<Category> list = CategoriesFacade.getInstance()
 								.listTop( 
-											account.getUser().getOrganisation(), 
-											showEvenEmpty 
+										session.getUser().getOrganisation(), 
+										showEvenEmpty 
 								);
 
 		if ( logger.isDebugEnabled() && list != null ) {

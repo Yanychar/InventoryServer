@@ -27,9 +27,11 @@ import com.c2point.tools.entity.person.OrgUser;
 	@NamedQuery(name = "findAccountByUsrName", query = 
 			"SELECT account FROM Account account " +
 				"WHERE account.usrName = :usrName AND account.deleted = false ORDER BY account.usrName ASC"),
+/*	
 	@NamedQuery(name = "findAccountBySessionId", query = 
 			"SELECT account FROM Account account " +
 				"WHERE account.uniqueSessionID = :sessionId AND account.deleted = false"),
+*/				
 })
 public class Account extends SimplePojo {
 	
@@ -47,6 +49,7 @@ public class Account extends SimplePojo {
 	@Enumerated( EnumType.ORDINAL )
 	private AccountStateType 		state;
 
+/*	
     private String 				uniqueSessionID;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -55,7 +58,7 @@ public class Account extends SimplePojo {
     private Date			dateTouchedForDB;
 	@Temporal(TemporalType.TIMESTAMP)
     private Date			dateEndedForDB;
-	
+*/	
 	
 	public Account( String usrName, String pwd, OrgUser user ) {
 		super();
@@ -66,12 +69,12 @@ public class Account extends SimplePojo {
 		addUser( user );
 		
 		setState( AccountStateType.Active );
-
+/*
 		this.uniqueSessionID = null;
 		this.dateStartedForDB = null;
 		this.dateTouchedForDB  = null;
 		this.dateEndedForDB  = null;
-		
+*/		
 	}
 	public Account() {
 		this( "", "", null );
@@ -147,7 +150,7 @@ public class Account extends SimplePojo {
 	
 	public AccountStateType getState() { return state; }
 	public void setState( AccountStateType state ) { this.state = state; }
-	
+/*	
 	public String getUniqueSessionID() { return uniqueSessionID; }
 	protected void setUniqueSessionID( String uniqueSessionID ) { this.uniqueSessionID = uniqueSessionID; }
 	
@@ -173,8 +176,9 @@ public class Account extends SimplePojo {
 	protected void setDateTouchedForDB( Date dateTouchedForDB ) { this.dateTouchedForDB = dateTouchedForDB; }	
 	protected Date getDateEndedForDB() { return this.dateEndedForDB; }
 	protected void setDateEndedForDB( Date dateEndedForDB ) { this.dateEndedForDB = dateEndedForDB; }	
-	
+*/	
 
+/*	
 	public String setUniqueSessionID() {
 
 		DateTime date = DateTime.now();
@@ -199,7 +203,7 @@ public class Account extends SimplePojo {
 		
 		return oldId;
 	}
-
+*/
 	public boolean valid() {
 		
 		Collection<OrgUser> retList = normalize();

@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.MsgFacade;
-import com.c2point.tools.entity.authentication.Account;
+import com.c2point.tools.entity.authentication.Session;
 import com.c2point.tools.entity.msg.Message;
 import com.c2point.tools.entity.msg.MessageType;
 import com.c2point.tools.entity.person.OrgUser;
@@ -50,17 +50,17 @@ public class RejectionResource extends BaseResource {
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
 		
-		Account account = findAccount( sessionId );
+		Session session = findSession( sessionId );
 
-		if ( account == null ) {
+		if ( session == null ) {
 			if ( logger.isDebugEnabled()) {
-				logger.debug( "  FAILED because account not found");
+				logger.debug( "  FAILED because session not found");
 				logger.debug( "... end RejectionResource.get()");
 			}
 			
-			throw new WebApplicationException( Response.Status.NOT_FOUND );
+			throw new WebApplicationException( Response.Status.UNAUTHORIZED );
 		}
-		if ( logger.isDebugEnabled()) logger.debug( "  Account found" );
+		if ( logger.isDebugEnabled()) logger.debug( "  Session was found" );
 		
 		/*
 		 * Necessary to:
@@ -88,7 +88,7 @@ public class RejectionResource extends BaseResource {
 		//   Create Rejection Message and store it
 		Message msg = new Message( 
 				MessageType.REJECTION, 
-				account.getUser(), 
+				session.getUser(), 
 				rejectedUser,
 				item
 		);

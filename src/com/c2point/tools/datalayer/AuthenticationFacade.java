@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.InventoryUI;
 import com.c2point.tools.entity.authentication.Account;
+import com.c2point.tools.entity.authentication.ActiveSessions;
+import com.c2point.tools.entity.authentication.Session;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.transactions.TransactionOperation;
 import com.vaadin.ui.UI;
@@ -60,9 +62,9 @@ public class AuthenticationFacade extends DataFacade {
 				logger.debug( "Account and User found" );
 
 				if ( account.getPwd().compareTo( pwd ) == 0 ) {
-					account.setUniqueSessionID();
+//					account.setUniqueSessionID();
 
-					account = merge( account );
+//					account = merge( account );
 					
 				} else {
 					if ( logger.isDebugEnabled())
@@ -91,7 +93,7 @@ public class AuthenticationFacade extends DataFacade {
 		Account account = sessionOwner.getAccount();
 		
 		// Set status logged = OFF
-		account.closeSession();
+//		account.closeSession();
 
 		account = merge( account );
 		if ( logger.isDebugEnabled()) logger.debug( "Session for " + sessionOwner + " closed!" );
@@ -102,44 +104,6 @@ public class AuthenticationFacade extends DataFacade {
 		bRes = true;
 		
 		return bRes;
-	}
-	
-	public Account findBySessionId( String sessionId ) {
-		Account account;
-		
-		EntityManager em = createEntityManager();
-		try {
-			// Fetched Account with specify UserName. Should be one account only!!!  
-			TypedQuery<Account> q = em.createNamedQuery( "findAccountBySessionId", Account.class )
-					.setParameter("sessionId", sessionId );
-			account = q.getSingleResult();
-		} catch ( NoResultException e ) {
-			account = null;
-			logger.debug( "Not found: NoResultException for sessionId: '" + sessionId + "'" );
-		} catch ( NonUniqueResultException e ) {
-			account = null;
-			logger.error( "It should be one account only for sessionId: '" + sessionId + "'" );
-			
-			TypedQuery<Account> q2 = em.createNamedQuery( "findAccountBySessionId", Account.class )
-					.setParameter("sessionId", sessionId );
-			List<Account> lst = q2.getResultList();
-			logger.debug( "Find by sessionID size = " + lst.size());
-			for ( Account a : lst ) {
-				logger.debug( "Account[ id, name, pwd ]: " + a.getId() + ", " + a.getUsrName() + ", " + a.getPwd() );
-			}
-			
-	
-			
-			
-			
-		} catch ( Exception e ) {
-			account = null;
-			logger.error( e );
-		} finally {
-			em.close();
-		}
-		
-		return account;
 	}
 	
 	public Account addAccount( String usrName, String pwd, OrgUser user ) {

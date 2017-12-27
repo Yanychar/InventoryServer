@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.MsgFacade;
-import com.c2point.tools.entity.authentication.Account;
+import com.c2point.tools.entity.authentication.Session;
 import com.c2point.tools.entity.msg.Message;
 import com.c2point.tools.entity.msg.MessageType;
 import com.c2point.tools.entity.person.OrgUser;
@@ -49,18 +49,18 @@ public class AgreementResource extends BaseResource {
 
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
-		
-		Account account = findAccount( sessionId );
 
-		if ( account == null ) {
+		Session session = findSession( sessionId );
+
+		if ( session == null ) {
 			if ( logger.isDebugEnabled()) {
-				logger.debug( "  FAILED because account not found");
+				logger.debug( "  FAILED because session not found");
 				logger.debug( "... end AgreementResource.get()");
 			}
 			
-			throw new WebApplicationException( Response.Status.NOT_FOUND );
+			throw new WebApplicationException( Response.Status.UNAUTHORIZED );
 		}
-		if ( logger.isDebugEnabled()) logger.debug( "  Account found" );
+		if ( logger.isDebugEnabled()) logger.debug( "  Session was found" );
 		
 		/*
 		 * Necessary to:
@@ -98,7 +98,7 @@ public class AgreementResource extends BaseResource {
 		//   Create AGREEMENT Message and store it
 		Message msg = new Message( 
 				MessageType.AGREEMENT, 
-				account.getUser(), 
+				session.getUser(), 
 				newUser,
 				item
 		);

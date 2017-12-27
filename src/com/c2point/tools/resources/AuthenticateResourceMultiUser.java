@@ -17,17 +17,19 @@ import com.c2point.tools.datalayer.AuthenticationFacade;
 import com.c2point.tools.datalayer.TransactionsFacade;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.authentication.ActiveSessions;
+import com.c2point.tools.entity.authentication.Session;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.resources.stubs.AuthUserStub;
+import com.c2point.tools.resources.stubs.AuthUsersStub;
 import com.c2point.tools.resources.stubs.OrgUserStub;
 
-@Path("/authenticate")
-public class AuthenticateResource extends BaseResource {
-	private static Logger logger = LogManager.getLogger( AuthenticateResource.class.getName());
+@Path("/authmultiuser")
+public class AuthenticateResourceMultiUser extends BaseResource {
+	private static Logger logger = LogManager.getLogger( AuthenticateResourceMultiUser.class.getName());
 	
 	@GET
 	@Produces( MediaType.APPLICATION_JSON )
-	public AuthUserStub authenticateJSON(
+	public AuthUsersStub authenticateJSON(
 			@DefaultValue("") @QueryParam("name") String usrname, 
 			@DefaultValue("") @QueryParam("pwd") String pwd, 
 			@DefaultValue("None") @QueryParam("hwc") String imei, 
@@ -45,13 +47,44 @@ public class AuthenticateResource extends BaseResource {
 
 		Account account = AuthenticationFacade.getInstance().authenticateUser( usrname, pwd, appVer, imei );
 
-		
+		AuthUserStub stub;
+		AuthUsersStub stubList = new AuthUsersStub();
 		
 		if ( account != null && account.valid()) {
 
-			// TODO. Account can be connected to several User records in diferent organisations
-			// Should be redesigned
-			TransactionsFacade.getInstance().writeLogin( account.getUsers().iterator().next());
+			if ( account.getUsers().size() == 1 ) {
+				TransactionsFacade.getInstance().writeLogin( account.getUser());
+				
+				
+				OrgUser user = account.getUsers().iterator().next();		
+				
+				stub = new AuthUserStub( 
+						new OrgUserStub( user ), 
+						ActiveSessions.getActiveSessions().addSession( user ).getUniqueSessionID(), 
+						DateTime.now()
+				);
+				
+				stubList.add( stub );
+				
+			} else {
+				// Account can be connected to several User records in diferent organisations
+				// In this case returns list of users
+
+				for ( OrgUser user : account.getUsers()) {
+					
+					if ( user != null ) {
+
+						stub = new AuthUserStub( 
+								new OrgUserStub( user ), 
+								null, 
+								null
+						);
+						
+						stubList.add( stub );
+						
+					}
+				}
+			}
 			
 		} else {
 			if ( logger.isDebugEnabled()) {
@@ -61,18 +94,10 @@ public class AuthenticateResource extends BaseResource {
 			throw new WebApplicationException( Response.Status.NOT_FOUND );
 		}
 		
-		OrgUser user = account.getUser();		
-		
-		AuthUserStub stub = new AuthUserStub( 
-				new OrgUserStub( user ), 
-				ActiveSessions.getActiveSessions().addSession( user ).getUniqueSessionID(), 
-				DateTime.now()
-		);
-		
 		if ( logger.isDebugEnabled()) logger.debug( "***** Response: authenticated!" );
 		if ( logger.isDebugEnabled()) logger.debug( "... end AuthenticateResource.authenticateJSON()");
 		
-		return stub;
+		return stubList;
 
 	}
 }

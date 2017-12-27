@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.ItemsFacade;
-import com.c2point.tools.entity.authentication.Account;
+import com.c2point.tools.entity.authentication.Session;
 import com.c2point.tools.entity.repository.ToolItem;
 import com.c2point.tools.entity.tool.Category;
 import com.c2point.tools.entity.tool.identity.ToolIdentity;
@@ -55,16 +55,17 @@ public class GetToolsResource extends BaseResource {
 			
 		}
 
-		Account account = findAccount( sessionId );
+		Session session = findSession( sessionId );
 
-		if ( account == null ) {
+		if ( session == null ) {
 			if ( logger.isDebugEnabled()) {
-				logger.debug( "  FAILED because account not found");
-				logger.debug( "... end GetCategoriesResource.getJSON()");
+				logger.debug( "  FAILED because session not found");
+				logger.debug( "... end GetToolResource.get()");
 			}
-			throw new WebApplicationException( Response.Status.NOT_FOUND );
+			
+			throw new WebApplicationException( Response.Status.UNAUTHORIZED );
 		}
-		if ( logger.isDebugEnabled()) logger.debug( "  Account found" );
+		if ( logger.isDebugEnabled()) logger.debug( "  Session was found" );
 		
 		/*
 		 * if toolid != null than priority to fetch tool and check category if specified
@@ -86,12 +87,12 @@ public class GetToolsResource extends BaseResource {
 		} else if ( searchStr != null && searchStr.length() > 0 ) {
 
 			ToolIdentity identity = new ToolIdentity( ToolIdentityType.SEARCHSTRING, searchStr ); 
-			tList = ItemsFacade.getInstance().getItems( account.getUser().getOrganisation(), identity );
+			tList = ItemsFacade.getInstance().getItems( session.getUser().getOrganisation(), identity );
 			
 		} else if ( barcode != null && barcode.length() > 0 ) {
 
 			ToolIdentity identity = new ToolIdentity( ToolIdentityType.BARCODE, barcode ); 
-			tList = ItemsFacade.getInstance().getItems( account.getUser().getOrganisation(), identity );
+			tList = ItemsFacade.getInstance().getItems( session.getUser().getOrganisation(), identity );
 			
 		} else if ( categoryId >= 0 ) {
 			// Items belonged to category and subcategories will be fetched
@@ -103,17 +104,17 @@ public class GetToolsResource extends BaseResource {
 				if ( userId >= 0 ) {
 					// ... belonged to particular user (personal and non personal)
 					if ( logger.isDebugEnabled()) logger.debug( "  Search All tools belonged to User!" );
-					tList = ItemsFacade.getInstance().getItems( category, account.getUser());
+					tList = ItemsFacade.getInstance().getItems( category, session.getUser());
 					
 				} else if ( showPublicOnly ) {
 					// ... without Tools with PersonalFlag
 					if ( logger.isDebugEnabled()) logger.debug( "  Search All tools with Personal Tools excluded!" );
-					tList = ItemsFacade.getInstance().getItemsPublic( category, account.getUser().getOrganisation());
+					tList = ItemsFacade.getInstance().getItemsPublic( category, session.getUser().getOrganisation());
 					
 				} else {
 					// .. without restrictions. All belonged to specified Category 
 					if ( logger.isDebugEnabled()) logger.debug( "  Category Id only specified. Will be search all tools belonged to category" );
-					tList = ItemsFacade.getInstance().getItems( category, account.getUser().getOrganisation());
+					tList = ItemsFacade.getInstance().getItems( category, session.getUser().getOrganisation());
 					
 				}
 			}
@@ -123,17 +124,17 @@ public class GetToolsResource extends BaseResource {
 			if ( userId >= 0 ) {
 				// ... belonged to particular user (personal and non personal)
 				if ( logger.isDebugEnabled()) logger.debug( "  Search All tools belonged to User!" );
-				tList = ItemsFacade.getInstance().getItems( account.getUser());
+				tList = ItemsFacade.getInstance().getItems( session.getUser());
 				
 			} else if ( showPublicOnly ) {
 				// ... without Tools with PersonalFlag
 				if ( logger.isDebugEnabled()) logger.debug( "  Search All tools with Personal Tools excluded!" );
-				tList = ItemsFacade.getInstance().getItemsPublic( account.getUser().getOrganisation());
+				tList = ItemsFacade.getInstance().getItemsPublic( session.getUser().getOrganisation());
 				
 			} else {
 				// .. without restrictions
 				if ( logger.isDebugEnabled()) logger.debug( "  Search All tools without any restrictions will be returned" );
-				tList = ItemsFacade.getInstance().getItems( account.getUser().getOrganisation());
+				tList = ItemsFacade.getInstance().getItems( session.getUser().getOrganisation());
 				
 			}
 			

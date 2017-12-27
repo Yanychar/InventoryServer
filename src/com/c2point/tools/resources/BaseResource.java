@@ -10,6 +10,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.AuthenticationFacade;
 import com.c2point.tools.entity.authentication.Account;
+import com.c2point.tools.entity.authentication.ActiveSessions;
+import com.c2point.tools.entity.authentication.Session;
 
 public class BaseResource {
 
@@ -17,19 +19,19 @@ public class BaseResource {
 
 	@Context HttpServletRequest req;		
 
-	protected Account findAccount( String sessionId ) throws WebApplicationException {
+	protected Session findSession( String sessionId ) throws WebApplicationException {
 	
 		if ( logger.isDebugEnabled()) logger.debug( " Find User Session for sessionId='" + sessionId + "'" );
-		Account account = AuthenticationFacade.getInstance().findBySessionId( sessionId );
+		Session session = ActiveSessions.getActiveSessions().findSession( sessionId );
 		
 		// if not found return "NOT FOUND
-		if ( account == null ) {
-			if ( logger.isDebugEnabled()) logger.debug( " NOT FOUND sessionId='" + sessionId + "'" );
+		if ( session == null ) {
+			if ( logger.isDebugEnabled()) logger.debug( " Session NOT FOUND sessionId='" + sessionId + "'" );
 			// If not than resp = FAILED
-			if ( logger.isDebugEnabled()) logger.debug( "...end 'GetReportsResource.getReports'. Response = UNAUTHORIZED" );
+			if ( logger.isDebugEnabled()) logger.debug( "...end. Response = UNAUTHORIZED" );
 			throw new WebApplicationException( Response.Status.UNAUTHORIZED );
 		}
-		return account;
+		return session;
 	}
 	
 	protected HttpServletRequest getRequest() { return req; }

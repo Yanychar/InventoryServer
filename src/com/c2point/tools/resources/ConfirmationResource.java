@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.MsgFacade;
-import com.c2point.tools.entity.authentication.Account;
+import com.c2point.tools.entity.authentication.Session;
 import com.c2point.tools.entity.msg.Message;
 import com.c2point.tools.entity.msg.MessageType;
 import com.c2point.tools.entity.person.OrgUser;
@@ -50,17 +50,17 @@ public class ConfirmationResource extends BaseResource {
 			throw new WebApplicationException( Response.Status.BAD_REQUEST );
 		}
 		
-		Account account = findAccount( sessionId );
+		Session session = findSession( sessionId );
 
-		if ( account == null ) {
+		if ( session == null ) {
 			if ( logger.isDebugEnabled()) {
-				logger.debug( "  FAILED because account not found");
-				logger.debug( "... end AgreementResource.get()");
+				logger.debug( "  FAILED because session not found");
+				logger.debug( "... end ConfirmationResource.get()");
 			}
 			
-			throw new WebApplicationException( Response.Status.NOT_FOUND );
+			throw new WebApplicationException( Response.Status.UNAUTHORIZED );
 		}
-		if ( logger.isDebugEnabled()) logger.debug( "  Account found" );
+		if ( logger.isDebugEnabled()) logger.debug( "  Session was found" );
 		
 		/*
 		 * Necessary to:
@@ -87,7 +87,7 @@ public class ConfirmationResource extends BaseResource {
 		}
 
 		item.setReservedBy( null );
-		item.setCurrentUser( account.getUser());
+		item.setCurrentUser( session.getUser());
 
 		if ( DataFacade.getInstance().merge( item ) != null ) {
 			if ( logger.isDebugEnabled()) logger.debug( "Specified Tool Item with Id=" + item.getId() + " has been updated" );
@@ -98,7 +98,7 @@ public class ConfirmationResource extends BaseResource {
 		//   Create CONFIRMATION Message and store it
 		Message msg = new Message( 
 				MessageType.CONFIRMATION, 
-				account.getUser(), 
+				session.getUser(), 
 				oldOwner,
 				item
 		);

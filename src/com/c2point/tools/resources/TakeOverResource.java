@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.MsgFacade;
 import com.c2point.tools.datalayer.ItemsFacade;
-import com.c2point.tools.entity.authentication.Account;
+import com.c2point.tools.entity.authentication.Session;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
 
@@ -38,17 +38,17 @@ public class TakeOverResource extends BaseResource {
 			
 		}
 
-		Account account = findAccount( sessionId );
+		Session session = findSession( sessionId );
 
-		if ( account == null ) {
+		if ( session == null ) {
 			if ( logger.isDebugEnabled()) {
-				logger.debug( "  FAILED because account not found");
+				logger.debug( "  FAILED because session not found");
 				logger.debug( "... end TakeOverResource.get()");
 			}
 			
-			throw new WebApplicationException( Response.Status.NOT_FOUND );
+			throw new WebApplicationException( Response.Status.UNAUTHORIZED );
 		}
-		if ( logger.isDebugEnabled()) logger.debug( "  Account found" );
+		if ( logger.isDebugEnabled()) logger.debug( "  Session was found" );
 		
 		/*
 		 * Necessary to:
@@ -77,7 +77,7 @@ public class TakeOverResource extends BaseResource {
 		// Set new user and change status
 		OrgUser oldUser = item.getCurrentUser();
 		
-		ToolItem updatedItem = ItemsFacade.getInstance().updateUser( account.getUser(), item, account.getUser());
+		ToolItem updatedItem = ItemsFacade.getInstance().updateUser( session.getUser(), item, session.getUser());
 		
 		if ( updatedItem != null ) {
 			if ( logger.isDebugEnabled()) logger.debug( "Specified Tool Item with Id=" + item.getId() + " has been updated" );
@@ -88,7 +88,7 @@ public class TakeOverResource extends BaseResource {
 		// Save Info message
 		
 		if ( oldUser != null )
-			if ( MsgFacade.getInstance().addToolBorrowedInfo( account.getUser(), oldUser, updatedItem )) {
+			if ( MsgFacade.getInstance().addToolBorrowedInfo( session.getUser(), oldUser, updatedItem )) {
 				if ( logger.isDebugEnabled()) logger.debug( "ToolItem " + item + " was borrowed" );
 			} else {
 				throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );

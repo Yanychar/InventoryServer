@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.MsgFacade;
-import com.c2point.tools.entity.authentication.Account;
+import com.c2point.tools.entity.authentication.Session;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.entity.repository.ToolItem;
 
@@ -36,18 +36,18 @@ public class BorrowRequestResource extends BaseResource {
 			
 		}
 
-		Account account = findAccount( sessionId );
+		Session session = findSession( sessionId );
 
-		if ( account == null ) {
+		if ( session == null ) {
 			if ( logger.isDebugEnabled()) {
-				logger.debug( "  FAILED because account not found");
+				logger.debug( "  FAILED because session not found");
 				logger.debug( "... end BorrowRequestResource.get()");
 			}
 			
-			throw new WebApplicationException( Response.Status.NOT_FOUND );
+			throw new WebApplicationException( Response.Status.UNAUTHORIZED );
 		}
-		if ( logger.isDebugEnabled()) logger.debug( "  Account found" );
-		
+		if ( logger.isDebugEnabled()) logger.debug( "  Session was found" );
+
 		/*
 		 * Necessary to:
 		 *   find ToolItem
@@ -65,7 +65,7 @@ public class BorrowRequestResource extends BaseResource {
 		}
 		
 		// Determine sender
-		OrgUser sender = account.getUser();
+		OrgUser sender = session.getUser();
 		
 		// Determine Tool
 		ToolItem item = DataFacade.getInstance().find( ToolItem.class, toolId );

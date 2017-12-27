@@ -15,6 +15,7 @@ import org.joda.time.format.DateTimeFormat;
 import com.c2point.tools.datalayer.DataFacade;
 import com.c2point.tools.datalayer.ItemsFacade;
 import com.c2point.tools.entity.authentication.Account;
+import com.c2point.tools.entity.authentication.Session;
 import com.c2point.tools.entity.location.GeoLocation;
 import com.c2point.tools.entity.location.LocationRecord;
 import com.c2point.tools.entity.location.LocationStatus;
@@ -52,17 +53,17 @@ public class ValidateResource extends BaseResource {
 			
 		}
 
-		Account account = findAccount( sessionId );
+		Session session = findSession( sessionId );
 
-		if ( account == null ) {
+		if ( session == null ) {
 			if ( logger.isDebugEnabled()) {
-				logger.debug( "  FAILED because account not found");
-				logger.debug( "... end ReleaseToolResource.get()");
+				logger.debug( "  FAILED because session not found");
+				logger.debug( "... end ValidateResource.get()");
 			}
 			
-			throw new WebApplicationException( Response.Status.NOT_FOUND );
+			throw new WebApplicationException( Response.Status.UNAUTHORIZED );
 		}
-		if ( logger.isDebugEnabled()) logger.debug( "  Account found" );
+		if ( logger.isDebugEnabled()) logger.debug( "  Session was found" );
 		
 		/*
 		 * Necessary to:
@@ -105,7 +106,7 @@ public class ValidateResource extends BaseResource {
 		}
 		
 		// Update last location within toolitem
-		ToolItem updatedItem = ItemsFacade.getInstance().updateLocation( account.getUser(), item, location );
+		ToolItem updatedItem = ItemsFacade.getInstance().updateLocation( session.getUser(), item, location );
 		
 		if ( updatedItem != null ) {
 			if ( logger.isDebugEnabled()) logger.debug( "Specified Tool Item with Id=" + item.getId() + " has been updated" );
@@ -115,7 +116,7 @@ public class ValidateResource extends BaseResource {
 
 		// Add location to the location history
 		LocationRecord locRecord = new LocationRecord( 	item, 
-														date, account.getUser(), 
+														date, session.getUser(), 
 														location, status ); 
 		DataFacade.getInstance().insert( locRecord );
 

@@ -7,24 +7,22 @@ import javax.xml.bind.annotation.XmlType;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
-import com.c2point.tools.entity.authentication.Account;
-
 
 @XmlRootElement(name = "authenticated")
 @XmlType(propOrder = { "name", "sessionId", "date" })
-public class AuthenticationStub {
+public class AuthUserStub {
 	
 	private OrgUserStub 	user;
 	private String 			sessionId = "";
 	private String 			date;
 	
-	protected AuthenticationStub() {
+	protected AuthUserStub() {
 		
 	}
 	
-	public AuthenticationStub( Account account, DateTime date ) {
-		this.user = new OrgUserStub( account.getUser());
-		this.sessionId = account.getUniqueSessionID();
+	public AuthUserStub( OrgUserStub user, String sessionId, DateTime date ) {
+		this.user = user;
+		this.sessionId = sessionId;
 		this.date = date.toString( DateTimeFormat.forPattern( "ddMMyyyyHHmm" ));
 	}
 

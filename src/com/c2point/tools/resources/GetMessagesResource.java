@@ -15,7 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.datalayer.MsgFacade;
-import com.c2point.tools.entity.authentication.Account;
+import com.c2point.tools.entity.authentication.Session;
 import com.c2point.tools.entity.msg.Message;
 import com.c2point.tools.entity.msg.MessageStatus;
 import com.c2point.tools.resources.stubs.MsgListStub;
@@ -42,27 +42,28 @@ public class GetMessagesResource extends BaseResource {
 			
 		}
 
-		Account account = findAccount( sessionId );
+		Session session = findSession( sessionId );
 
-		if ( account == null ) {
+		if ( session == null ) {
 			if ( logger.isDebugEnabled()) {
-				logger.debug( "  FAILED because account not found");
-				logger.debug( "... end GetMessagesResource.getJSON()");
+				logger.debug( "  FAILED because session not found");
+				logger.debug( "... end GetMessagesResource.get()");
 			}
-			throw new WebApplicationException( Response.Status.NOT_FOUND );
+			
+			throw new WebApplicationException( Response.Status.UNAUTHORIZED );
 		}
-		if ( logger.isDebugEnabled()) logger.debug( "  Account found" );
+		if ( logger.isDebugEnabled()) logger.debug( "  Session was found" );
 		
 		Collection<Message> msgList = null;
 		
 		if ( status == MessageStatus.UNREAD ) {
 			if ( logger.isDebugEnabled()) logger.debug( "  UNREAD messages shall be read!" );
 			
-			msgList = MsgFacade.getInstance().list( account.getUser(), MessageStatus.UNREAD );
+			msgList = MsgFacade.getInstance().list( session.getUser(), MessageStatus.UNREAD );
 			
 		} else {
 			// In other cases Read ALL
-			msgList = MsgFacade.getInstance().list( account.getUser() );
+			msgList = MsgFacade.getInstance().list( session.getUser() );
 			
 		} 
 		

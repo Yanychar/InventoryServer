@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.c2point.tools.resources.AuthenticateResource;
 import com.c2point.tools.resources.GetToolsResource;
-import com.c2point.tools.resources.stubs.AuthenticationStub;
+import com.c2point.tools.resources.stubs.AuthUserStub;
 import com.c2point.tools.resources.stubs.ToolItemsListStub;
 
 public class TestGetToolsWithPersonalFlag {
@@ -25,7 +25,7 @@ public class TestGetToolsWithPersonalFlag {
 		
 		AuthenticateResource authRes = new AuthenticateResource();
 		
-		AuthenticationStub authStub = authRes.authenticateJSON( "sev", "sev", "", "" );
+		AuthUserStub authStub = authRes.authenticateJSON( "sev", "sev", "", "" );
 		
 		GetToolsResource getToolsRes = new GetToolsResource();
 		
