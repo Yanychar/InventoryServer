@@ -17,7 +17,6 @@ import com.c2point.tools.datalayer.AuthenticationFacade;
 import com.c2point.tools.datalayer.TransactionsFacade;
 import com.c2point.tools.entity.authentication.Account;
 import com.c2point.tools.entity.authentication.ActiveSessions;
-import com.c2point.tools.entity.authentication.Session;
 import com.c2point.tools.entity.person.OrgUser;
 import com.c2point.tools.resources.stubs.AuthUserStub;
 import com.c2point.tools.resources.stubs.AuthUsersStub;
@@ -42,9 +41,6 @@ public class AuthenticateResourceMultiUser extends BaseResource {
 			
 		}
 		
-//		usrname = "sevastia";
-//		pwd = "tavricheski";
-
 		Account account = AuthenticationFacade.getInstance().authenticateUser( usrname, pwd, appVer, imei );
 
 		AuthUserStub stub;

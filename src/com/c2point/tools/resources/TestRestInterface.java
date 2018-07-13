@@ -43,11 +43,36 @@ public class TestRestInterface extends BaseResource {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public String sayJsonTest() {
+  public JSONResp sayJsonTest() {
 	  
 	  logger.debug( "Inventory received REST requests ( APPLICATION_JSON )" );
 	  
-    return "Inventory is ready for REST requests (JSON)";
+	  JSONResp resp = new JSONResp( "TextInventory", "Ready REST (JSON) interface" );
+	  
+    return resp;
+  }
+
+  class JSONResp {
+	  private String app;
+	  private String msg;
+	
+	  public JSONResp( String app, String msg ) {
+		  setApp( app );
+		  setMsg( msg );
+	  }
+	  public String getApp() {
+		return app;
+	  }
+	  public void setApp(String app) {
+		this.app = app;
+	  }
+	  public String getMsg() {
+		return msg;
+	  }
+	  public void setMsg(String msg) {
+		this.msg = msg;
+	  }
+	  
   }
   
 }

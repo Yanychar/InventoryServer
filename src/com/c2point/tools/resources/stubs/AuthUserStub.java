@@ -22,8 +22,8 @@ public class AuthUserStub {
 	
 	public AuthUserStub( OrgUserStub user, String sessionId, DateTime date ) {
 		this.user = user;
-		this.sessionId = sessionId;
-		this.date = date.toString( DateTimeFormat.forPattern( "ddMMyyyyHHmm" ));
+		this.sessionId = ( sessionId != null ? sessionId : "" );
+		this.date = ( date != null ? date.toString( DateTimeFormat.forPattern( "ddMMyyyyHHmm" )) : "" );
 	}
 
 	public OrgUserStub getUser() { return user; }
